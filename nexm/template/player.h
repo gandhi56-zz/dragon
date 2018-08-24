@@ -32,7 +32,6 @@ class Player{
 public:
 	ClientSocket _socket;
 	int status;
-	char buffer[40];
 
 	Player(char* servIp, int port);
 	~Player();

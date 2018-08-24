@@ -22,7 +22,7 @@ Player::~Player(){
 
 void Player::run(){
 	string data;
-	char _data[40];
+	char _data[64];
 	while (1){
 		memset(&_data, 0, sizeof(_data));
 		recv(this->_socket.clientSd, 

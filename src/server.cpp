@@ -181,9 +181,10 @@ void Server::receive_ack(int& sock){
 
 void Server::create_log(){
 	// generate a log file	
-	string title;
-	title = "./log/" + player1.name;
-	title += "-" + player2.name + ".log";
+	
+	string title = configObj.data["log-title"];
+	//title = "./log/" + player1.name;
+	//title += "-" + player2.name + ".log";
 	logFile.open(title);
 	cout << title << " created." << endl;
 }

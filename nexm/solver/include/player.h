@@ -45,9 +45,9 @@ private:
 	// minimax
 	vector<string> get_moves(State state, char stone);
 	string best_move(State state, char stone, uint depth);
-	int minimax(State state, char stone, uint depth);
-	int max_value(State state, uint depth);
-	int min_value(State state, uint depth);
+	int minimax(State state, char stone, uint depth, int& alpha, int& beta);
+	int max_value(State state, uint depth, int& alpha, int& beta);
+	int min_value(State state, uint depth, int& alpha, int& beta);
 	int evaluate(char result);
 
 public:

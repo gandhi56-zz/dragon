@@ -1,4 +1,5 @@
-rows=2
+rows=3
 columns=3
 player1-name=solver1.0
-player2-name=anshil
+player2-name=solver1.0
+log-title=solver1.0-solver1.0-0.txt
