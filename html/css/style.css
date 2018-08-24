@@ -1,0 +1,40 @@
+@import url(https://fonts.googleapis.com/css?family=Oswald:400,600);
+
+h1 {
+	font-family: Oswald;
+	font-size: 50px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
+}
+h3 {
+	font-family: Oswald;
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 15.4px;
+}
+p {
+	font-family: Oswald;
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 20px;
+}
+
+button {
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+
+    background-color: #000000;
+    color: white;
+    border-radius: 12px;
+}
+
+button:hover {
+    background-color: #fffeff;
+    color: black;
+}

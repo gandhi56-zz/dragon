@@ -1,0 +1,4 @@
+rows=2
+columns=3
+player1-name=solver1.0
+player2-name=anshil
