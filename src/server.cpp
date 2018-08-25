@@ -141,7 +141,7 @@ void Server::create_socket(){
         exit(0);
     }
 	int opt=1;	
-	setsockopt(serverSd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+	setsockopt(serverSd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT , &opt, sizeof(opt));
 	cout << "Server socket has been created." << endl;
 }
 
@@ -206,23 +206,23 @@ void Server::run(){
 	_msg += "B#";
 
 	cout << "S>" << _msg << endl;
-	send(player1.socket, _msg.c_str(), sizeof(_msg), 0);
+	send(player1.socket, _msg.c_str(), (_msg).length(), 0);
     
 	_msg[_msg.length() - 2] = 'W';
 	cout << "S>" << _msg << endl;
-	send(player2.socket, _msg.c_str(), sizeof(_msg), 0);
+	send(player2.socket, _msg.c_str(), _msg.length(), 0);
 	while (true){
 		// check if the game terminates yet
 		// print board state to standard output
 		result = game->terminal_test();
 		game->board->show();
-		
+		cout << "*** Result : " << result << endl;		
 		if (result == '?'){
 			// decide the player yet to move,
 			// send a move request to that player
 			// wait for response
 			currPlayer = step%2 == 0? player1:player2;
-			send(currPlayer.socket, "?", sizeof("?"), 0);
+			send(currPlayer.socket, "Move?", string("Move?").length(), 0);
 			
 			cout << "S>?" << endl;
 			memset(&msg, 0, sizeof(msg));
@@ -232,7 +232,7 @@ void Server::run(){
 			read(currPlayer.socket, (char*)&msg, 
 				sizeof(msg));
 			cout << "S<" << msg << endl;
-
+			cout << "\n message : " << msg << "\n\n";
 			_msg = string(msg);
 			if (game->is_valid(_msg, currPlayer.stone)){
 				// if move is valid, update game state
@@ -247,6 +247,13 @@ void Server::run(){
 					_msg.length() + 1, 0);
 				send(player2.socket, (">"+_msg).c_str(),
 					_msg.length() + 1, 0);
+				char moveRcv[40];
+				memset(&moveRcv, 0, sizeof(moveRcv));
+				read(player1.socket, (char *)&moveRcv, sizeof(moveRcv));
+				cout << "S>B: " << moveRcv << endl;
+				memset(&moveRcv, 0, sizeof(moveRcv));
+				read(player2.socket, (char *)&moveRcv, sizeof(moveRcv));
+				cout << "S>W: " << moveRcv << endl;
 				cout << "S>" << _msg << endl;
 			}
 			else{
@@ -261,8 +268,10 @@ void Server::run(){
 		else{
 			if (result == BLACK){
 				cout << "Black wins!" << endl;
-				send(player1.socket, "+", sizeof("+"), 0);
-				send(player2.socket, "-", sizeof("-"), 0);
+				string win = "Result+";
+				string loose = "Result-";
+				send(player1.socket, win.c_str(), strlen(win.c_str()), 0);
+				send(player2.socket, loose.c_str(), strlen(loose.c_str()), 0);
 				cout << "S>+/-" << endl;
 				logFile << result;
 			}
@@ -294,7 +303,7 @@ void Server::cmd_run(){
 	while (true){
 		result = game->terminal_test();
         this->game->board->show();
-		
+		printf("*** // Result %c\n ", result);
 		if (result != '?')		break;
 		
 		usleep(1000000);

@@ -13,7 +13,17 @@ Player::Player(char* servIp, int port){
 		inet_addr(servIp);
 
 	this->_socket.sendSockAddr.sin_port = htons(port);
-
+	
+	int status = connect(_socket.clientSd, (sockaddr*)&_socket.sendSockAddr, sizeof(_socket.sendSockAddr));
+	if(status < 0)
+		cout << "Error connecting to _socket!" << endl;
+	
+	cout << "Connected to the server!" << endl;
+	
+	/* implement proper read settings function after including the game class */
+	char dummyBuffer[40];
+	read(_socket.clientSd, (char *)dummyBuffer, sizeof(dummyBuffer));
+	cout << "rec: " << dummyBuffer << endl;
 }
 
 Player::~Player(){
@@ -25,13 +35,13 @@ void Player::run(){
 	char _data[64];
 	while (1){
 		memset(&_data, 0, sizeof(_data));
-		recv(this->_socket.clientSd, 
-			(char*)&_data, sizeof(_data), 0);
+		read(this->_socket.clientSd, 
+			(char*)&_data, sizeof(_data));
 		cout << "rec:" << _data << endl;
 		if (!strcmp(_data, "!")){
-			break;
+			exit(1);
 		}
-		else if (!strcmp(_data, "?")){
+		else if (!strcmp(_data, "Move?")){
 
 			// send move here
 			cout << ">";
@@ -40,24 +50,29 @@ void Player::run(){
 			send(this->_socket.clientSd, data.c_str(), 
 				data.size(), 0);
 		}
-		else if (!strcmp(_data, "+")){
+		else if (!strcmp(_data, "Result+")){
 			cout << "Yahoo, I won!!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "-")){
+		else if (!strcmp(_data, "Result-")){
 			cout << "Ugh, I lost!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "#")){
+		else if (!strcmp(_data, "Result#")){
 			cout << "Draw!" << endl;
 			break;
 		}
 		else if(_data[0] == '>'){
 			// to update state in memory
+			/*data = string(_data);
+			string move = data.substr(1, data.length() - 1);
+			state.update(move);
+			movesCount++;*/
+			send(this->_socket.clientSd, "move recieved", strlen("move recieved"), 0);
 			continue;
 		}
 		else{
-			continue;
+			break;
 		}
 
 	}

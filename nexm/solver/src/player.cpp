@@ -54,7 +54,7 @@ Player::~Player(){
 	/*
 		Destructor
 	*/
-	close(_socket.clientSd);
+	close(this->_socket.clientSd);
 }
 
 void Player::read_settings(char* buff, uint& rows, uint& cols){	
@@ -248,10 +248,11 @@ void Player::run(){
 		read(this->_socket.clientSd, 
 			(char*)&_data, sizeof(_data));
 		cout << "rec:" << _data << endl;
+
 		if (!strcmp(_data, "!")){
 			exit(1);
 		}
-		else if (!strcmp(_data, "?")){
+		else if (!strcmp(_data, "Move?")){
 
 			// send move here
 			cout << "curr state" << endl;
@@ -259,17 +260,17 @@ void Player::run(){
 			data = best_move(state, myStone, state.movesCount);
 			cout << "sending " << data.c_str() << endl;
 			send(this->_socket.clientSd, data.c_str(), 
-				data.size(), 0);
+				strlen(data.c_str()), 0);
 		}
-		else if (!strcmp(_data, "+")){
+		else if (!strcmp(_data, "Result+")){
 			cout << "Yahoo, I won!!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "-")){
+		else if (!strcmp(_data, "Result-")){
 			cout << "Ugh, I lost!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "#")){
+		else if (!strcmp(_data, "Result#")){
 			cout << "Draw!" << endl;
 			break;
 		}
@@ -279,12 +280,13 @@ void Player::run(){
 			string move = data.substr(1, data.length() - 1);
 			state.update(move);
 			movesCount++;
-
-			memset(_data, 0, sizeof(_data));
-
+			send(this->_socket.clientSd, "move recieved", strlen("move recieved"), 0);
+			continue;
+			
 		}
 		else{
-			continue;
+			printf("breaking\n");
+			break;
 		}
 
 	}
