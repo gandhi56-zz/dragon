@@ -21,5 +21,4 @@ run: $(OBJ)main
 	$(OBJ)main
 
 clean:
-	rm -f ./nexm/player
 	rm -f $(OBJ)*.o $(OBJ)main

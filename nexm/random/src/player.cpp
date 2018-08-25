@@ -35,7 +35,8 @@ Player::Player(char* servIp, int port){
 
 	char buffer[40];
 	memset(buffer, 0, sizeof(buffer));
-	recv(_socket.clientSd, (char*)&buffer, sizeof(buffer), 0);
+	//recv(_socket.clientSd, (char*)&buffer, sizeof(buffer), 0);
+	read(_socket.clientSd, (char*)&buffer, sizeof(buffer));
 	cout << "rec:" << buffer << endl;
 
 	uint numRows;
@@ -153,8 +154,8 @@ void Player::run(){
 	char stone = BLACK;
 	while (1){
 		memset(_data, 0, sizeof(_data));
-		recv(this->_socket.clientSd, 
-			(char*)&_data, sizeof(_data), 0);
+		read(this->_socket.clientSd, 
+			(char*)&_data, sizeof(_data));
 		cout << "rec:" << _data << endl;
 		if (!strcmp(_data, "!")){
 			exit(1);

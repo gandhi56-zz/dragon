@@ -17,6 +17,11 @@ Cell::Cell(string _key){
 
 
 State::State(){
+	numRows = 0;
+	numColumns = 0;
+	count[BLACK] = 0;
+	count[WHITE] = 0;
+	count[NEUTRAL] = 0;
 	movesCount = 0;
 }
 
@@ -27,9 +32,6 @@ State::~State(){
 void State::set_size(uint rows, uint cols){
 	numRows = rows;
 	numColumns = cols;
-	count[BLACK] = 0;
-	count[WHITE] = 0;
-	count[NEUTRAL] = 0;
 }
 
 void State::create_graph(){
@@ -49,7 +51,7 @@ void State::create_graph(){
 		for (uint col = 0; col < numColumns; ++col){
 			string key = get_key(row, col);
 			graph[key] = Cell(key);
-			add_nbr(row, col);
+			add_nbrs(row, col);
 		}
 	}
 
@@ -70,7 +72,7 @@ void State::create_graph(){
 }
 
 
-void State::add_nbr(uint row, uint col){
+void State::add_nbrs(uint row, uint col){
 	/*
 		add neighbours to the cell positioned at 'row' 
 		and 'col'.	
@@ -264,17 +266,4 @@ bool State::connected(string key0, string key1){
 	}
 	return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -35,7 +35,7 @@ Player::Player(char* servIp, int port){
 
 	char buffer[40];
 	memset(buffer, 0, sizeof(buffer));
-	recv(_socket.clientSd, (char*)&buffer, sizeof(buffer), 0);
+	read(_socket.clientSd, (char*)&buffer, sizeof(buffer));
 	cout << "rec:" << buffer << endl;
 
 	uint numRows;
@@ -141,13 +141,16 @@ vector<string> Player::get_moves(State state, char stone){
 }
 
 string Player::best_move(State state, char stone, uint depth){
+	
+	// store a vector with all legal moves from state
 	vector<string> moves = get_moves(state, stone);
-	int bestValue = (stone == BLACK? -100 : 100);
-	string bestMove = "";
 
+	// initialize minimax values
+	int bestValue = (stone == BLACK? -100 : 100);
 	int alpha = -100;
 	int beta = 100;
 
+	string bestMove = "";
 	for (string move : moves){
 		state.update(move);
 
@@ -242,8 +245,8 @@ void Player::run(){
 	char _data[40];
 	while (1){
 		memset(_data, 0, sizeof(_data));
-		recv(this->_socket.clientSd, 
-			(char*)&_data, sizeof(_data), 0);
+		read(this->_socket.clientSd, 
+			(char*)&_data, sizeof(_data));
 		cout << "rec:" << _data << endl;
 		if (!strcmp(_data, "!")){
 			exit(1);
@@ -251,8 +254,6 @@ void Player::run(){
 		else if (!strcmp(_data, "?")){
 
 			// send move here
-
-
 			cout << "curr state" << endl;
 			state.show();
 			data = best_move(state, myStone, state.movesCount);

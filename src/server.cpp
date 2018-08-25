@@ -229,8 +229,8 @@ void Server::run(){
 			
 			// record time server takes to receive
 			// a response from 'currPlayer'
-			recv(currPlayer.socket, (char*)&msg, 
-				sizeof(msg), 0);
+			read(currPlayer.socket, (char*)&msg, 
+				sizeof(msg));
 			cout << "S<" << msg << endl;
 
 			_msg = string(msg);

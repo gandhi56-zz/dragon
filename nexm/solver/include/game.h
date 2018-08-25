@@ -44,7 +44,7 @@ class State{
 		char status();
 
 	private:
-		void add_nbr(uint row, uint col);
+		void add_nbrs(uint row, uint col);
 		uint num_nbrs(uint row, uint col);
 		uint get_row(string key);
 		uint get_col(string key);
