@@ -279,6 +279,9 @@ void Player::run(){
 			string move = data.substr(1, data.length() - 1);
 			state.update(move);
 			movesCount++;
+
+			memset(_data, 0, sizeof(_data));
+
 		}
 		else{
 			continue;
