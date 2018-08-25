@@ -160,7 +160,7 @@ void Player::run(){
 		if (!strcmp(_data, "!")){
 			exit(1);
 		}
-		else if (!strcmp(_data, "?")){
+		else if (!strcmp(_data, "Move?")){
 
 			// send move here
 			cout << ">";
@@ -168,15 +168,15 @@ void Player::run(){
 			send(this->_socket.clientSd, data.c_str(), 
 				data.size(), 0);
 		}
-		else if (!strcmp(_data, "+")){
+		else if (!strcmp(_data, "Result+")){
 			cout << "Yahoo, I won!!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "-")){
+		else if (!strcmp(_data, "Result-")){
 			cout << "Ugh, I lost!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "#")){
+		else if (!strcmp(_data, "Result#")){
 			cout << "Draw!" << endl;
 			break;
 		}
@@ -188,9 +188,11 @@ void Player::run(){
 			state.show();
 			movesCount++;
 			stone = (movesCount%2 == 0? BLACK : WHITE);
+			send(this->_socket.clientSd, "move recieved", strlen("move recieved"), 0);
+			continue;
 		}
 		else{
-			continue;
+			break;
 		}
 
 	}
