@@ -244,9 +244,9 @@ void Server::run(){
 
 				// send move to each player
 				send(player1.socket, (">"+_msg).c_str(),
-					sizeof(_msg), 0);
+					_msg.length() + 1, 0);
 				send(player2.socket, (">"+_msg).c_str(),
-					sizeof(_msg), 0);
+					_msg.length() + 1, 0);
 				cout << "S>" << _msg << endl;
 			}
 			else{
