@@ -215,8 +215,7 @@ void Server::run(){
 		// check if the game terminates yet
 		// print board state to standard output
 		result = game->terminal_test();
-		game->board->show();
-		cout << "*** Result : " << result << endl;		
+		game->board->show();	
 		if (result == '?'){
 			// decide the player yet to move,
 			// send a move request to that player
@@ -232,7 +231,6 @@ void Server::run(){
 			read(currPlayer.socket, (char*)&msg, 
 				sizeof(msg));
 			cout << "S<" << msg << endl;
-			cout << "\n message : " << msg << "\n\n";
 			_msg = string(msg);
 			if (game->is_valid(_msg, currPlayer.stone)){
 				// if move is valid, update game state
@@ -277,15 +275,15 @@ void Server::run(){
 			}
 			else if (result == WHITE){
 				cout << "White wins!" << endl;
-				send(player1.socket, "-", sizeof("-"), 0);
-				send(player2.socket, "+", sizeof("+"), 0);
+				send(player1.socket, "Result-", strlen(string("Result-").c_str()), 0);
+				send(player2.socket, "Result+", strlen(string("Result+").c_str()), 0);
 				cout << "S>+/-" << endl;
 				logFile << result;
 			}
 			else{
 				cout << "Draw!" << endl;
-				send(player1.socket, "#", sizeof("#"), 0);
-				send(player2.socket, "#", sizeof("#"), 0);
+				send(player1.socket, "Result#", strlen(string("Result#").c_str()), 0);
+				send(player2.socket, "Result#", strlen(string("Result#").c_str()), 0);
 				cout << "S>#" << endl;
 				logFile << result;
 			}

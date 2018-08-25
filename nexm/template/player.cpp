@@ -15,9 +15,10 @@ Player::Player(char* servIp, int port){
 	this->_socket.sendSockAddr.sin_port = htons(port);
 	
 	int status = connect(_socket.clientSd, (sockaddr*)&_socket.sendSockAddr, sizeof(_socket.sendSockAddr));
-	if(status < 0)
+	if(status < 0){
 		cout << "Error connecting to _socket!" << endl;
-	
+	}
+
 	cout << "Connected to the server!" << endl;
 	
 	/* implement proper read settings function after including the game class */
