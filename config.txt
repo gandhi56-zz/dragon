@@ -1,5 +1,5 @@
 rows=3
-columns=3
+columns=4
 player1-name=random
 player2-name=solver1.0
-log-title=./log/solver1.0-solver1.0-3x3-3.txt
+log-title=./log/anshil-solver1.0-3x3-3.txt
