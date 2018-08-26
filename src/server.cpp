@@ -95,7 +95,13 @@ Server::Server(){
 
 	create_log();
 
-	game = new Game(numRows, numColumns);
+	state.set_size(numRows, numColumns);
+	state.create_graph();
+
+	if (configObj.store_data("set-state", tmp)){
+		set_state(tmp);
+	}
+
 	cout << "Game created successfully." << endl;
 }
 
@@ -103,7 +109,6 @@ Server::~Server(){
 	close(player1.socket);
 	close(player2.socket);
     close(serverSd);
-    delete game;
     logFile.close();
 	cout << "Server destroyed" << endl;
 }
@@ -179,6 +184,22 @@ void Server::receive_ack(int& sock){
     }
 }
 
+void Server::set_state(string moves){
+	uint i = 0;
+	uint j = 1;
+	while (i < moves.length()){
+		if (state.valid_stone(moves[i])){
+			j = i + 1;
+			while (moves[j] != ';')	j++;
+			state.update(moves.substr(i, j-i-1));
+			i = j+1;
+
+			step++;
+		}
+	}
+	state.update(moves.substr(i, j-i-1));
+}
+
 void Server::create_log(){
 	// generate a log file	
 	
@@ -214,14 +235,15 @@ void Server::run(){
 	while (true){
 		// check if the game terminates yet
 		// print board state to standard output
-		result = game->terminal_test();
-		game->board->show();	
+		result = state.status();
+		state.show();	
 		if (result == '?'){
 			// decide the player yet to move,
 			// send a move request to that player
 			// wait for response
 			currPlayer = step%2 == 0? player1:player2;
-			send(currPlayer.socket, "Move?", string("Move?").length(), 0);
+			send(currPlayer.socket, "Move?", 
+				string("Move?").length(), 0);
 			
 			cout << "S>?" << endl;
 			memset(&msg, 0, sizeof(msg));
@@ -232,11 +254,11 @@ void Server::run(){
 				sizeof(msg));
 			cout << "S<" << msg << endl;
 			_msg = string(msg);
-			if (game->is_valid(_msg, currPlayer.stone)){
+			if (state.is_valid(_msg, currPlayer.stone)){
 				// if move is valid, update game state
 				// append move to the logfile
 				// increment moves count
-				this->game->update(_msg, currPlayer.stone);
+				state.update(_msg);
 				logFile << _msg << ";";
 				step++;
 
@@ -295,123 +317,3 @@ void Server::run(){
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void Server::cmd_run(){
-	string move;
-	char result;
-	while (true){
-		result = game->terminal_test();
-        this->game->board->show();
-		printf("*** // Result %c\n ", result);
-		if (result != '?')		break;
-		
-		usleep(1000000);
-		
-		while (true){
-			if (step%2 == 0){
-				// black's move
-				random_move(this->game->board, BLACK, move);
-			
-				if (game->is_valid(move, BLACK))	break;
-			}
-			else{
-				// white's move
-				random_move(this->game->board, WHITE, move);
-				if (game->is_valid(move, WHITE))	break;
-			}
-		}
-
-        printf("[%c]%s\n",
-        	(step%2==0?BLACK:WHITE),move.c_str());
-		logFile << move << ";";
-		this->game->update(move, (step%2==0?BLACK:WHITE));
-		step++;
-	}
-	
-	printf("Results\n#moves played:%d\n", step);
-	
-	if (result == '#'){
-		printf("Draw\n");
-		logFile << "Draw";
-	}
-	else{
-		printf("%c wins\n", result);
-		logFile << result;
-	}
-}
-
-void random_move(Board* board, char stone, string& move){
-	
-	vector<string> emptyPosVect;
-	vector<string> neutralPosVect;
-	vector<string> stonePosVect;
-
-	for (uint row = 0; row < board->numRows; ++row){
-		for (uint col = 0; col < board->numColumns; ++col){
-			string key = board->get_key(row, col);
-			
-			if (board->state[key].value == '.'){
-				emptyPosVect.push_back(key);
-			}
-			else if (board->state[key].value == NEUTRAL){
-				neutralPosVect.push_back(key);
-			}
-			else if (board->state[key].value == stone){
-				stonePosVect.push_back(key);
-			}
-		}
-	}
-
-	srand((uint)time(NULL)); 
-	
-	uint randNum = 0;
-	uint index;
-	
-	// 'generator' move: place a neutral and a 
-	// non-neutral stone on
-	// two empty cells. assert: emptyPosVect.size() >= 2.
-	
-	// 'transformer' move: transform two neutral stones and 
-	// a non-neutral
-	// stone. assert: neutralPosVect.size() >= 2 and 
-	// stonePosVect.siz() >= 1
-	
-	if (emptyPosVect.size() >= 2){
-		if (neutralPosVect.size() >= 2 
-			&& stonePosVect.size() >= 1){
-			randNum = rand() % 2;
-		}
-		else{
-			randNum = 0;
-		}
-	}
-	else{
-		if ((neutralPosVect.size())>=2
-			&&stonePosVect.size()>=1){
-			randNum = 1;
-		}
-	}
-
-	if (randNum == 0){
-		// perform 'generator' move
-		index = rand()%emptyPosVect.size();
-		string stonePos = emptyPosVect[index];
-		emptyPosVect.erase(emptyPosVect.begin()+index);
-		string neutralPos = emptyPosVect[
-			rand()%emptyPosVect.size()];
-		
-		// now create a move string
-		move = stone + stonePos + "?" + neutralPos;
-	}
-	else if (randNum == 1){
-		// perform 'transformer' move
-		index = rand()%neutralPosVect.size();
-		string stonePos1 = neutralPosVect[index];
-		neutralPosVect.erase(neutralPosVect.begin()+index);
-		string stonePos2 = neutralPosVect[
-			rand()%neutralPosVect.size()];
-		string neutralPos = stonePosVect[
-			rand()%stonePosVect.size()];
-		move = stone+stonePos1+stone+
-			stonePos2+"?"+neutralPos;
-	}
-}

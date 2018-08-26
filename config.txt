@@ -1,5 +1,6 @@
 rows=3
-columns=4
-player1-name=random
-player2-name=solver1.0
-log-title=./log/anshil-solver1.0-3x3-3.txt
+columns=3
+player1-name=solver1.0
+player2-name=random
+log-title=./log/solver1.0-solver1.0-3x3-5.txt
+set-state=Bb2?c1;

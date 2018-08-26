@@ -117,7 +117,6 @@ vector<string> Player::get_moves(State state, char stone){
 			key.push_back(stone);
 			key += emptyPos[i] + "?" + emptyPos[j];
 
-			cout << key << endl;
 			moves.push_back(key);
 		}
 	}
@@ -131,7 +130,6 @@ vector<string> Player::get_moves(State state, char stone){
 				key.push_back(stone);
 				key += neutralPos[j] + "?" + stonePos[k];
 
-				cout << key << endl;
 				moves.push_back(key);
 			}
 		}
@@ -141,6 +139,10 @@ vector<string> Player::get_moves(State state, char stone){
 }
 
 string Player::best_move(State state, char stone, uint depth){
+
+	cout << "searching best move for state:" << endl;
+	state.show();
+
 	
 	// store a vector with all legal moves from state
 	vector<string> moves = get_moves(state, stone);
@@ -169,15 +171,10 @@ string Player::best_move(State state, char stone, uint depth){
 			}
 		}
 	}
-
-	cout << "alpha=" << alpha << endl;
-	cout << "beta=" << beta << endl;
-
 	return bestMove;
 }
 
 int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
-	cout << "depth=" << depth << endl;
 	char result = state.status();
 	if (result != '?'){
 		return evaluate(result);
@@ -228,7 +225,6 @@ int Player::min_value(State state, uint depth, int& alpha, int& beta){
 }
 
 int Player::evaluate(char result){
-	cout << "Evaluating state" << endl;
 	if (result == BLACK)		return 1;
 	else if (result == WHITE)	return -1;
 	return 0;
@@ -255,8 +251,6 @@ void Player::run(){
 		else if (!strcmp(_data, "Move?")){
 
 			// send move here
-			cout << "curr state" << endl;
-			state.show();
 			data = best_move(state, myStone, state.movesCount);
 			cout << "sending " << data.c_str() << endl;
 			send(this->_socket.clientSd, data.c_str(), 

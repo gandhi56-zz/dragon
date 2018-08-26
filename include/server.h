@@ -49,16 +49,15 @@ class Server{
     	void bind_socket();
     	void receive_ack(int& sock);
 		void create_log();
+		void set_state(string moves);
 		
 	public:
 		uint step;
-		Game *game;
+		State state;
 		
 		Server();
 		~Server();
     	void run();
-    	void cmd_run();
 };
 
-void random_move(Board* board, char stone, string& move);
 #endif // _SERVER_
