@@ -37,6 +37,7 @@ Player::Player(char* servIp, int port){
 	memset(buffer, 0, sizeof(buffer));
 	read(_socket.clientSd, (char*)&buffer, sizeof(buffer));
 	cout << "rec:" << buffer << endl;
+	send(this->_socket.clientSd, "Recieved game details", strlen("Recieved game details"), 0);
 
 	uint numRows;
 	uint numColumns;
@@ -48,7 +49,32 @@ Player::Player(char* servIp, int port){
 	// create state instance
 	state.set_size(numRows, numColumns);
 	state.create_graph();
+
+	memset(&buffer, 0, sizeof(buffer));
+	read(this->_socket.clientSd, (char *)&buffer, sizeof(buffer));
+	this->set_state(string(buffer));
+	send(this->_socket.clientSd, "Recieved game state", strlen("Reciev    ed game state"), 0);
 }
+
+void Player::set_state(string moves){
+    uint i = 0;
+    uint j = 1;
+	if(moves == "DEFAULT;") return;
+    while (i < moves.length()){
+        if (moves[i] == BLACK || moves[i] == WHITE || moves[i] == NEUTRAL){
+            j = i + 1;
+            while (moves[j] != ';') j++;
+	        state.update(moves.substr(i, j-i));
+            i = j+1;
+
+        }
+		else{
+			cout << "Error parsing start state\n";
+			break;
+		}
+    }
+}
+
 
 Player::~Player(){
 	/*
@@ -87,6 +113,7 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 	cout << "rows=" << rows << endl;
 	cout << "cols=" << cols << endl;
 	cout << "stone=" << myStone << endl;
+	
 }
 
 // minimax implementation --------------------------------------

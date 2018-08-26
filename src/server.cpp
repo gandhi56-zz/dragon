@@ -101,7 +101,6 @@ Server::Server(){
 	if (configObj.store_data("set-state", tmp)){
 		set_state(tmp);
 	}
-
 	cout << "Game created successfully." << endl;
 }
 
@@ -187,17 +186,24 @@ void Server::receive_ack(int& sock){
 void Server::set_state(string moves){
 	uint i = 0;
 	uint j = 1;
+	cout << "*** Moves string = " << moves << endl;
+	if(moves == "DEFAULT;"){ return;}
 	while (i < moves.length()){
 		if (state.valid_stone(moves[i])){
 			j = i + 1;
 			while (moves[j] != ';')	j++;
-			state.update(moves.substr(i, j-i-1));
+			cout << " *** move " << moves.substr(i, j-i) << endl;
+			state.update(moves.substr(i, j-i));
 			i = j+1;
 
 			step++;
 		}
+		else{//if the state string is incorrect
+			cout << ("Error parsing the state \n");
+			break;
+		}
 	}
-	state.update(moves.substr(i, j-i-1));
+	//state.update(moves.substr(i, j-i-1));
 }
 
 void Server::create_log(){
@@ -228,10 +234,19 @@ void Server::run(){
 
 	cout << "S>" << _msg << endl;
 	send(player1.socket, _msg.c_str(), (_msg).length(), 0);
-    
-	_msg[_msg.length() - 2] = 'W';
+ 	_msg[_msg.length() - 2] = 'W';
 	cout << "S>" << _msg << endl;
 	send(player2.socket, _msg.c_str(), _msg.length(), 0);
+	//confirmation that players recieved game settings	
+	read(player1.socket, (char *)&msg, sizeof(msg));
+	read(player2.socket, (char *)&msg, sizeof(msg));
+
+	configObj.store_data("set-state", _msg);
+	send(player1.socket, (_msg).c_str(), strlen((_msg).c_str()), 0);
+    send(player2.socket, (_msg).c_str(), strlen((_msg).c_str()), 0);
+	//confirmation that players recieved game state
+	read(player1.socket, (char *)&msg, sizeof(msg));
+	read(player2.socket, (char *)&msg, sizeof(msg));
 	while (true){
 		// check if the game terminates yet
 		// print board state to standard output

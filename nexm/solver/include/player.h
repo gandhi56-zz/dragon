@@ -49,7 +49,7 @@ private:
 	int max_value(State state, uint depth, int& alpha, int& beta);
 	int min_value(State state, uint depth, int& alpha, int& beta);
 	int evaluate(char result);
-
+	void set_state(string moves);
 public:
 	Player(char* servIp, int port);
 	~Player();

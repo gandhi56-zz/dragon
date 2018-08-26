@@ -41,7 +41,7 @@ private:
 	void read_settings(char* buff, uint& rows, uint& cols);
 	void connect_server();
 	void random_move(char stone, string& move);
-
+	void set_state(string moves);
 public:
 	Player(char* servIp, int port);
 	~Player();

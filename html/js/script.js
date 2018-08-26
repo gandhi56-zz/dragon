@@ -1,5 +1,5 @@
 //"use strict";
-const WHITE = 'w'
+const WHITE = 'W'
 const BLACK = 'B'
 const NEUTRAL = '?'
 const EMPTY = '.'

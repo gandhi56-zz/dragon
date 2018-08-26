@@ -21,7 +21,8 @@ function exit() {}
 function openInput(e) {
     var file = e.target.files[0];
     if (!file) {
-        return;
+        alert("File not found!!");
+		return;
     }
     var reader = new FileReader();
     reader.onload = function(e) {

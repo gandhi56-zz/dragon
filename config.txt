@@ -3,4 +3,4 @@ columns=3
 player1-name=solver1.0
 player2-name=random
 log-title=./log/solver1.0-solver1.0-3x3-5.txt
-set-state=Bb2?c1;
+set-state=DEFAULT;
