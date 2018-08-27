@@ -175,39 +175,61 @@ string Player::best_move(State state, char stone, uint depth){
 	int bestValue = (stone == BLACK? -100 : 100);
 	int alpha = -100;
 	int beta = 100;
-
 	string bestMove = "";
+	
+	// for every possible move from 'state'
 	for (string move : moves){
+
+		// play move
 		state.update(move);
 
 		if (stone == BLACK){
+			// if MAX played the last move, then
+			// maximize the minimax value and 
+			// update the 'bestMove' if needed
 			int value = minimax(state, WHITE, depth+1, alpha, beta);
-			/*if(value == 1){
-				bestMove = move;
-				break;
-			}*/
 			if (value > bestValue){
 				bestValue = value;
 				bestMove = move;
+				
+				// update alpha
+				alpha = max(alpha, bestValue);
+
+				// prune if possible
+				if (alpha >= beta)	break;
 			}
+
 		}
 		else{
+			// if MIN played the last move, then
+			// minimize the minimax value and
+			// update the 'bestMove' if needed
 			int value = minimax(state, BLACK, depth+1, alpha, beta);
-			/*if(value == -1){
-				bestMove = move;
-				break;
-			}*/
 			if (value < bestValue){
 				bestValue = value;
 				bestMove = move;
+				
+				// update beta
+				beta = min(beta, bestValue);
+
+				// prune if possible
+				if (alpha >= beta) break;
 			}
+
 		}
 		state.revert(move, stone);
 	}
+
+	cout << "minimax=" << bestValue << endl;
+	cout << "best move=" << bestMove << endl;
 	return bestMove;
 }
 
 int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
+	
+	cout << "depth=" << depth << endl;
+	state.show();
+	
 	char result = state.status();
 	if (result != '?'){
 		return evaluate(result);
@@ -250,7 +272,7 @@ int Player::min_value(State state, uint depth, int& alpha, int& beta){
 						alpha, beta));
 		beta = min(beta, bestValue);
 		state.revert(move, WHITE);
-		if (alpha <= beta)	break;
+		if (alpha >= beta)	break;
 	}
 
 	return bestValue;
