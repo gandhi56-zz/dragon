@@ -184,14 +184,18 @@ void State::update(string move){
 	uint i = 0;
 	uint j = 1;
 	while (j < move.length()){
-		if (move[j]==BLACK || move[j]==WHITE || move[j]==NEUTRAL){
+		if (move[j]==BLACK || move[j]==WHITE || 
+			move[j]==NEUTRAL || move[j]==EMPTY){
+			
 			string pos = move.substr(i+1, j-i-1);
 
 			if (graph[pos].value != EMPTY){
 				count[graph[pos].value]--;
 			}
-			count[move[i]]++;
 
+			if (move[i] != EMPTY){
+				count[move[i]]++;
+			}
 			graph[pos].value = move[i];
 			i = j;
 		}
@@ -202,10 +206,46 @@ void State::update(string move){
 	if (graph[pos].value != EMPTY){
 		count[graph[pos].value]--;
 	}
-	count[move[i]]++;
+	if (move[i] != EMPTY){	
+		count[move[i]]++;
+	}
 	graph[move.substr(i+1, j-i-1)].value = move[i];
-
 	movesCount++;
+}
+
+void State::revert(string move, char stone){
+	uint numStones = 0;
+	uint numNeutrals = 0;
+	for (uint i = 0; i < move.length(); ++i){
+		if (move[i] == stone)			numStones++;
+		else if (move[i] == NEUTRAL)	numNeutrals++;
+	}
+
+	if (numNeutrals != 1)	return;
+
+	if (numStones == 1){
+		for (uint i = 0; i < move.length(); ++i){
+			if (move[i] == stone || move[i] == NEUTRAL){
+				count[move[i]]--;
+				move[i] = EMPTY;
+			}
+		}
+	}
+	else if (numStones == 2){
+		for (uint i = 0; i < move.length(); ++i){
+			if (move[i] == stone){
+				move[i] = NEUTRAL;
+				count[stone]--;
+				count[NEUTRAL]++;
+			}
+			else if (move[i] == NEUTRAL){
+				move[i] = stone;
+				count[stone]++;
+				count[NEUTRAL]--;
+			}
+		}
+	}
+	update(move);
 }
 
 char State::status(){

@@ -10,9 +10,9 @@ int main(int argc, char *argv[]){
     char serverIp[] = "127.0.0.1";
     int port = atoi(argv[1]);
     
-    // create player and try connecting to the server
+	// create player and try connecting to the server
     Player player(serverIp, port);
     player.run();
-   
+	
 	return 0;
 }
