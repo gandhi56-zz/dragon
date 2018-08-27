@@ -25,6 +25,44 @@ struct Cell{
 	Cell(string _key);
 };
 
+class Board{
+    public:
+        uint numRows;
+        uint numColumns;
+        map<string, Cell> state;
+    
+        Board(uint numRows, uint numColumns);
+        void show();
+        string get_key(uint row, uint col);
+        bool valid_pos_str(string key);
+        bool valid_stone(char stone);
+        bool valid_pos(uint row, uint col);
+
+    private:
+        void add_neighbours(uint row, uint col);
+        uint count_neighbours(uint row, uint col);
+        void add_col_edge();
+        uint get_row(string key);
+        uint get_col(string key);
+};
+
+class Game{
+    public:
+        Board* board;
+
+        Game(uint numRows, uint numColumns);
+        ~Game();
+        void init(uint numRows, uint numColumns);
+        bool is_valid(string move, char stone);
+        void update(string move, char stone);
+        char terminal_test();
+
+    private:
+        void update_cell(string movePos, char stone);
+        bool is_connected(string key0, string key1);
+};
+
+
 class State{
 	public:
 		uint numRows;

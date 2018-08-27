@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include <fstream>
 
+#include "game.h"
+
 using namespace std;
 
 struct ClientSocket{
@@ -28,17 +30,23 @@ struct ClientSocket{
 };
 
 class Player{
-
 public:
-	ClientSocket _socket;
-	int status;
 
+	State state;
+	uint movesCount;
+	
+	void connect_server();
+	void read_settings(char* buff, uint& rows, uint& cols);
+	void user_move(char* move);
+	void set_state(string move);
+
+	int status;
+	ClientSocket _socket;
 	Player(char* servIp, int port);
 	~Player();
-	void connect_server();
-	void receive_data();
-	void send_data(const char* data);
 	void run();
+	int send_data(const char* data);
+	int recieve_data(char* data);
 };
 
 #endif // _PLAYER_

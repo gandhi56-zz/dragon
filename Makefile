@@ -22,3 +22,5 @@ run: $(OBJ)main
 
 clean:
 	rm -f $(OBJ)*.o $(OBJ)main
+	rm -rf $(SRC).*.*.*
+	rm -rf $(HEADER).*.*.*

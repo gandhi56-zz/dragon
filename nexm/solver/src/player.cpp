@@ -185,6 +185,10 @@ string Player::best_move(State state, char stone, uint depth){
 
 		if (stone == BLACK){
 			int value = minimax(state, WHITE, depth+1, alpha, beta);
+			/*if(value == 1){
+				bestMove = move;
+				break;
+			}*/
 			if (value > bestValue){
 				bestValue = value;
 				bestMove = move;
@@ -192,6 +196,10 @@ string Player::best_move(State state, char stone, uint depth){
 		}
 		else{
 			int value = minimax(state, BLACK, depth+1, alpha, beta);
+			/*if(value == -1){
+				bestMove = move;
+				break;
+			}*/
 			if (value < bestValue){
 				bestValue = value;
 				bestMove = move;

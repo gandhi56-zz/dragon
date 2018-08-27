@@ -1,5 +1,6 @@
 
-#include "player.h"
+#include "../include/player.h"
+
 
 Player::Player(char* servIp, int port){
 	this->_socket.port = port;
@@ -22,13 +23,86 @@ Player::Player(char* servIp, int port){
 	cout << "Connected to the server!" << endl;
 	
 	/* implement proper read settings function after including the game class */
-	char dummyBuffer[40];
-	read(_socket.clientSd, (char *)dummyBuffer, sizeof(dummyBuffer));
-	cout << "rec: " << dummyBuffer << endl;
+	movesCount = 0;
+
+	char buffer[40];
+	memset(buffer, 0, sizeof(buffer));
+	read(_socket.clientSd, (char *)&buffer, sizeof(buffer));
+	cout << "rec: " << buffer << endl;
+	if(send_data("Recieved game details") == -1){
+		perror("Not able to send acknowledgement\n");
+	}
+
+	uint numRows;
+	uint numColumns;
+	read_settings(buffer, numRows, numColumns);
+
+	state.set_size(numRows, numColumns);
+	state.create_graph();
+
+	memset(&buffer, 0, sizeof(buffer));
+	recieve_data(buffer);
+	this->set_state(string(buffer));
+	send_data("Recieved game state");
 }
 
+int Player::recieve_data(char* data){
+	return read(_socket.clientSd, (char *)&data, sizeof(data));
+}
+int Player::send_data(const char* msg){
+	return send(this->_socket.clientSd, msg, strlen(msg), 0);
+}
 Player::~Player(){
 	close(this->_socket.clientSd);
+}
+
+void Player::set_state(string moves){
+    uint i = 0;
+    uint j = 1;
+    if(moves == "DEFAULT;") return;
+    while (i < moves.length()){
+        if (moves[i] == BLACK || moves[i] == WHITE || moves[i] == NEUTRAL){
+            j = i + 1;
+            while (moves[j] != ';') j++;
+            state.update(moves.substr(i, j-i));
+            i = j+1;
+
+        }
+        else{
+            cout << "Error parsing start state\n";
+            break;
+        }
+    }
+}
+
+void Player::read_settings(char* buff, uint& rows, uint& cols){
+    /*
+        read row and column dimensions from server.
+    */
+
+    string _buffer = string(buff);
+    uint i = 0;
+    while (_buffer[i] != 'r')   i++;
+    i++;
+    if (_buffer[i+1] == '-'){
+        rows = stoi(_buffer.substr(i, 1));
+    }
+    else{
+        rows = stoi(_buffer.substr(i, 2));
+    }
+
+    i = 0;
+    while (_buffer[i] != 'c')   i++;
+    i++;
+    if (_buffer[i+1] == '-'){
+        cols = stoi(_buffer.substr(i, 1));
+    }
+    else{
+        cols = stoi(_buffer.substr(i, 2));
+    }
+
+    cout << "rows=" << rows << endl;
+    cout << "cols=" << cols << endl;
 }
 
 void Player::run(){
@@ -39,6 +113,7 @@ void Player::run(){
 		read(this->_socket.clientSd, 
 			(char*)&_data, sizeof(_data));
 		cout << "rec:" << _data << endl;
+				
 		if (!strcmp(_data, "!")){
 			exit(1);
 		}
@@ -48,8 +123,7 @@ void Player::run(){
 			cout << ">";
 			getline(cin, data);
 
-			send(this->_socket.clientSd, data.c_str(), 
-				data.size(), 0);
+			send_data(data.c_str());
 		}
 		else if (!strcmp(_data, "Result+")){
 			cout << "Yahoo, I won!!" << endl;
@@ -65,11 +139,12 @@ void Player::run(){
 		}
 		else if(_data[0] == '>'){
 			// to update state in memory
-			/*data = string(_data);
+			data = string(_data);
 			string move = data.substr(1, data.length() - 1);
 			state.update(move);
-			movesCount++;*/
-			send(this->_socket.clientSd, "move recieved", strlen("move recieved"), 0);
+			state.show();
+			movesCount++;
+			send_data("move recieved");
 			continue;
 		}
 		else{
@@ -79,30 +154,4 @@ void Player::run(){
 	}
 }
 
-int main(int argc, char *argv[]){
-	if (argc != 2){
-		cerr << "Usage: <port>" << endl;
-		exit(0);
-	}
 
-	// fetch port number
-	char serverIp[] = "127.0.0.1";
-	int port = atoi(argv[1]);
-
-	// create player and try connecting to the server
-	Player player(serverIp, port);
-
-	player.status = connect(player._socket.clientSd, 
-		(sockaddr*)&player._socket.sendSockAddr, 
-		sizeof(player._socket.sendSockAddr));
-
-	if (player.status < 0){
-		cout << "Error connecting to _socket!" << endl;
-	}
-	cout << "Connected to the server!" << endl;
-
-
-	player.run();
-
-	return 0;
-}

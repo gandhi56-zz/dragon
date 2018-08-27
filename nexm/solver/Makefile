@@ -24,3 +24,6 @@ run: $(OBJ)run
 clean:
 	rm -f $(OBJ)*.o
 	rm -f $(OBJ)player
+	rm -rf $(SRC).*.*.*
+    rm -rf $(HEADER).*.*.*
+
