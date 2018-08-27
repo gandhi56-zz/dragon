@@ -42,6 +42,7 @@ class State{
 		void update(string move);
 		bool connected(string key0, string key1);
 		char status();
+		void revert(string move, char stone);
 
 	private:
 		void add_nbrs(uint row, uint col);
