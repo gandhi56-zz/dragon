@@ -2,5 +2,5 @@ rows=3
 columns=3
 player1-name=solver1.0
 player2-name=solver1.0
-log-title=./log/solver1.0-solver1.0-3x3-6-1.txt
-set-state=Bb2?c1;
+log-title=./log/solver1.0-solver1.0-3x3-0.txt
+set-state=DEFAULT;
