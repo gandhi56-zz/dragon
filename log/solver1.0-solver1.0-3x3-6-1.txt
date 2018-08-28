@@ -1,1 +1,1 @@
-Wa1?a3;Ba2?b1;Wa3Wb1?a1;Bb3?c2;Wa1Wc1?a3;Ba3Bc2?a2;B
+Wa1?c2;Ba2?a3;Wc1Wc2?b3;Ba3Bb3?a2;Wb1?c3;Ba2Bc3?b3;#

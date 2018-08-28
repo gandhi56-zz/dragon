@@ -232,7 +232,6 @@ int Player::max_value(State state, uint depth, int& alpha, int& beta){
 		bestValue = max(bestValue, minimax(state, WHITE, depth+1, 
 						alpha, beta));
 		alpha = max(alpha, bestValue);
-		
 		state.revert(move, BLACK);
 		
 		if (alpha >= beta)	break;
