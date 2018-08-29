@@ -1,6 +1,10 @@
 
 #include "../include/player.h"
 
+Player::Player(){
+	init_vars();
+}
+
 Player::Player(char* servIp, int port){
 	/*
 		Constructor: initialize player sockets
@@ -8,20 +12,64 @@ Player::Player(char* servIp, int port){
 		necessary game settings are read from
 		the connected server.
 	*/
+	
+	// initialize member variables
+	uint numRows;
+	uint numColumns;	
+	char buffer[40];
+	
+	init_vars();
+	attach_socket(servIp, port);
 
+	// read game settings
+	if (socketConnected){
+		memset(buffer, 0, sizeof(buffer));
+		read(_socket.clientSd, (char*)&buffer, 
+			sizeof(buffer));
+		cout << "rec:" << buffer << endl;
+		send(_socket.clientSd, "ok", strlen("ok"), 0);
+		read_settings(buffer, numRows, numColumns);
+		
+		// create state instance
+		gameState.set_size(numRows, numColumns);
+		gameState.create_graph();
 
+		memset(&buffer, 0, sizeof(buffer));
+		read(_socket.clientSd, (char *)&buffer, 
+			sizeof(buffer));
+		set_state(string(buffer));
+		send(_socket.clientSd, "ok", strlen("ok"), 0);
+	}
+}
+
+Player::~Player(){
+	/*
+		Destructor
+	*/
+	
+	if (socketConnected)
+		close(this->_socket.clientSd);
+}
+
+void Player::init_vars(){
+	movesCount = 0;
+	socketConnected = false;
+}
+
+void Player::attach_socket(char* servIp, int port){
+	
 	// setup client-side socket
-	this->_socket.port = port;
-	this->_socket.host = gethostbyname(servIp);
-	this->_socket.clientSd = socket(AF_INET, SOCK_STREAM, 0);
-	bzero((char*)&this->_socket.sendSockAddr, 
-		sizeof(this->_socket.sendSockAddr));
-	this->_socket.sendSockAddr.sin_family = AF_INET;
-	this->_socket.sendSockAddr.sin_addr.s_addr = 
+	_socket.port = port;
+	_socket.host = gethostbyname(servIp);
+	_socket.clientSd = socket(AF_INET, SOCK_STREAM, 0);
+	bzero((char*)&_socket.sendSockAddr, 
+		sizeof(_socket.sendSockAddr));
+	_socket.sendSockAddr.sin_family = AF_INET;
+	_socket.sendSockAddr.sin_addr.s_addr = 
 		inet_addr(servIp);
 
 	// connect to port
-	this->_socket.sendSockAddr.sin_port = htons(port);
+	_socket.sendSockAddr.sin_port = htons(port);
 	int status = connect(_socket.clientSd, 
 		(sockaddr*)&_socket.sendSockAddr, 
 		sizeof(_socket.sendSockAddr));
@@ -29,31 +77,8 @@ Player::Player(char* servIp, int port){
 		cout << "Error connecting to _socket!" << endl;
 	}
 	cout << "Connected to the server!" << endl;
-
-	// receive game settings
-	movesCount = 0;
-
-	char buffer[40];
-	memset(buffer, 0, sizeof(buffer));
-	read(_socket.clientSd, (char*)&buffer, sizeof(buffer));
-	cout << "rec:" << buffer << endl;
-	send(this->_socket.clientSd, "Recieved game details", strlen("Recieved game details"), 0);
-
-	uint numRows;
-	uint numColumns;
-	read_settings(buffer, numRows, numColumns);
-
-	// set random seed
-	srand((uint)time(NULL));
 	
-	// create state instance
-	gameState.set_size(numRows, numColumns);
-	gameState.create_graph();
-
-	memset(&buffer, 0, sizeof(buffer));
-	read(this->_socket.clientSd, (char *)&buffer, sizeof(buffer));
-	this->set_state(string(buffer));
-	send(this->_socket.clientSd, "Received game state", strlen("Received game state"), 0);
+	socketConnected = true;
 }
 
 void Player::set_state(string moves){
@@ -73,14 +98,6 @@ void Player::set_state(string moves){
 			break;
 		}
     }
-}
-
-
-Player::~Player(){
-	/*
-		Destructor
-	*/
-	close(this->_socket.clientSd);
 }
 
 void Player::read_settings(char* buff, uint& rows, uint& cols){	

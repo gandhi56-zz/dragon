@@ -36,7 +36,10 @@ class Player{
 private:
 	ClientSocket _socket;
 	uint movesCount;
+	bool socketConnected;
 
+	void init_vars();
+	void attach_socket(char* servIp, int port);
 	void read_settings(char* buff, uint& rows, uint& cols);
 	void connect_server();
 
@@ -52,6 +55,7 @@ public:
 	char myStone;
 	State gameState;
 
+	Player();
 	Player(char* servIp, int port);
 	~Player();
 	void run();

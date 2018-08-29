@@ -1,8 +1,9 @@
 #include "../include/server.h"
 
-// ~~~~~~~~~~~~~~~~~~Config struct~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~Config struct~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void Config::read(){
-	cout << "Fetching configurations from ../config.txt" << endl;
+	cout << "Fetching configurations from ../config.txt";
+	cout << endl;
 	file.open("config.txt");
 	string line;
 	if (file){
@@ -47,8 +48,8 @@ void Config::show(){
 		it++;
 	}
 }
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
 	/*
 		Initialize the member variables, set up
@@ -252,8 +253,10 @@ void Server::run(){
 	read(player2.socket, (char *)&msg, sizeof(msg));
 
 	configObj.store_data("set-state", _msg);
-	send(player1.socket, (_msg).c_str(), strlen((_msg).c_str()), 0);
-    send(player2.socket, (_msg).c_str(), strlen((_msg).c_str()), 0);
+	send(player1.socket, (_msg).c_str(), 
+		strlen((_msg).c_str()), 0);
+    send(player2.socket, (_msg).c_str(), 
+    	strlen((_msg).c_str()), 0);
     
 	//confirmation that players recieved game state
 	read(player1.socket, (char *)&msg, sizeof(msg));
@@ -344,5 +347,5 @@ void Server::run(){
     }
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
