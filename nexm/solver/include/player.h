@@ -35,9 +35,7 @@ class Player{
 
 private:
 	ClientSocket _socket;
-	State state;
 	uint movesCount;
-	char myStone;
 
 	void read_settings(char* buff, uint& rows, uint& cols);
 	void connect_server();
@@ -45,15 +43,19 @@ private:
 	// minimax
 	vector<string> get_moves(State state, char stone);
 	string best_move(State state, char stone, uint depth);
-	int minimax(State state, char stone, uint depth, int& alpha, int& beta);
+	int minimax(State state, char stone, uint depth, int& alpha, 
+		int& beta);
 	int max_value(State state, uint depth, int& alpha, int& beta);
 	int min_value(State state, uint depth, int& alpha, int& beta);
-	int evaluate(char result);
 	void set_state(string moves);
 public:
+	char myStone;
+	State gameState;
+
 	Player(char* servIp, int port);
 	~Player();
 	void run();
+	void solve(State state, char stone);
 };
 
 #endif // _PLAYER_

@@ -13,6 +13,7 @@ int main(int argc, char *argv[]){
 	// create player and try connecting to the server
     Player player(serverIp, port);
     player.run();
+    //player.solve(player.gameState, player.myStone);
 	
 	return 0;
 }

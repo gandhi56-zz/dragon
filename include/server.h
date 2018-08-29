@@ -50,6 +50,7 @@ class Server{
     	void receive_ack(int& sock);
 		void create_log();
 		void set_state(string moves);
+		void set_step(string value);
 		
 	public:
 		uint step;

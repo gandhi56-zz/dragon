@@ -121,7 +121,7 @@ void State::show(){
 	/*
 		print board to standard output.
 	*/
-	cout << endl;
+	cout << endl << " ";
 
 	for (uint col = 1; col <= numColumns; ++col){
 		if (col < 10)	cout << "  " << col;
@@ -258,16 +258,21 @@ char State::status(){
 
     if 		(connected("B0", "B1"))	return BLACK;
 	else if (connected("W0", "W1"))	return WHITE;
+	
+	uint emptyCount = numRows*numColumns - 
+		(count[BLACK]+count[WHITE]+count[NEUTRAL]);
+		
+	if (emptyCount > 1){
+		return '?';
+	}
 	else{
-		uint emptyCount = numRows*numColumns - count[BLACK]
-			- count[WHITE] - count[NEUTRAL];
-		if (emptyCount <= 1){
-			if (count[NEUTRAL] <= 1)		return '#';
-			else						return '?';
+		if (count[NEUTRAL] >= 2){
+			return '?';
+		}
+		else{
+			return DRAW;
 		}
 	}
-
-	return NEUTRAL;
 }
 
 bool State::connected(string key0, string key1){

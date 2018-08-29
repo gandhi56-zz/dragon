@@ -1,6 +1,16 @@
+#set dimensions
 rows=3
 columns=3
+
+#set player names
 player1-name=solver1.0
-player2-name=solver1.0
-log-title=./log/solver1.0-solver1.0-3x3-0.txt
+player2-name=anshil
+
+#set log file name
+log-title=temp.txt
+
+#set the initial board state
 set-state=DEFAULT;
+
+#set the player who plays the first move
+turn=BLACK;

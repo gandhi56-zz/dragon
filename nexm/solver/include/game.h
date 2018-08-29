@@ -6,6 +6,7 @@
 #define WHITE   'W'
 #define NEUTRAL '?'
 #define EMPTY   '.'
+#define DRAW	'#'
 
 #include <iostream>
 #include <vector>

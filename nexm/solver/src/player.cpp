@@ -47,13 +47,13 @@ Player::Player(char* servIp, int port){
 	srand((uint)time(NULL));
 	
 	// create state instance
-	state.set_size(numRows, numColumns);
-	state.create_graph();
+	gameState.set_size(numRows, numColumns);
+	gameState.create_graph();
 
 	memset(&buffer, 0, sizeof(buffer));
 	read(this->_socket.clientSd, (char *)&buffer, sizeof(buffer));
 	this->set_state(string(buffer));
-	send(this->_socket.clientSd, "Recieved game state", strlen("Reciev    ed game state"), 0);
+	send(this->_socket.clientSd, "Received game state", strlen("Received game state"), 0);
 }
 
 void Player::set_state(string moves){
@@ -61,10 +61,10 @@ void Player::set_state(string moves){
     uint j = 1;
 	if(moves == "DEFAULT;") return;
     while (i < moves.length()){
-        if (moves[i] == BLACK || moves[i] == WHITE || moves[i] == NEUTRAL){
+        if (moves[i]==BLACK || moves[i]==WHITE || moves[i]==NEUTRAL){
             j = i + 1;
             while (moves[j] != ';') j++;
-	        state.update(moves.substr(i, j-i));
+	        gameState.update(moves.substr(i, j-i));
             i = j+1;
 
         }
@@ -116,7 +116,7 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 	
 }
 
-// minimax implementation --------------------------------------
+// alpha-beta minimax implementation ------------------------
 vector<string> Player::get_moves(State state, char stone){
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
@@ -166,97 +166,93 @@ vector<string> Player::get_moves(State state, char stone){
 }
 
 string Player::best_move(State state, char stone, uint depth){
-	state.show();
-	
-	// store a vector with all legal moves from state
-	vector<string> moves = get_moves(state, stone);
 
 	// initialize minimax values
-	int bestValue = (stone == BLACK? -100 : 100);
 	int alpha = -100;
 	int beta = 100;
 	string bestMove = "";
 	
-	// for every possible move from 'state'
-	for (string move : moves){
+	// store a vector with all legal moves from state
+	vector<string> moves = get_moves(state, stone);
+	cout << "number of moves found=" << moves.size() << endl;
+		
+	if (stone == BLACK){
+		int bestValue = -1000;
 
-		// play move
-		state.update(move);
-
-		if (stone == BLACK){
-			// if MAX played the last move, then
-			// maximize the minimax value and 
-			// update the 'bestMove' if needed
+		// for every possible move from 'state'
+		for (string move : moves){
+			state.update(move);
 			int value = minimax(state, WHITE, depth+1, alpha, beta);
+
 			if (value > bestValue){
 				bestValue = value;
 				bestMove = move;
-				
-				// update alpha
-				alpha = max(alpha, bestValue);
-
-				// prune if possible
-				if (alpha >= beta)	break;
 			}
-
+	
+			alpha = max(alpha, bestValue);
+			if (alpha >= beta){
+				break;
+			}
 		}
-		else{
-			// if MIN played the last move, then
-			// minimize the minimax value and
-			// update the 'bestMove' if needed
+	}
+
+
+	else if (stone == WHITE){
+		int bestValue = 1000;
+
+		// for every possible move from 'state'
+		for (string move : moves){
+			state.update(move);
 			int value = minimax(state, BLACK, depth+1, alpha, beta);
+
 			if (value < bestValue){
 				bestValue = value;
 				bestMove = move;
-				
-				// update beta
-				beta = min(beta, bestValue);
-
-				// prune if possible
-				if (alpha >= beta) break;
 			}
 
+			beta = min(beta, bestValue);
+			if (alpha >= beta){
+				break;
+			}
 		}
-		state.revert(move, stone);
 	}
-
-	cout << "minimax=" << bestValue << endl;
-	cout << "best move=" << bestMove << endl;
 	return bestMove;
 }
 
-int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
-	
-	cout << "depth=" << depth << endl;
-	state.show();
+int Player::minimax(State state, char stone, uint depth, 
+	int& alpha, int& beta){
 	
 	char result = state.status();
-	if (result != '?'){
-		return evaluate(result);
-	}
-	else{
-		if (stone == BLACK){
-			return max_value(state, depth, alpha, beta);
-		}
-		else if (stone == WHITE){
-			return min_value(state, depth, alpha, beta);
-		}
-	}
 	
+	state.show();
+	cout << result << endl;
+	
+	if 		(result == BLACK)	return 1;
+	else if (result == WHITE)	return -1;
+	else if (result == DRAW)	return 0;
+	
+	if (stone == BLACK){
+		return max_value(state, depth, alpha, beta);
+	}
+	else if (stone == WHITE){
+		return min_value(state, depth, alpha, beta);
+	}
 	return 0;
 }
 
 int Player::max_value(State state, uint depth, int& alpha, int& beta){
 	int bestValue = -100;
 	vector<string> moves = get_moves(state, BLACK);
+
+	// for every possible move from 'state'
 	for (string move : moves){
 		state.update(move);
-		bestValue = max(bestValue, minimax(state, WHITE, depth+1, 
-						alpha, beta));
+		bestValue = max(bestValue,minimax(state, WHITE, 
+			depth+1, alpha, beta));
 		alpha = max(alpha, bestValue);
-		state.revert(move, BLACK);
-		
-		if (alpha >= beta)	break;
+		if (alpha >= beta){
+			break;
+		}
 	}
 
 	return bestValue;
@@ -265,22 +261,28 @@ int Player::max_value(State state, uint depth, int& alpha, int& beta){
 int Player::min_value(State state, uint depth, int& alpha, int& beta){
 	int bestValue = 100;
 	vector<string> moves = get_moves(state, WHITE);
+
+	// for every possible move from 'state'
 	for (string move : moves){
 		state.update(move);
-		bestValue = min(bestValue, minimax(state, BLACK, depth+1, 
-						alpha, beta));
+		bestValue = min(bestValue,minimax(state, BLACK, 
+			depth+1, alpha, beta));
 		beta = min(beta, bestValue);
-		state.revert(move, WHITE);
-		if (alpha >= beta)	break;
+		if (alpha >= beta){
+			break;
+		}
 	}
 
 	return bestValue;
 }
 
-int Player::evaluate(char result){
-	if (result == BLACK)		return 1;
-	else if (result == WHITE)	return -1;
-	return 0;
+void Player::solve(State state, char stone){
+	int a = -100;
+	int b = 100;
+	int value = minimax(state, stone, 0, a, b);
+	cout << "alpha=" << a << endl;
+	cout << "beta="  << b << endl;
+	cout << "value=" << value << endl;
 }
 
 // -------------------------------------------------------------
@@ -304,7 +306,7 @@ void Player::run(){
 		else if (!strcmp(_data, "Move?")){
 
 			// send move here
-			data = best_move(state, myStone, state.movesCount);
+			data =best_move(gameState, myStone, 0);
 			cout << "sending " << data.c_str() << endl;
 			send(this->_socket.clientSd, data.c_str(), 
 				strlen(data.c_str()), 0);
@@ -325,14 +327,15 @@ void Player::run(){
 			// to update state in memory
 			data = string(_data);
 			string move = data.substr(1, data.length() - 1);
-			state.update(move);
+			gameState.update(move);
 			movesCount++;
-			send(this->_socket.clientSd, "move recieved", strlen("move recieved"), 0);
+			send(this->_socket.clientSd, "move recieved", 
+				strlen("move recieved"), 0);
 			continue;
 			
 		}
 		else{
-			printf("breaking\n");
+			cout << "breaking" << endl;
 			break;
 		}
 
