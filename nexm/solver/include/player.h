@@ -50,7 +50,7 @@ private:
 		int& beta);
 	int max_value(State state, uint depth, int& alpha, int& beta);
 	int min_value(State state, uint depth, int& alpha, int& beta);
-	void set_state(string moves);
+	
 public:
 	char myStone;
 	State gameState;
@@ -58,8 +58,11 @@ public:
 	Player();
 	Player(char* servIp, int port);
 	~Player();
+
+	void set_state(string moves);
 	void run();
 	void solve(State state, char stone);
+
 };
 
 #endif // _PLAYER_

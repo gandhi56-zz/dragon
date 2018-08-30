@@ -28,12 +28,14 @@ Player::Player(char* servIp, int port){
 			sizeof(buffer));
 		cout << "rec:" << buffer << endl;
 		send(_socket.clientSd, "ok", strlen("ok"), 0);
+		
 		read_settings(buffer, numRows, numColumns);
 		
 		// create state instance
 		gameState.set_size(numRows, numColumns);
 		gameState.create_graph();
 
+		// set initial position of gameState
 		memset(&buffer, 0, sizeof(buffer));
 		read(_socket.clientSd, (char *)&buffer, 
 			sizeof(buffer));
