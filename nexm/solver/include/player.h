@@ -42,14 +42,6 @@ private:
 	void attach_socket(char* servIp, int port);
 	void read_settings(char* buff, uint& rows, uint& cols);
 	void connect_server();
-
-	// minimax
-	vector<string> get_moves(State state, char stone);
-	string best_move(State state, char stone, uint depth);
-	int minimax(State state, char stone, uint depth, int& alpha, 
-		int& beta);
-	int max_value(State state, uint depth, int& alpha, int& beta);
-	int min_value(State state, uint depth, int& alpha, int& beta);
 	
 public:
 	char myStone;
@@ -62,7 +54,14 @@ public:
 	void set_state(string moves);
 	void run();
 	void solve(State state, char stone);
-
+	
+	// minimax
+	vector<string> get_moves(State state, char stone);
+	string best_move(State state, char stone, uint depth);
+	int minimax(State state, char stone, uint depth, int& alpha, 
+		int& beta);
+	int max_value(State state, uint depth, int& alpha, int& beta);
+	int min_value(State state, uint depth, int& alpha, int& beta);
 };
 
 #endif // _PLAYER_
