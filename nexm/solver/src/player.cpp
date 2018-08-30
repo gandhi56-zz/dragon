@@ -252,8 +252,6 @@ string Player::best_move(State state, char stone, uint depth){
 }
 
 int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
-	state.show();
-
 	if 		(state.connected("B0", "B1"))	return 1;
 	else if (state.connected("W0", "W1"))	return -1;
 	
@@ -267,9 +265,7 @@ int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
 	if (stone == BLACK){
 		// maximize minimax value
 		value = -100;
-		for (uint i = 0; i < moves.size(); ++i){
-			cout << moves[i] << endl;
-			
+		for (uint i = 0; i < moves.size(); ++i){	
 			state.update(moves[i]);
 			value = max(value, minimax(state, WHITE, depth+1, alpha, beta));
 			alpha = max(alpha, value);
@@ -284,8 +280,6 @@ int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
 		// minimize minimax value
 		value = 100;
 		for (uint i = 0; i < moves.size(); ++i){
-			cout << moves[i] << endl;
-		
 			state.update(moves[i]);
 			value = min(value, minimax(state, BLACK, depth+1, alpha, beta));
 			beta = min(beta, value);
