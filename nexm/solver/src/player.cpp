@@ -204,25 +204,28 @@ string Player::best_move(State state, char stone, uint depth){
 	int alpha = -100;
 	int beta = 100;
 	string bestMove;
-	
-	// store a vector with all legal moves from state
-	vector<string> moves = get_moves(state, stone);
+	int bestValue;
 
 	if (stone == BLACK){
-		// maximize minimax value
-		int bestValue = -100;
+		bestValue = -100;
+		
+		// store a vector with all legal moves from state
+		vector<string> moves = get_moves(state, BLACK);
+		
 		for (uint i = 0; i < moves.size(); ++i){
+		
+			// for every valid legal move from the
+			// current state, update state
 			state.update(moves[i]);
+
+			// get the minimax value
 			int value = minimax(state, WHITE, depth+1, alpha, beta);
+			
 			if (value > bestValue){
 				bestValue = value;
 				bestMove = moves[i];
 			}
-			alpha = max(alpha, bestValue);
-			if (beta <= alpha){
-				break;
-			}
-			
+			//alpha = max(alpha, bestValue);
 			state.revert(moves[i], BLACK);
 		}
 	}
@@ -231,7 +234,10 @@ string Player::best_move(State state, char stone, uint depth){
 	else if (stone == WHITE){
 	
 		// minimize minimax value
-		int bestValue = 100;
+		bestValue = 100;
+		
+		// store a vector with all legal moves from state
+		vector<string> moves = get_moves(state, stone);
 		for (uint i = 0; i < moves.size(); ++i){
 			state.update(moves[i]);
 			int value = minimax(state, BLACK, depth+1, alpha, beta);
@@ -239,15 +245,17 @@ string Player::best_move(State state, char stone, uint depth){
 				bestValue = value;
 				bestMove = moves[i];
 			}
-			beta = min(beta, bestValue);
-			if (beta <= alpha){
-				break;
-			}
+			//beta = min(beta, bestValue);
 			state.revert(moves[i], WHITE);
 		}
 
 
 	}
+
+	cout << "alpha=" << alpha << endl;
+	cout << "beta=" << beta << endl;
+	cout << "value=" << bestValue << endl;
+	cout << "bestMove=" << bestMove << endl;
 	return bestMove;
 }
 
