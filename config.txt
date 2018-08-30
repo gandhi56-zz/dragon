@@ -1,10 +1,10 @@
 #set dimensions
-rows=3
-columns=3
+rows=5
+columns=5
 
 #set player names
 player1-name=solver1.0
-player2-name=solver1.0
+player2-name=random
 
 #set log file name
 log-title=temp.txt

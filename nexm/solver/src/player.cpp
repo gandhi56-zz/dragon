@@ -200,6 +200,10 @@ vector<string> Player::get_moves(State state, char stone){
 
 string Player::best_move(State state, char stone, uint depth){
 
+	cout << "initial state>>>>>>>>>>>>>>>>>>>>>>" << endl;
+	state.show();
+	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+
 	// initialize minimax values
 	int alpha = -100;
 	int beta = 100;
@@ -225,7 +229,7 @@ string Player::best_move(State state, char stone, uint depth){
 				bestValue = value;
 				bestMove = moves[i];
 			}
-			//alpha = max(alpha, bestValue);
+			alpha = max(alpha, bestValue);
 			state.revert(moves[i], BLACK);
 		}
 	}
@@ -245,12 +249,14 @@ string Player::best_move(State state, char stone, uint depth){
 				bestValue = value;
 				bestMove = moves[i];
 			}
-			//beta = min(beta, bestValue);
+			beta = min(beta, bestValue);
 			state.revert(moves[i], WHITE);
 		}
 
 
 	}
+
+	state.show();
 
 	cout << "alpha=" << alpha << endl;
 	cout << "beta=" << beta << endl;
@@ -260,16 +266,36 @@ string Player::best_move(State state, char stone, uint depth){
 }
 
 int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
-	if 		(state.connected("B0", "B1"))	return 1;
-	else if (state.connected("W0", "W1"))	return -1;
-	
+
 	vector<string> moves = get_moves(state, stone);
+	int value = 100;
 	
-	if (moves.size() == 0){
-		return 0;
+	if (state.connected("B0", "B1")){
+		value = 1;
 	}
+	else if (state.connected("W0", "W1")){
+		value = -1;
+	}
+	else if (moves.size() == 0){
+		value = 0;
+	}
+
+	cout << "depth=" << depth << endl;
 	
-	int value;
+	if (value == 0 || value == 1 || value == -1){
+		cout << "reached a leaf node*****" << endl;
+		state.show();
+
+		cout << "alpha=" << alpha << endl;
+		cout << "beta=" << beta << endl;
+		cout << "value=" << value << endl;
+		return value;
+	}
+	else{
+		state.show();
+	}
+
+	
 	if (stone == BLACK){
 		// maximize minimax value
 		value = -100;

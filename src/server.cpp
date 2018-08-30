@@ -126,6 +126,7 @@ void Server::init_mem(){
 	*/
 	step = 0;
     port = 16011;
+	movesCounter = 0;
 }
 
 void Server::setup_socket(){
@@ -288,6 +289,9 @@ void Server::run(){
 				// if move is valid, update game state
 				// append move to the logfile
 				// increment moves count
+
+				movesCounter++;
+
 				state.update(_msg);
 				logFile << _msg << ";";
 				step++;
@@ -341,6 +345,9 @@ void Server::run(){
 				cout << "S>#" << endl;
 				logFile << result;
 			}
+
+			cout << "Moves elapsed=" << movesCounter << endl;
+
 			break;
 		}
 

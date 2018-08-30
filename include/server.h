@@ -54,6 +54,7 @@ class Server{
 		
 	public:
 		uint step;
+		uint movesCounter;
 		State state;
 		
 		Server();

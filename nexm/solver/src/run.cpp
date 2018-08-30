@@ -20,13 +20,22 @@ int main(int argc, char *argv[]){
 /*
 	uint rows = 3;
 	uint cols = 3;
-	
-	Player player;
-	player.gameState.set_size(rows, cols);
-	player.gameState.create_graph();
-	player.set_state("Ba1Bb1;");
 
-	player.solve(player.gameState, BLACK);
+	while (true){
+		Player player;
+		player.gameState.set_size(rows, cols);
+		player.gameState.create_graph();
+		string init;
+		cin >> init;
+		player.set_state(init);
+
+		//player.solve(player.gameState, BLACK);
+		
+		player.gameState.show();
+		cout << player.gameState.connected("B0", "B1") << endl;
+	
+	}
+
 */
 	return 0;
 }
