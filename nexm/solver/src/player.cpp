@@ -88,15 +88,15 @@ void Player::set_state(string moves){
     uint j = 1;
 	if(moves == "DEFAULT;") return;
     while (i < moves.length()){
-        if (moves[i]==BLACK || moves[i]==WHITE || moves[i]==NEUTRAL){
+        if (moves[i]==BLACK||moves[i]==WHITE||
+        	moves[i]==NEUTRAL){
             j = i + 1;
             while (moves[j] != ';') j++;
 	        gameState.update(moves.substr(i, j-i));
             i = j+1;
-
         }
 		else{
-			cout << "Error parsing start state\n";
+			cout << "Error parsing start state" << endl;
 			break;
 		}
     }
@@ -335,7 +335,7 @@ void Player::solve(State state, char stone){
 	cout << "value=" << value << endl;
 }
 
-// -------------------------------------------------------------
+// -----------------------------------------------------------
 
 void Player::run(){
 	/*
@@ -361,15 +361,15 @@ void Player::run(){
 			send(this->_socket.clientSd, data.c_str(), 
 				strlen(data.c_str()), 0);
 		}
-		else if (!strcmp(_data, "Result+")){
+		else if (!strcmp(_data, "+")){
 			cout << "Yahoo, I won!!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "Result-")){
+		else if (!strcmp(_data, "-")){
 			cout << "Ugh, I lost!" << endl;
 			break;
 		}
-		else if (!strcmp(_data, "Result#")){
+		else if (!strcmp(_data, "#")){
 			cout << "Draw!" << endl;
 			break;
 		}
@@ -379,8 +379,8 @@ void Player::run(){
 			string move = data.substr(1, data.length() - 1);
 			gameState.update(move);
 			movesCount++;
-			send(this->_socket.clientSd, "move recieved", 
-				strlen("move recieved"), 0);
+			send(this->_socket.clientSd, "ok", 
+				strlen("ok"), 0);
 			continue;
 			
 		}

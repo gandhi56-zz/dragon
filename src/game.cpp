@@ -122,7 +122,7 @@ void State::show(){
 		print board to standard output.
 	*/
 	cout << endl;
-
+	cout << " ";
 	for (uint col = 1; col <= numColumns; ++col){
 		if (col < 10)	cout << "  " << col;
 		else			cout << " " << col;
@@ -342,4 +342,14 @@ bool State::is_valid(string move, char stone){
 		return false;
 	}
 	return true;
+}
+
+void State::clear(){
+	graph.clear();
+	count[BLACK] = 0;
+	count[WHITE] = 0;
+	count[NEUTRAL] = 0;
+	movesCount = 0;
+
+	create_graph();
 }

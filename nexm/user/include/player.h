@@ -18,7 +18,9 @@
 #include <fcntl.h>
 #include <fstream>
 
-#include "game.h"
+#include <vector>
+
+#include "../include/game.h"
 
 using namespace std;
 
@@ -30,23 +32,27 @@ struct ClientSocket{
 };
 
 class Player{
-public:
 
-	State state;
-	uint movesCount;
-	
-	void connect_server();
-	void read_settings(char* buff, uint& rows, uint& cols);
-	void user_move(char* move);
-	void set_state(string move);
-
-	int status;
+private:
 	ClientSocket _socket;
+	uint movesCount;
+	bool socketConnected;
+
+	void init_vars();
+	void attach_socket(char* servIp, int port);
+	void read_settings(char* buff, uint& rows, uint& cols);
+	void connect_server();
+	
+public:
+	char myStone;
+	State gameState;
+
+	Player();
 	Player(char* servIp, int port);
 	~Player();
+
+	void set_state(string moves);
 	void run();
-	int send_data(const char* data);
-	int recieve_data(char* data);
 };
 
 #endif // _PLAYER_

@@ -1,4 +1,5 @@
 #ifndef _SERVER_
+
 #define _SERVER_
 
 #include "game.h"
@@ -16,6 +17,9 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <string.h>
+#include <chrono>
+
+using namespace std::chrono;
 		
 struct Player{
 	string name;
@@ -34,9 +38,15 @@ struct Config{
 
 class Server{
 	private:
+		// socket vars
 		uint port;
 		sockaddr_in servAddr;
 		int serverSd;
+
+		// game vars
+		uint maxGames;
+		uint numRows;
+		uint numColumns;
 
 		struct Player player1;
 		struct Player player2;
@@ -51,7 +61,7 @@ class Server{
 		void create_log();
 		void set_state(string moves);
 		void set_step(string value);
-		
+		void import_settings();
 	public:
 		uint step;
 		uint movesCounter;
@@ -59,7 +69,9 @@ class Server{
 		
 		Server();
 		~Server();
+		void run_games();
     	void run();
+
 };
 
 #endif // _SERVER_

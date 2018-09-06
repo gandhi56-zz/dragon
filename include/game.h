@@ -46,6 +46,8 @@ class State{
 		bool valid_stone(char stone);
 		bool is_valid(string move, char stone);
 
+		void clear();
+
 	private:
 		void add_nbrs(uint row, uint col);
 		uint num_nbrs(uint row, uint col);

@@ -15,27 +15,5 @@ int main(int argc, char *argv[]){
     Player player(serverIp, port);
 	player.run();
     player.solve(player.gameState, player.myStone);
-
-
-/*
-	uint rows = 3;
-	uint cols = 3;
-
-	while (true){
-		Player player;
-		player.gameState.set_size(rows, cols);
-		player.gameState.create_graph();
-		string init;
-		cin >> init;
-		player.set_state(init);
-
-		//player.solve(player.gameState, BLACK);
-		
-		player.gameState.show();
-		cout << player.gameState.connected("B0", "B1") << endl;
-	
-	}
-
-*/
 	return 0;
 }

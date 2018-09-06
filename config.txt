@@ -1,10 +1,10 @@
 #set dimensions
-rows=5
-columns=5
+rows=4
+columns=4
 
 #set player names
 player1-name=solver1.0
-player2-name=random
+player2-name=anshil
 
 #set log file name
 log-title=temp.txt
@@ -14,3 +14,6 @@ set-state=DEFAULT;
 
 #set the player who plays the first move
 turn=BLACK;
+
+#set the number of games to run
+num-games=1;

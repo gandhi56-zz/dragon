@@ -1,7 +1,5 @@
 #include "../include/server.h"
-#include <chrono>
 
-using namespace std::chrono;
 
 // ~~~~~~~~~~~~~~~~~~Config struct~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void Config::read(){
@@ -69,6 +67,7 @@ Server::Server(){
     create_socket();
     setup_socket();
     bind_socket();
+
 	cout << "Port = " << port << endl;
 	cout << "Waiting for players to connect..." << endl;
 	receive_ack(player1.socket);
@@ -78,40 +77,14 @@ Server::Server(){
 	player2.stone = WHITE;
     cout << "Connected with player 2!" << endl;
 
-	uint numRows = 0;
-	uint numColumns = 0;
-
 	configObj.read();
-
-	// import game settings here
-	string tmp;
-	if (configObj.store_data("rows", tmp)){
-		numRows = atoi(tmp.c_str());
-	}
-	tmp = "";
-	if (configObj.store_data("columns", tmp)){
-		numColumns = atoi(tmp.c_str());
-	}
-	tmp = "";
-	if (configObj.store_data("player1-name", tmp)){
-		player1.name = tmp;
-	}
-	tmp = "";
-	if (configObj.store_data("player2-name", tmp)){
-		player2.name = tmp;
-	}
-
+	import_settings();
 	create_log();
-
 	state.set_size(numRows, numColumns);
 	state.create_graph();
 
-	if (configObj.store_data("set-state", tmp)){
-		set_state(tmp);
-	}
-	if (configObj.store_data("turn", tmp)){
-		set_step(tmp);
-	}
+
+	cout << "#games = " << maxGames << endl;
 	cout << "Game created successfully." << endl;
 }
 
@@ -129,6 +102,9 @@ void Server::init_mem(){
 	*/
 	step = 0;
     port = 16011;
+	maxGames = 1;	// default max number of games
+	numRows = 3;
+	numColumns = 3;
 }
 
 void Server::setup_socket(){
@@ -229,6 +205,43 @@ void Server::create_log(){
 	cout << title << " created." << endl;
 }
 
+void Server::import_settings(){
+	string tmp;
+	if (configObj.store_data("rows", tmp)){
+		numRows = atoi(tmp.c_str());
+	}
+	tmp = "";
+	if (configObj.store_data("columns", tmp)){
+		numColumns = atoi(tmp.c_str());
+	}
+	tmp = "";
+	if (configObj.store_data("player1-name", tmp)){
+		player1.name = tmp;
+	}
+	tmp = "";
+	if (configObj.store_data("player2-name", tmp)){
+		player2.name = tmp;
+	}
+	tmp = "";
+	if (configObj.store_data("num-games", tmp)){
+		maxGames = atoi(tmp.c_str());
+	}
+	if (configObj.store_data("set-state", tmp)){
+		set_state(tmp);
+	}
+	if (configObj.store_data("turn", tmp)){
+		set_step(tmp);
+	}
+
+}
+
+void Server::run_games(){
+	for (uint gameNum = 1; gameNum <= maxGames; ++gameNum){
+		state.clear();
+		run();
+	}
+}
+
 void Server::run(){
 	/*
 		Run a game between two players. The players must be
@@ -295,8 +308,10 @@ void Server::run(){
 			auto stop =  high_resolution_clock::now();
 
 			// output the time elapsed making the move
-			duration<double> elapsed = duration_cast<duration<double>>(stop - start);
-			cout << "Time elapsed: " << elapsed.count() << " seconds" << endl;
+			duration<double> elapsed = 
+				duration_cast<duration<double>>(stop - start);
+			cout << "Time elapsed: " << elapsed.count();
+			cout << " seconds" << endl;
 
 			if (state.is_valid(_msg, currPlayer.stone)){
 				// if move is valid, update game state
@@ -334,24 +349,30 @@ void Server::run(){
 		else{
 			if (result == BLACK){
 				cout << "Black wins!" << endl;
-				string win = "Result+";
-				string loose = "Result-";
-				send(player1.socket, win.c_str(), strlen(win.c_str()), 0);
-				send(player2.socket, loose.c_str(), strlen(loose.c_str()), 0);
+				string win = "+";
+				string loose = "-";
+				send(player1.socket, win.c_str(), 
+					strlen(win.c_str()), 0);
+				send(player2.socket, loose.c_str(), 
+					strlen(loose.c_str()), 0);
 				cout << "S>+/-" << endl;
 				logFile << result;
 			}
 			else if (result == WHITE){
 				cout << "White wins!" << endl;
-				send(player1.socket, "Result-", strlen(string("Result-").c_str()), 0);
-				send(player2.socket, "Result+", strlen(string("Result+").c_str()), 0);
+				send(player1.socket, "-", 
+					strlen(string("-").c_str()), 0);
+				send(player2.socket, "+", 
+					strlen(string("+").c_str()), 0);
 				cout << "S>+/-" << endl;
 				logFile << result;
 			}
 			else{
 				cout << "Draw!" << endl;
-				send(player1.socket, "Result#", strlen(string("Result#").c_str()), 0);
-				send(player2.socket, "Result#", strlen(string("Result#").c_str()), 0);
+				send(player1.socket, "#", 
+					strlen(string("#").c_str()), 0);
+				send(player2.socket, "#", 
+					strlen(string("#").c_str()), 0);
 				cout << "S>#" << endl;
 				logFile << result;
 			}
