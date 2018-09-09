@@ -80,9 +80,9 @@ Server::Server(){
 	configObj.read();
 	import_settings();
 	create_log();
+	
 	state.set_size(numRows, numColumns);
 	state.create_graph();
-
 
 	cout << "#games = " << maxGames << endl;
 	cout << "Game created successfully." << endl;
@@ -237,6 +237,8 @@ void Server::import_settings(){
 
 void Server::run_games(){
 	for (uint gameNum = 1; gameNum <= maxGames; ++gameNum){
+		cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+		cout << "Game #" << gameNum << endl;
 		state.clear();
 		run();
 	}
@@ -247,6 +249,12 @@ void Server::run(){
 		Run a game between two players. The players must be
 		connected to this server via sockets.
 	*/
+
+
+	cout << "initial state >>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+	state.show();
+	cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+
 
     char result;
     string _msg;

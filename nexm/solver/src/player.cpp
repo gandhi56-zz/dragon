@@ -225,7 +225,7 @@ string Player::best_move(State state, char stone, uint depth){
 			// get the minimax value
 			int value = minimax(state, WHITE, depth+1, alpha, beta);
 			
-			if (value > bestValue){
+			if (value >= bestValue){
 				bestValue = value;
 				bestMove = moves[i];
 			}
@@ -280,19 +280,11 @@ int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
 		value = 0;
 	}
 
-	cout << "depth=" << depth << endl;
 	
 	if (value == 0 || value == 1 || value == -1){
-		cout << "reached a leaf node*****" << endl;
-		state.show();
-
-		cout << "alpha=" << alpha << endl;
-		cout << "beta=" << beta << endl;
-		cout << "value=" << value << endl;
 		return value;
 	}
 	else{
-		state.show();
 	}
 
 	
