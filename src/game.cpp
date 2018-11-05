@@ -267,9 +267,6 @@ bool State::connected(string key0, string key1){
 	return false;
 }
 
-
-
-
 bool State::valid_pos(string key){
 	if (key.length() == 0)	return false;
 	return valid_pos(get_row(key), get_col(key));

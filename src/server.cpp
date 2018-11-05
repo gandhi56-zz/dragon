@@ -84,7 +84,7 @@ Server::Server(){
 	state.set_size(numRows, numColumns);
 	state.create_graph();
 
-	cout << "#games = " << maxGames << endl;
+	//cout << "#games = " << maxGames << endl;
 	cout << "Game created successfully." << endl;
 }
 

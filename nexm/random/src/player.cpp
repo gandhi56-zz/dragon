@@ -86,7 +86,7 @@ void Player::attach_socket(char* servIp, int port){
 void Player::set_state(string moves){
     uint i = 0;
     uint j = 1;
-	if(moves == "DEFAULT;") return;
+	if(moves == ";") return;
     while (i < moves.length()){
         if (moves[i]==BLACK || moves[i]==WHITE || moves[i]==NEUTRAL){
             j = i + 1;
@@ -96,7 +96,7 @@ void Player::set_state(string moves){
 
         }
 		else{
-			cout << "Error parsing start state\n";
+			cout << "Error parsing start state:" << moves << endl;
 			break;
 		}
     }
