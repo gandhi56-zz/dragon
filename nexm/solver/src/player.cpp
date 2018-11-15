@@ -329,6 +329,36 @@ void Player::solve(State state, char stone){
 
 // -----------------------------------------------------------
 
+// alpha-beta negamax implementation -------------------------
+
+string best_neg_move(State state, char stone, int depth){
+	
+	// initialize minimax values
+	int alpha = -100;
+	int beta = 100;
+	string bestMove;
+	int bestValue;
+
+	vector<string> moves = get_moves(state, stone);
+
+	for (string move : moves){
+		state.update(move);
+		int value = -negamax(state, 
+			(stone==BLACK?WHITE:BLACK), depth-1, -beta, -alpha);
+		bestValue = max(bestValue, value);
+		alpha = max(alpha, bestValue);
+		if (alpha >= beta)	break;
+	}
+
+	return bestValue;
+
+}
+
+// -----------------------------------------------------------
+
+
+
+
 void Player::run(){
 	/*
 		Run game over server.
