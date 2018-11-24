@@ -18,6 +18,21 @@ using namespace std;
 typedef unsigned int uint;
 
 struct Cell{
+
+	/*
+	 * vars
+	 * - key: cell id
+	 * - value: state of the cell
+	 * - adjKeys: vector containing 
+	 *   the keys of each nbr cell
+	 *
+	 * methods:
+	 * - constructors
+	 *
+	 * space:
+	 * - ~25 bytes
+	 */
+
 	string key;
 	char value;
 	vector<string> adjKeys;
@@ -27,6 +42,18 @@ struct Cell{
 };
 
 class State{
+
+	/*
+	 *	vars
+	 *	- numRows, numColumns : dimensions of the board
+	 *	- graph : state configuration of the board
+	 *	- count : #cells of each type on the board,
+	 *			BLACK, WHITE, NEUTRAL
+	 *	- movesCount : #moves processed so far
+	 *
+	 */
+
+
 	public:
 		uint numRows;
 		uint numColumns;
