@@ -1,5 +1,7 @@
 
 #include "../include/player.h"
+#include <algorithm>	// for random_shuffle
+
 
 Player::Player(){
 	init_vars();
@@ -7,11 +9,11 @@ Player::Player(){
 
 Player::Player(char* servIp, int port){
 	/*
-		Constructor: initialize player sockets
-		and create a game instance once the
-		necessary game settings are read from
-		the connected server.
-	*/
+	 * Constructor: initialize player sockets
+	 * and create a game instance once the
+	 * necessary game settings are read from
+	 * the connected server.
+	 */
 	
 	// initialize member variables
 	uint numRows;
@@ -321,7 +323,7 @@ int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
 void Player::solve(State state, char stone){
 	int alpha = -100;
 	int beta = 100;
-	int value = minimax(state, stone, 0, alpha, beta);
+	int value = negamax(state, 0, stone == BLACK, alpha, beta);
 	cout << "alpha=" << alpha << endl;
 	cout << "beta="  << beta << endl;
 	cout << "value=" << value << endl;
@@ -331,27 +333,85 @@ void Player::solve(State state, char stone){
 
 // alpha-beta negamax implementation -------------------------
 
-string best_neg_move(State state, char stone, int depth){
+int Player::evaluate(State state, bool isMax){
+	int value = 0;
+	if (state.connected("B0", "B1"))		value = 1;
+	else if (state.connected("W0", "W1"))	value = -1;
+	if (!isMax)	value *= -1;
+	return value;
+}
+
+string Player::best_neg_move(State state, int depth, bool isMax){
+	/*
+	 * Given a state, calls negamax and returns the best move
+	 * for the player to move. 
+	 *
+	 * Assumes the # legal moves from this position is > 0.
+	 */	
 	
-	// initialize minimax values
+	state.show();
+	
+	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
+
+	vector<string> moves = get_moves(state, play0);
 	int alpha = -100;
 	int beta = 100;
-	string bestMove;
-	int bestValue;
+	int value = -100;
+	string bestMove = moves[0];
+	for (string move : moves){
+		state.update(move);		// play0 plays a move
+		int negVal = 
+			-negamax(state, depth-1, !isMax, -beta, -alpha);
+		if (negVal > value){
+			value = negVal;
+			bestMove = move;
+		}
 
-	vector<string> moves = get_moves(state, stone);
+		alpha = max(alpha, value);
+		if (alpha >= beta)	break;
+
+		state.revert(move, play0);
+	}
+
+	cout << "bestMove = " << bestMove << endl;
+	cout << "value = " << value << endl;
+	cout << "alpha = " << alpha << endl;
+	cout << "beta = " << beta << endl;
+
+	return bestMove;
+
+}
+
+
+int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
+	
+	state.show();
+	
+	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
+	int value = evaluate(state, isMax);
+	if (depth == 0 || value != 0){
+		cout << "state evaluation = " << value << endl;
+		return value;
+	}
+	
+	vector<string> moves = get_moves(state, play0);
+	if (moves.size() == 0){
+		cout << "state evaluation = " << value << endl;
+		return 0;	// return DRAW
+	}
+
+	value = -100;
+
+	random_shuffle(moves.begin(), moves.end());
 
 	for (string move : moves){
 		state.update(move);
-		int value = -negamax(state, 
-			(stone==BLACK?WHITE:BLACK), depth-1, -beta, -alpha);
-		bestValue = max(bestValue, value);
-		alpha = max(alpha, bestValue);
-		if (alpha >= beta)	break;
+		value = max(value, -negamax(state, depth-1, !isMax, -beta, -alpha));	
+		alpha = max(alpha, value);
+		if (alpha >= beta)	break;	// alpha-beta cutoff
+		state.revert(move, play0);
 	}
-
-	return bestValue;
-
+	return value;
 }
 
 // -----------------------------------------------------------
@@ -378,7 +438,15 @@ void Player::run(){
 		else if (!strcmp(_data, "Move?")){
 
 			// send move here
-			data =best_move(gameState, myStone, 0);
+			
+			
+			//data =best_move(gameState, myStone, 0);
+
+
+			data = best_neg_move(gameState, 100, myStone == BLACK);
+
+
+
 			cout << "sending " << data.c_str() << endl;
 			send(this->_socket.clientSd, data.c_str(), 
 				strlen(data.c_str()), 0);

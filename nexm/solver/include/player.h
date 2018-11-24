@@ -62,6 +62,11 @@ public:
 		int& beta);
 	int max_value(State state, uint depth, int& alpha, int& beta);
 	int min_value(State state, uint depth, int& alpha, int& beta);
+
+	// negamax
+	int evaluate(State state, bool isMax);
+	string best_neg_move(State state, int depth, bool isMax);
+	int negamax(State state, int depth, bool isMax, int alpha, int beta);
 };
 
 #endif // _PLAYER_

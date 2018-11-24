@@ -181,6 +181,7 @@ bool State::valid_pos(uint row, uint col){
 }
 
 void State::update(string move){
+	cout << move << endl;
 	uint i = 0;
 	uint j = 1;
 	while (j < move.length()){
