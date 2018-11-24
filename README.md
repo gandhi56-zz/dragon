@@ -130,12 +130,12 @@ Technical
 * Server to be able to run tournaments (/Makefile)
 * Support for Mac and Windows
 * Report search information
-	- number of nodes in the game tree
-	- number of nodes pruned
-	- number of moves simulated
-	- time taken to determine a move at various
+	-number of nodes in the game tree
+	-number of nodes pruned
+	-number of moves simulated
+	-time taken to determine a move at various
 		depths
-	- number of leaf nodes
+	-number of leaf nodes
 
 Theoretical
 * Game tree complexity
@@ -143,12 +143,12 @@ Theoretical
 Implementation
 * Improve algorithms implemented in solver 1.0
 * Good heuristic evaluation
-	- number of legal moves available from a state
-	- minimum number of stones to win
-	- board dominance
-	- number of chains
-	- weak vs strong connections
-	- mustplay regions 
+	-number of legal moves available from a state
+	-minimum number of stones to win
+	-board dominance
+	-number of chains
+	-weak vs strong connections
+	-mustplay regions 
 		> preserving strong connections
 		> defensive plays
 
