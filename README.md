@@ -23,29 +23,23 @@ Players have two kinds of moves to choose from:
 	
 1. place a stone of their colour and a neutral stone into 
 	two distinct empty cells. For example,
-	   
-```
-		   1  2  3				   1  2  3
-		a\  .  .  .  \a				a\  .  .  ?  \a
-		 b\  .  .  .  \b			 b\  .  .  B  \b
-		  c\  .  .  .  \c			  c\  .  .  .  \c
-		       1  2  3				       1  2  3
-```
 
-Black places a **B** on _b3_ and a **?** on _a3_.
+
+![3x3blank](./images/3x3blank.png)
+
+![3x3genmove](./images/3x3genmove.png)
+
+Black places a **B** on _a1_ and a **?** on _c2_.
 
 2. convert two neutral stones on the board into the player's 
 	colour and convert one of their coloured stones into a 
 	neutral stone. For example,
 
-```
-		   1  2  3				   1  2  3
-		a\  ?  .  ?  \a				a\  W  .  W  \a
-		 b\  B  W  B  \b			 b\  B  ?  B  \b
-		  c\  .  ?  .  \c			  c\  .  ?  .  \c
-		       1  2  3				       1  2  3
-```
-White converts **?** at _a1_ and _a3_ to **W** and **W** at _b2_ to 
+![3x3transform1](./images/3x3transform1.png)
+
+![3x3transform2](./images/3x3transform2.png)
+
+Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to 
 **?**.
 			   
 The objective of the game is to form a connection between
@@ -53,16 +47,10 @@ opposite sides. Black aims to connect the top and bottom
 edges with **B** while white aims to connect the left and
 right edges with **W**.
 
-```
-					   1  2  3			
-					a\  ?  .  ?  \a		
-					 b\  B  W  B  \b	
-					  c\  .  ?  .  \c	
-					       1  2  3	
-```
+![3x3blackwin](./images/3x3blackwin.png)
 
 Black forms a connection from the top edge to the bottom 
-edge with the help of the stones on _a2_, _b2_ and _c1_.
+edge with the help of the stones on _a2_, _b2_ and _c2_.
 
 The game terminates when either player wins or no legal
 moves exist.
@@ -74,7 +62,7 @@ The server and the players are expected to follow the
 protocol given below; following are the different input
 commands a player may receive from the server:
 
-1. "r<R>-c<C>#"
+1. "rR-cC#"
 
 	* Server sends the game settings (format may be extended 
 	later). R denotes the number of rows of the board and
@@ -137,18 +125,6 @@ Nex Problems
 ------------------------------------------------------------
 1. Describe the game tree.
 2. Where should the neutral stones be placed?
-3. Solve the 1s2n problem.
-
-					   1  2  3  4
-					a\  .  .  .  .  \a
-					 b\  .  .  .  .  \b
-					  c\  .  *  .  .  \c
-					   d\  ?  ?  .  .  \d
-						1  2  3  4
-
-	What should player * do? What should the opponent 
-	of * do if its their turn to play?
-
-4. Find strong and weak openings.
-5. How should the game states be evaluated?
-6. Is Nex a first player win game?
+3. Find strong and weak openings.
+4. How should the game states be evaluated?
+5. Is Nex a first player win game?

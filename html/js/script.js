@@ -18,7 +18,7 @@ var colors = [
 var TILE_ON=-1;                  // tile that mouse is hovering over
 
 var SIDE_LENGTH = 11;       // correction factors to adjust tile alignment
-const SPACE = 25;
+const SPACE = 24;
 var moveBuffer = [];
 var move = [];
 var index=0;                // position in moveBuffer
@@ -61,7 +61,7 @@ Cell.prototype.placeStone = function(player) {
     board.ascii();
 }
 
-// ~~~~~~~~~~~~~~~~ Board ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~ Board ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function Board() {
     this.state = new Array(SIZE);
@@ -71,25 +71,25 @@ function Board() {
 
 Board.prototype.init = function() {
 
-    var padding = 150;
-    for (var j=0; j<SIZE; ++j) this.text.addChild(new Text(String.fromCharCode(j+65)).attr({
-        x: j*SPACE + padding - 20,
-        y: SPACE,
+    var padding = 100;
+
+    for (var j=0; j<SIZE; ++j) this.text.addChild(new Text(String.fromCharCode(j+49)).attr({
+        x: j*SPACE + padding - 10,
+        y: SPACE + 15,
         fontFamily: 'Arial, sans-serif',
-        fontSize: '25',
+        fontSize: '12',
         textFillColor: 'white',
         textStrokeColor: 'black',
         textStrokeWidth: 1
     }));
-
     for (var i=0; i<SIZE; ++i) {
         this.state[i] = new Array(SIZE);
         // print leftmost digits
-        this.text.addChild(new Text(i+1).attr({
-            x: -2*SPACE+padding+i*-10.25,
-            y: i*SPACE*1.05+SPACE*2.5,
+        this.text.addChild(new Text(String.fromCharCode(i+97)).attr({
+            x: -2*SPACE+padding+i*-10.25+10,
+            y: i*SPACE*1.05+SPACE*2.5 + 4,
             fontFamily: 'Arial, sans-serif',
-            fontSize: '23',
+            fontSize: '12',
             textFillColor: 'black',
             textStrokeColor: 'black',
             textStrokeWidth: 1
@@ -98,22 +98,22 @@ Board.prototype.init = function() {
             this.state[i][j] = new Cell(j*SPACE+padding+i*-10.25, i*SPACE+SPACE*3, SIZE*i+j);
         padding+=SPACE;
 
-        this.text.addChild(new Text(i+1).attr({
-            x: SIZE*SPACE+padding*0.6+SPACE*2,
-            y: i*SPACE*1.03+SPACE*2.5,
+        this.text.addChild(new Text(String.fromCharCode(i+97)).attr({
+            x: SIZE*SPACE+padding*0.6+SPACE*2 - 20,
+            y: i*SPACE*1.05+SPACE*2.5 + 4,
             fontFamily: 'Arial, sans-serif',
-            fontSize: '23',
+            fontSize: '12',
             textFillColor: 'black',
             textStrokeColor: 'black',
             textStrokeWidth: 1
         }));
     }
 
-    for (var j=0; j<SIZE; ++j) this.text.addChild(new Text(String.fromCharCode(j+65)).attr({
-        x: j*SPACE+padding+SIZE*-10.25,
-        y:SIZE*SPACE+SPACE*3.2,
+    for (var j=0; j<SIZE; ++j) this.text.addChild(new Text(String.fromCharCode(j+49)).attr({
+        x: j*SPACE+padding+SIZE*-10.25 - 10,
+        y:SIZE*SPACE+SPACE*3.2 - 5,
         fontFamily: 'Arial, sans-serif',
-        fontSize: '25',
+        fontSize: '12',
         textFillColor: 'white',
         textStrokeColor: 'black',
         textStrokeWidth: 1
