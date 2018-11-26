@@ -1,11 +1,12 @@
+
 # nexC
 
-Project Overview:
+### Project Overview:
 ------------------------------------------------------------
 nexC is a command-line interface for a connection game, 
 called Nex. 
 
-Game description:
+### Game description:
 ------------------------------------------------------------
 Nex is a Hex-variant connection game, played between two 
 players, namely black and white. Following figure 
@@ -43,13 +44,11 @@ Black places a **B** on _a1_ and a **?** on _c2_.
 
 ![3x3transform2](./images/3x3transform2.png)
 
-Black converts **?** at _a2_ and _c2_ to **B** and **B** 
-at _a1_ to **?**.
+Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to **?**.
 			   
 The _objective_ of the game is to form a connection between
-opposite sides. Black aims to connect the top and bottom
-edges with **B** while white aims to connect the left and
-right edges with **W**.
+opposite sides. To win the game, black aims to connect the top and bottom edges with **B** while white aims to connect the left and
+right edges with **W**. If neither player satisfies the objective and there is no legal move that can be played any further, we conclude that the game has ended in a _draw_.
 
 ![3x3blackwin](./images/3x3blackwin.png)
 
@@ -62,7 +61,7 @@ two empty cells for the player to play a generate move or
 at least one neutral stone to allow a transform move to
 be playable.
 
-Communication Protocol
+### Communication Protocol
 ------------------------------------------------------------
 The server and the players are expected to follow the
 protocol given below; following are the different input
@@ -99,7 +98,7 @@ commands a player may receive from the server:
 	* The substring followed by '>' is the most recent move
 	that updated the server state. No response is expected.
 
-Issues
+### Issues
 ------------------------------------------------------------
 * Technical
 	* Server to be able to run tournaments (/Makefile)
@@ -127,7 +126,7 @@ Issues
 			* preserving strong connections
 			* defensive plays
 
-Nex Problems
+### Nex Problems
 ------------------------------------------------------------
 * **3x3 Nex**
 	1. Find all winning openings for Black and conclude that
@@ -142,11 +141,11 @@ Nex Problems
 	4. How should the game states be evaluated?
 	5. Is Nex a first player win game?
 
-What do we know about Nex so far?
+### What do we know about Nex so far?
 ------------------------------------------------------------
-* Combinatorics behind 2x2 Nex and 2x2 Hex
-	* Number of openings: 12 in Nex, 4 in Hex
-	* The opening **Ba1?a2** is the unique winning opening in
-		2x2 Nex. Every other opening concludes in a draw.
-	* There are 61 nodes in the game tree of 2x2 Nex, comparing 
-		with 65 nodes in the game tree of 2x2 Hex.
+##### Combinatorics behind 2x2 Nex and 2x2 Hex
+* Number of openings: 12 in Nex, 4 in Hex
+* The opening **Ba1?a2** is the unique winning opening in
+	2x2 Nex. Every other opening concludes in a draw.
+* There are 61 nodes in the game tree of 2x2 Nex, comparing 
+	with 65 nodes in the game tree of 2x2 Hex.
