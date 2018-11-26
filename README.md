@@ -31,7 +31,7 @@ Players have two kinds of moves to choose from:
 
 ![3x3genmove](./images/3x3genmove.png)
 
-	Black places a **B** on _a1_ and a **?** on _c2_.
+Black places a **B** on _a1_ and a **?** on _c2_.
 
 2. Transform move: convert two neutral stones on the 
 	board into the player's colour and convert one of 
@@ -43,8 +43,8 @@ Players have two kinds of moves to choose from:
 
 ![3x3transform2](./images/3x3transform2.png)
 
-	Black converts **?** at _a2_ and _c2_ to **B** and 
-	**B** at _a1_ to **?**.
+Black converts **?** at _a2_ and _c2_ to **B** and **B** 
+at _a1_ to **?**.
 			   
 The _objective_ of the game is to form a connection between
 opposite sides. Black aims to connect the top and bottom
@@ -142,11 +142,11 @@ Nex Problems
 	4. How should the game states be evaluated?
 	5. Is Nex a first player win game?
 
-What do we know about Nex so far? How does it compare to Hex?
+What do we know about Nex so far?
 ------------------------------------------------------------
-Combinatorics behind 2x2 Nex and 2x2 Hex
-* Number of openings: 12 in Nex, 4 in Hex
-* The opening **Ba1?a2** is the unique winning opening in
-	2x2 Nex. Every other opening concludes in a draw.
-* There are 61 nodes in the game tree of 2x2 Nex, comparing 
-	with 65 nodes in the game tree of 2x2 Hex.
+* Combinatorics behind 2x2 Nex and 2x2 Hex
+	* Number of openings: 12 in Nex, 4 in Hex
+	* The opening **Ba1?a2** is the unique winning opening in
+		2x2 Nex. Every other opening concludes in a draw.
+	* There are 61 nodes in the game tree of 2x2 Nex, comparing 
+		with 65 nodes in the game tree of 2x2 Hex.
