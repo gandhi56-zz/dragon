@@ -373,11 +373,6 @@ string Player::best_neg_move(State state, int depth, bool isMax){
 		state.revert(move, play0);
 	}
 
-	cout << "bestMove = " << bestMove << endl;
-	cout << "value = " << value << endl;
-	cout << "alpha = " << alpha << endl;
-	cout << "beta = " << beta << endl;
-
 	return bestMove;
 
 }
@@ -390,20 +385,15 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
 	int value = evaluate(state, isMax);
 	if (depth == 0 || value != 0){
-		cout << "state evaluation = " << value << endl;
 		return value;
 	}
 	
 	vector<string> moves = get_moves(state, play0);
 	if (moves.size() == 0){
-		cout << "state evaluation = " << value << endl;
 		return 0;	// return DRAW
 	}
 
 	value = -100;
-
-	random_shuffle(moves.begin(), moves.end());
-
 	for (string move : moves){
 		state.update(move);
 		value = max(value, -negamax(state, depth-1, !isMax, -beta, -alpha));	
@@ -441,8 +431,6 @@ void Player::run(){
 			
 			
 			//data =best_move(gameState, myStone, 0);
-
-
 			data = best_neg_move(gameState, 100, myStone == BLACK);
 
 

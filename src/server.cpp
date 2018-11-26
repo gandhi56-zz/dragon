@@ -101,7 +101,7 @@ void Server::init_mem(){
 		initialize member variables
 	*/
 	step = 0;
-    port = 16011;
+    port = 21299;
 	maxGames = 1;	// default max number of games
 	numRows = 3;
 	numColumns = 3;
@@ -174,7 +174,7 @@ void Server::receive_ack(int& sock){
 void Server::set_state(string moves){
 	uint i = 0;
 	uint j = 1;
-	if(moves == "DEFAULT;"){ return;}
+	if(moves == ";"){ return;}
 	while (i < moves.length()){
 		if (state.valid_stone(moves[i])){
 			j = i + 1;
@@ -185,7 +185,7 @@ void Server::set_state(string moves){
 			i = j+1;
 		}
 		else{//if the move string is incorrect
-			cout << ("Error parsing the state \n");
+			cout << "Error parsing the state:" << moves[i] << endl;
 			break;
 		}
 	}
@@ -249,11 +249,6 @@ void Server::run(){
 		Run a game between two players. The players must be
 		connected to this server via sockets.
 	*/
-
-
-	cout << "initial state >>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-	state.show();
-	cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
 
 
     char result;

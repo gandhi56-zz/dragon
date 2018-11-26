@@ -1,6 +1,6 @@
 #set dimensions
-rows=3
-columns=3
+rows=2
+columns=2
 
 #set player names
 player1-name=random

@@ -3,7 +3,7 @@ CC = g++
 CCFLAGS = -Wall -std=c++17
 SRC = ./src/
 OBJ = ./obj/
-PORT = 16011
+PORT = 21299
 
 $(OBJ)run: $(OBJ)run.o $(OBJ)player.o $(OBJ)game.o
 	@$(CC) $(CCFLAGS) $(OBJ)run.o $(OBJ)player.o $(OBJ)game.o -o $(OBJ)run

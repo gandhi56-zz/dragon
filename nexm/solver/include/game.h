@@ -33,12 +33,10 @@ struct Cell{
 	 * - ~25 bytes
 	 */
 
-	string key;
 	char value;
 	vector<string> adjKeys;
 
 	Cell();
-	Cell(string _key);
 };
 
 class State{

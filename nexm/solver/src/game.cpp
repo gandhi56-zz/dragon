@@ -4,12 +4,6 @@
 
 // Cell class methods --------------------------------------
 Cell::Cell(){
-	key = "";
-	value = EMPTY;
-}
-
-Cell::Cell(string _key){
-	key = _key;
 	value = EMPTY;
 }
 
@@ -42,7 +36,7 @@ void State::create_graph(){
 
     string winStones[] = {"B0", "B1", "W0", "W1"};
 	for (string stone : winStones){
-		graph[stone] = Cell(stone);
+		graph.insert( {stone, Cell()} );
 		graph[stone].value = stone[0];
 	}
 
@@ -50,7 +44,7 @@ void State::create_graph(){
 	for (uint row = 0; row < numRows; ++row){
 		for (uint col = 0; col < numColumns; ++col){
 			string key = get_key(row, col);
-			graph[key] = Cell(key);
+			graph[key] = Cell();
 			add_nbrs(row, col);
 		}
 	}
