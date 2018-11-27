@@ -1,9 +1,9 @@
 #set dimensions
-rows=2
-columns=2
+rows=3
+columns=3
 
 #set player names
-player1-name=random
+player1-name=solver2.0
 player2-name=solver1.0
 
 #set log file name

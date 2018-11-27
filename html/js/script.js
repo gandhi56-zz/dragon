@@ -6,7 +6,7 @@ const EMPTY = '.'
 const BCOL = 1;
 const WCOL = 0;
 const NCOL = 2;
-var SIZE = Number(stage.options.initialData2);                  // default 11
+var SIZE = Number(stage.options.initialData2);    // default 11
 
 var PLAYER = 0;                 // current player; white=0, black=1
 var colors = [
@@ -154,7 +154,7 @@ Board.prototype.get = function(i,j) {
 
 Board.prototype.set = function(i,j, player) {
         if (this.onBoard(i,j))
-            this.state[i][j].placeStone(player);
+            this.state[j][i].placeStone(player);
 };
 
 Board.prototype.clear = function() {
@@ -170,7 +170,7 @@ Board.prototype.clear = function() {
     this.init();
 };
 
-//~~~~~~~~~~ Buttons ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~ Button~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function Button(x,y,message, fontSize) {
     var button = new Group().addTo(stage);

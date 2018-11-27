@@ -145,10 +145,6 @@ void State::show(){
 }
 
 string State::get_key(uint row, uint col){
-	/*
-		return key corresponding the cell at 'row' and 
-		'col'.
-	*/
 	string key;
 	key.push_back('a'+row);
 	
@@ -175,7 +171,6 @@ bool State::valid_pos(uint row, uint col){
 }
 
 void State::update(string move){
-	cout << move << endl;
 	uint i = 0;
 	uint j = 1;
 	while (j < move.length()){
@@ -244,13 +239,6 @@ void State::revert(string move, char stone){
 }
 
 char State::status(){
-	/*
-		Returns the stone corresponding to the winner if
-		the game is over. If the game draws, '#' is returned.
-
-		If a move can still be played, '?' is returned.
-	*/
-
     if 		(connected("B0", "B1"))	return BLACK;
 	else if (connected("W0", "W1"))	return WHITE;
 	

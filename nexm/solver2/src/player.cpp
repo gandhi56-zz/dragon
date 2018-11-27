@@ -136,7 +136,9 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 	
 }
 
-// alpha-beta minimax implementation ------------------------
+
+
+// -------------------------------------------------------------------
 vector<string> Player::get_moves(State state, char stone){
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
@@ -144,15 +146,16 @@ vector<string> Player::get_moves(State state, char stone){
 	vector<string> neutralPos;
 	for (uint row = 0; row < state.numRows; ++row){
 		for (uint col = 0; col < state.numColumns; ++col){
-			string key = state.get_key(row,col);
-			if (state.graph[key].value == EMPTY){
-				emptyPos.push_back(key);
+			uint key = row * state.numRows + col;
+			if (state.graph[key].first == EMPTY){
+				emptyPos.push_back(state.get_key(row, col));
 			}
-			else if (state.graph[key].value == stone){
-				stonePos.push_back(key);
+			else if((state.graph[key].first==BLACK and stone=='B') or 
+					(state.graph[key].first == WHITE and stone=='W')){
+				stonePos.push_back(state.get_key(row, col));
 			}
-			else if (state.graph[key].value == NEUTRAL){
-				neutralPos.push_back(key);
+			else if (state.graph[key].first == NEUTRAL){
+				neutralPos.push_back(state.get_key(row, col));
 			}
 		}
 	}
@@ -199,126 +202,6 @@ vector<string> Player::get_moves(State state, char stone){
 	return moves;
 }
 
-string Player::best_move(State state, char stone, uint depth){
-
-	cout << "initial state>>>>>>>>>>>>>>>>>>>>>>" << endl;
-	state.show();
-	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-
-	// initialize minimax values
-	int alpha = -100;
-	int beta = 100;
-	string bestMove;
-	int bestValue;
-
-	if (stone == BLACK){
-		bestValue = -100;
-		
-		// store a vector with all legal moves from state
-		vector<string> moves = get_moves(state, BLACK);
-		
-		for (uint i = 0; i < moves.size(); ++i){
-		
-			// for every valid legal move from the
-			// current state, update state
-			state.update(moves[i]);
-
-			// get the minimax value
-			int value = minimax(state, WHITE, depth+1, alpha, beta);
-			
-			if (value >= bestValue){
-				bestValue = value;
-				bestMove = moves[i];
-			}
-			alpha = max(alpha, bestValue);
-			state.revert(moves[i], BLACK);
-		}
-	}
-
-
-	else if (stone == WHITE){
-	
-		// minimize minimax value
-		bestValue = 100;
-		
-		// store a vector with all legal moves from state
-		vector<string> moves = get_moves(state, stone);
-		for (uint i = 0; i < moves.size(); ++i){
-			state.update(moves[i]);
-			int value = minimax(state, BLACK, depth+1, alpha, beta);
-			if (value < bestValue){
-				bestValue = value;
-				bestMove = moves[i];
-			}
-			beta = min(beta, bestValue);
-			state.revert(moves[i], WHITE);
-		}
-
-
-	}
-
-	state.show();
-
-	cout << "alpha=" << alpha << endl;
-	cout << "beta=" << beta << endl;
-	cout << "value=" << bestValue << endl;
-	cout << "bestMove=" << bestMove << endl;
-	return bestMove;
-}
-
-int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
-
-	vector<string> moves = get_moves(state, stone);
-	int value = 100;
-	
-	if (state.connected("B0", "B1")){
-		value = 1;
-	}
-	else if (state.connected("W0", "W1")){
-		value = -1;
-	}
-	else if (moves.size() == 0){
-		value = 0;
-	}
-
-	
-	if (value == 0 || value == 1 || value == -1){
-		return value;
-	}
-	else{
-	}
-
-	
-	if (stone == BLACK){
-		// maximize minimax value
-		value = -100;
-		for (uint i = 0; i < moves.size(); ++i){	
-			state.update(moves[i]);
-			value = max(value, minimax(state, WHITE, depth+1, alpha, beta));
-			alpha = max(alpha, value);
-			if (beta <= alpha){
-				break;
-			}
-			
-			state.revert(moves[i], BLACK);
-		}
-	}
-	else if (stone == WHITE){
-		// minimize minimax value
-		value = 100;
-		for (uint i = 0; i < moves.size(); ++i){
-			state.update(moves[i]);
-			value = min(value, minimax(state, BLACK, depth+1, alpha, beta));
-			beta = min(beta, value);
-			if (beta <= alpha){
-				break;
-			}
-			state.revert(moves[i], WHITE);
-		}
-	}
-	return value;
-}
-
 void Player::solve(State state, char stone){
 	int alpha = -100;
 	int beta = 100;
@@ -328,14 +211,12 @@ void Player::solve(State state, char stone){
 	cout << "value=" << value << endl;
 }
 
-// -----------------------------------------------------------
-
-// alpha-beta negamax implementation -------------------------
-
 int Player::evaluate(State state, bool isMax){
-	int value = 0;
-	if (state.connected("B0", "B1"))		value = 1;
-	else if (state.connected("W0", "W1"))	value = -1;
+	char gameStatus = state.status();
+	int value;
+	if (gameStatus == 'B')		value = 1;
+	else if (gameStatus == 'W')	value = -1;
+	else						value = 0;
 	if (!isMax)	value *= -1;
 	return value;
 }
@@ -343,7 +224,7 @@ int Player::evaluate(State state, bool isMax){
 string Player::best_neg_move(State state, int depth, bool isMax){
 	state.show();
 	
-	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
+	char play0 = (char)(isMax?'B':'W');	// player to move
 
 	vector<string> moves = get_moves(state, play0);
 	int alpha = -100;
@@ -374,12 +255,12 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 	
 	state.show();
 	
+	char play0 = (char)(isMax?'B':'W');	// player to move
 	int value = evaluate(state, isMax);
 	if (depth == 0 || value != 0){
 		return value;
 	}
 	
-	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
 	vector<string> moves = get_moves(state, play0);
 	if (moves.size() == 0){
 		return 0;	// return DRAW
@@ -396,7 +277,7 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 	return value;
 }
 
-// -----------------------------------------------------------
+// -------------------------------------------------------------------
 
 
 
@@ -423,7 +304,7 @@ void Player::run(){
 			
 			
 			//data =best_move(gameState, myStone, 0);
-			data = best_neg_move(gameState, 100, myStone == BLACK);
+			data = best_neg_move(gameState, 100, myStone == 'B');
 
 
 
