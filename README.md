@@ -191,14 +191,11 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex.
 	* implements Alpha-beta Negamax search
 	* state space complexity: O(25mn) bytes
 	* intractable for boards bigger than 3x3
-	* takes 25s. on average to perform a full
-		game tree search on an empty 3x3 board
 * Solver 2.0 (Under testing phase)
 	* implements Alpha-beta Negamax search
 	* state representation using a bitboard, where each cell is denoted using 2 bits
 	* state space complexity: O(10mn) bits
 	* intractability?
-	* takes 22s. on average to perform a full game tree search on an empty 3x3 board
 	* drew against Solver 1.0
 	* won 8, drew 2, lost 0; against a pseudorandom player
 * Random Bits (Coming soon...)

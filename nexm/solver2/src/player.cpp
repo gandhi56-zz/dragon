@@ -160,6 +160,8 @@ vector<string> Player::get_moves(State state, char stone){
 		}
 	}
 
+// TODO get_moves does not generate moves correctly
+
 	vector<string> moves;
 
 	if (emptyPos.size() >= 2){

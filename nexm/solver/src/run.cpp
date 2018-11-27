@@ -1,6 +1,5 @@
 #include "../include/player.h"
 
-#include <algorithm>	// for random_shuffle
 
 int main(int argc, char *argv[]){
     if (argc != 2){
@@ -24,8 +23,6 @@ int main(int argc, char *argv[]){
 
 	vector<string> moves = player.get_moves(player.gameState, BLACK);
 
-	srand(unsigned (time(0)));
-	random_shuffle(moves.begin(), moves.end());
 	int alpha = -100;
 	int beta = 100;
 

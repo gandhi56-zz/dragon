@@ -201,9 +201,6 @@ vector<string> Player::get_moves(State state, char stone){
 
 string Player::best_move(State state, char stone, uint depth){
 
-	cout << "initial state>>>>>>>>>>>>>>>>>>>>>>" << endl;
-	state.show();
-	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
 
 	// initialize minimax values
 	int alpha = -100;
@@ -257,7 +254,6 @@ string Player::best_move(State state, char stone, uint depth){
 
 	}
 
-	state.show();
 
 	cout << "alpha=" << alpha << endl;
 	cout << "beta=" << beta << endl;
@@ -341,7 +337,6 @@ int Player::evaluate(State state, bool isMax){
 }
 
 string Player::best_neg_move(State state, int depth, bool isMax){
-	state.show();
 	
 	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
 
@@ -372,7 +367,6 @@ string Player::best_neg_move(State state, int depth, bool isMax){
 
 int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 	
-	state.show();
 	
 	int value = evaluate(state, isMax);
 	if (depth == 0 || value != 0){
