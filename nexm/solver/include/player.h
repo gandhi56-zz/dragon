@@ -52,8 +52,8 @@ public:
 	~Player();
 
 	void set_state(string moves);
-	void run();
-	void solve(State state, char stone);
+	void run(bool disp);
+	void solve(State state, char stone, bool disp);
 	
 	// minimax
 	vector<string> get_moves(State state, char stone);
@@ -65,8 +65,8 @@ public:
 
 	// negamax
 	int evaluate(State state, bool isMax);
-	string best_neg_move(State state, int depth, bool isMax);
-	int negamax(State state, int depth, bool isMax, int alpha, int beta);
+	string best_neg_move(State state, int depth, bool isMax, bool disp);
+	int negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp);
 };
 
 #endif // _PLAYER_

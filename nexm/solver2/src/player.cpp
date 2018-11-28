@@ -89,8 +89,7 @@ void Player::set_state(string moves){
     uint j = 1;
 	if(moves == ";") return;
     while (i < moves.length()){
-        if (moves[i]==BLACK||moves[i]==WHITE||
-        	moves[i]==NEUTRAL){
+        if (moves[i]=='B'||moves[i]=='W'||moves[i]=='?'){
             j = i + 1;
             while (moves[j] != ';') j++;
 	        gameState.update(moves.substr(i, j-i));
@@ -139,7 +138,9 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 
 
 // -------------------------------------------------------------------
-vector<string> Player::get_moves(State state, char stone){
+vector<string> Player::get_moves(State state, bool isMax){
+	string myStone = (isMax?"B":"W");
+
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
 	vector<string> stonePos;
@@ -150,8 +151,8 @@ vector<string> Player::get_moves(State state, char stone){
 			if (state.graph[key].first == EMPTY){
 				emptyPos.push_back(state.get_key(row, col));
 			}
-			else if((state.graph[key].first==BLACK and stone=='B') or 
-					(state.graph[key].first == WHITE and stone=='W')){
+			else if((state.graph[key].first==BLACK and isMax) or
+				(state.graph[key].first == WHITE and !isMax)){
 				stonePos.push_back(state.get_key(row, col));
 			}
 			else if (state.graph[key].first == NEUTRAL){
@@ -160,25 +161,19 @@ vector<string> Player::get_moves(State state, char stone){
 		}
 	}
 
-// TODO get_moves does not generate moves correctly
-
 	vector<string> moves;
 
 	if (emptyPos.size() >= 2){
 	
 		for (uint i = 0; i < emptyPos.size(); ++i){
 			for (uint j = i+1; j < emptyPos.size(); ++j){
-				string key;
-				key.push_back(stone);
-				key += emptyPos[i] + "?" + emptyPos[j];
-	
-				moves.push_back(key);
-				
-				key = "?"+emptyPos[i];
-				key.push_back(stone);
-				key += emptyPos[j];
-				
-				moves.push_back(key);
+				string key0 = myStone;
+				key0 += emptyPos[i] + "?" + emptyPos[j];
+				moves.push_back(key0);
+
+				string key1 = "?";
+				key1 += emptyPos[i] + myStone  + emptyPos[j];
+				moves.push_back(key1);
 			}
 		}
 	}
@@ -188,12 +183,9 @@ vector<string> Player::get_moves(State state, char stone){
 		for (uint i = 0; i < neutralPos.size(); ++i){
 			for (uint j = i + 1; j < neutralPos.size(); ++j){
 				for (uint k = 0; k < stonePos.size(); ++k){
-					string key;
-					key.push_back(stone);
-					key += neutralPos[i];
-					key.push_back(stone);
-					key += neutralPos[j] + "?" + stonePos[k];
-	
+					string key = myStone;
+					key += neutralPos[i]+myStone+neutralPos[j];
+					key += "?" + stonePos[k];
 					moves.push_back(key);
 				}
 			}
@@ -204,10 +196,10 @@ vector<string> Player::get_moves(State state, char stone){
 	return moves;
 }
 
-void Player::solve(State state, char stone){
+void Player::solve(State state, bool isMax, bool disp){
 	int alpha = -100;
 	int beta = 100;
-	int value = negamax(state, 0, stone == BLACK, alpha, beta);
+	int value = negamax(state, 100, isMax, alpha, beta, disp);
 	cout << "alpha=" << alpha << endl;
 	cout << "beta="  << beta << endl;
 	cout << "value=" << value << endl;
@@ -215,28 +207,31 @@ void Player::solve(State state, char stone){
 
 int Player::evaluate(State state, bool isMax){
 	char gameStatus = state.status();
+	if (gameStatus == GAME_NOT_OVER)	return -100;
+	
 	int value;
-	if (gameStatus == 'B')		value = 1;
-	else if (gameStatus == 'W')	value = -1;
-	else						value = 0;
+	if (gameStatus == BLACK_WIN)		value = 1;
+	else if (gameStatus == WHITE_WIN)	value = -1;
+	else if (gameStatus == DRAW)		value = 0;
 	if (!isMax)	value *= -1;
 	return value;
 }
 
-string Player::best_neg_move(State state, int depth, bool isMax){
-	state.show();
+string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
 	
-	char play0 = (char)(isMax?'B':'W');	// player to move
+	if (disp)	state.show();
 
-	vector<string> moves = get_moves(state, play0);
+	char play0 = (char)(isMax?'B':'W');	// player to move
+	vector<string> moves = get_moves(state, isMax);
 	int alpha = -100;
 	int beta = 100;
 	int value = -100;
 	string bestMove = moves[0];
 	for (string move : moves){
+		if (disp)	cout << "playing " << move << endl;
 		state.update(move);		// play0 plays a move
 		int negVal = 
-			-negamax(state, depth-1, !isMax, -beta, -alpha);
+			-negamax(state, depth-1, !isMax, -beta, -alpha, disp);
 		if (negVal > value){
 			value = negVal;
 			bestMove = move;
@@ -252,26 +247,26 @@ string Player::best_neg_move(State state, int depth, bool isMax){
 
 }
 
+int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp){
+	
+	if (disp)	state.show();
 
-int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
-	
-	state.show();
-	
 	char play0 = (char)(isMax?'B':'W');	// player to move
 	int value = evaluate(state, isMax);
-	if (depth == 0 || value != 0){
-		return value;
-	}
-	
-	vector<string> moves = get_moves(state, play0);
+
+	// return value if game over
+	if (value != -100 or !depth)	return value;
+
+	vector<string> moves = get_moves(state, isMax);
 	if (moves.size() == 0){
 		return 0;	// return DRAW
 	}
-
-	value = -100;
+	
 	for (string move : moves){
+		if (disp)	cout << "playing " << move << endl;
 		state.update(move);
-		value = max(value, -negamax(state, depth-1, !isMax, -beta, -alpha));	
+		value = max(value, -negamax(state, depth-1, !isMax, 
+			-beta, -alpha, disp));	
 		alpha = max(alpha, value);
 		if (alpha >= beta)	break;	// alpha-beta cutoff
 		state.revert(move, play0);
@@ -280,11 +275,7 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 }
 
 // -------------------------------------------------------------------
-
-
-
-
-void Player::run(){
+void Player::run(bool disp){
 	/*
 		Run game over server.
 	*/
@@ -303,12 +294,8 @@ void Player::run(){
 		else if (!strcmp(_data, "Move?")){
 
 			// send move here
-			
-			
 			//data =best_move(gameState, myStone, 0);
-			data = best_neg_move(gameState, 100, myStone == 'B');
-
-
+			data = best_neg_move(gameState, 100, myStone == 'B', disp);
 
 			cout << "sending " << data.c_str() << endl;
 			send(this->_socket.clientSd, data.c_str(), 

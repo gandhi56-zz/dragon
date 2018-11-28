@@ -315,10 +315,10 @@ int Player::minimax(State state, char stone, uint depth, int& alpha, int& beta){
 	return value;
 }
 
-void Player::solve(State state, char stone){
+void Player::solve(State state, char stone, bool disp){
 	int alpha = -100;
 	int beta = 100;
-	int value = negamax(state, 0, stone == BLACK, alpha, beta);
+	int value = negamax(state, 0, stone == BLACK, alpha, beta, disp);
 	cout << "alpha=" << alpha << endl;
 	cout << "beta="  << beta << endl;
 	cout << "value=" << value << endl;
@@ -336,19 +336,22 @@ int Player::evaluate(State state, bool isMax){
 	return value;
 }
 
-string Player::best_neg_move(State state, int depth, bool isMax){
+string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
 	
 	char play0 = (char)(isMax?BLACK:WHITE);	// player to move
-
 	vector<string> moves = get_moves(state, play0);
 	int alpha = -100;
 	int beta = 100;
 	int value = -100;
 	string bestMove = moves[0];
+
+	if (disp)	state.show();
+
 	for (string move : moves){
+		if (disp)	cout << "playing " << move << endl;
 		state.update(move);		// play0 plays a move
 		int negVal = 
-			-negamax(state, depth-1, !isMax, -beta, -alpha);
+			-negamax(state, depth-1, !isMax, -beta, -alpha, disp);
 		if (negVal > value){
 			value = negVal;
 			bestMove = move;
@@ -365,8 +368,9 @@ string Player::best_neg_move(State state, int depth, bool isMax){
 }
 
 
-int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
+int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp){
 	
+	if (disp)state.show();
 	
 	int value = evaluate(state, isMax);
 	if (depth == 0 || value != 0){
@@ -380,9 +384,11 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 	}
 
 	value = -100;
+
 	for (string move : moves){
+		if (disp)	cout << "playing " << move << endl;
 		state.update(move);
-		value = max(value, -negamax(state, depth-1, !isMax, -beta, -alpha));	
+		value = max(value, -negamax(state, depth-1, !isMax, -beta, -alpha, disp));	
 		alpha = max(alpha, value);
 		if (alpha >= beta)	break;	// alpha-beta cutoff
 		state.revert(move, play0);
@@ -395,7 +401,7 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta){
 
 
 
-void Player::run(){
+void Player::run(bool disp){
 	/*
 		Run game over server.
 	*/
@@ -417,7 +423,7 @@ void Player::run(){
 			
 			
 			//data =best_move(gameState, myStone, 0);
-			data = best_neg_move(gameState, 100, myStone == BLACK);
+			data = best_neg_move(gameState, 100, myStone == BLACK, disp);
 
 
 

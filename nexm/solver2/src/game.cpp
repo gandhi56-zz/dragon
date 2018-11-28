@@ -119,7 +119,6 @@ uint State::get_col(string pos){
 }
 
 void State::update(string move){
-	cout << "playing " << move << endl;
 	uint i = 0;
 	uint j = 1;
 	string pos;

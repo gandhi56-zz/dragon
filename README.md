@@ -187,17 +187,40 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex.
 ![](./images/ss5.png)
 
 ### Nex players
+* PseudoRand
+	* selects a move pseudorandomly
 * Solver 1.0
 	* implements Alpha-beta Negamax search
-	* state space complexity: O(25mn) bytes
+	* state space complexity: ~200n bits, where n is the number of cells
 	* intractable for boards bigger than 3x3
 * Solver 2.0 (Under testing phase)
 	* implements Alpha-beta Negamax search
 	* state representation using a bitboard, where each cell is denoted using 2 bits
-	* state space complexity: O(10mn) bits
+	* state space complexity: ~10n bits, where n is the number of cells
 	* intractability?
 	* drew against Solver 1.0
 	* won 8, drew 2, lost 0; against a pseudorandom player
 * Random Bits (Coming soon...)
 	* will implement Monte Carlo Tree Search
 	* state representation as in Solver 2.0
+
+### Nex tournaments
+
+*	**November 28 Midnight Challenge**
+
+	Game settings:
+	* Board size: 3 x 3
+	* Time Control: None
+	* Handicap: None
+
+
+
+
+	| Black      | White      | Games played | Black won | Draw | White won |
+	|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
+	| Solver 1.0 | Solver 2.0 | 1            | 1         | 0    | 0         |
+	| Solver 2.0 | Solver 1.0 | 1            | 0         | 1    | 0         |
+	| Solver 1.0 | PseudoRand | 5            | 5         | 0    | 0         |
+	| PseudoRand | Solver 1.0 | 5            | 0         | 3    | 2         |
+	| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
+	| PseudoRand | Solver 2.0 | 5            | 1         | 3    | 1         |
