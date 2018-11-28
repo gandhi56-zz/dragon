@@ -208,19 +208,19 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex.
 
 *	**November 28 Midnight Challenge**
 
-	Game settings:
-	* Board size: 3 x 3
-	* Time Control: None
-	* Handicap: None
+	*	Game settings:
+		* Board size: 3 x 3
+		* Time Control: None
+		* Handicap: None
 
 
+	* Results:
 
-
-	| Black      | White      | Games played | Black won | Draw | White won |
-	|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
-	| Solver 1.0 | Solver 2.0 | 1            | 1         | 0    | 0         |
-	| Solver 2.0 | Solver 1.0 | 1            | 0         | 1    | 0         |
-	| Solver 1.0 | PseudoRand | 5            | 5         | 0    | 0         |
-	| PseudoRand | Solver 1.0 | 5            | 0         | 3    | 2         |
-	| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
-	| PseudoRand | Solver 2.0 | 5            | 1         | 3    | 1         |
+		| Black      | White      | Games played | Black won | Draw | White won |
+		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
+		| Solver 1.0 | Solver 2.0 | 1            | 1         | 0    | 0         |
+		| Solver 2.0 | Solver 1.0 | 1            | 0         | 1    | 0         |
+		| Solver 1.0 | PseudoRand | 5            | 5         | 0    | 0         |
+		| PseudoRand | Solver 1.0 | 5            | 0         | 3    | 2         |
+		| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
+		| PseudoRand | Solver 2.0 | 5            | 1         | 3    | 1         |
