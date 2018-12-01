@@ -23,19 +23,16 @@ For example,
 ![3x3genmove](./images/3x3genmove.png)
 
 
-*Fig.1 shows the state obtained after Black plays the move _Ba1?c2_ on the starting position of 3 x 3 Nex, Black places a **B** on _a1_ and a **?** on _c2_.*
+*Fig.1 shows the state obtained after Black plays the move **_Ba1?c2_** on the starting position of 3 x 3 Nex, Black places a **B** on _a1_ and a **?** on _c2_.*
 
 2. Transform move: The player converts two Neutral stones on the  board into their colour and convert one of their coloured stones into a Neutral stone. 
 	
-	For example,
+For example,
 
 ![3x3transform1](./images/3x3transform1.png)
-
-*Fig.3: A game position in 3 x 3 Nex*
-
 ![3x3transform2](./images/3x3transform2.png)
 
-*Fig.4: The state obtained after Black plays the move Ba2Bc2?a1, where Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to **?**.*
+*Fig.4: The state obtained after Black plays the move **_Ba2Bc2?a1_**, where Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to **?**.*
 
 
 #### Terminology
