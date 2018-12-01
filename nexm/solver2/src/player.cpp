@@ -1,6 +1,6 @@
 
 #include "../include/player.h"
-
+#include <algorithm>	// for random_shuffle
 
 Player::Player(){
 	init_vars();
@@ -227,9 +227,13 @@ string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
 	int beta = 100;
 	int value = -100;
 	string bestMove = moves[0];
+
+	srand(time(NULL));
+	random_shuffle(moves.begin(), moves.end());
+
 	for (string move : moves){
 		if (disp)	cout << "playing " << move << endl;
-		state.update(move);		// play0 plays a move
+		state.update(move);
 		int negVal = 
 			-negamax(state, depth-1, !isMax, -beta, -alpha, disp);
 		if (negVal > value){

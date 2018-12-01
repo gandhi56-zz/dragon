@@ -42,7 +42,6 @@ void State::set_nbrs(vector<uint>& nbrs, uint key){
 	if (valid_pos(key+numColumns-1))nbrs.push_back(key+numColumns-1);
 }
 
-
 uint State::num_nbrs(uint row, uint col){
 	if (row == 0)	return (col == 0 ? 4 : 5);
 	else if (row == numRows - 1){	

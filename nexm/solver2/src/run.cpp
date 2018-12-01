@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[]){
     
+/*
     // fetch port number
 	char serverIp[] = "127.0.0.1";
   	int port;
@@ -24,12 +25,16 @@ int main(int argc, char *argv[]){
 	Player player(serverIp, port);
 	player.run(false);
 
-/*
+*/
 	Player player;
-	player.gameState.set_size(3,3);
+	player.gameState.set_size(2, 2);
 	player.gameState.create_graph();
 
 	cout << player.best_neg_move(player.gameState, 100, true, true) << endl;
-*/
+
+	player.gameState.create_graph();
+	player.gameState.update("?b1Bb2");
+	player.gameState.show();
+
 	return 0;
 }

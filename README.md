@@ -16,7 +16,7 @@ turn by turn. By convention, Black plays the first move. There are three kinds o
 1. Generate move: The player places a stone of their colour and a 
 	Neutral stone into two distinct empty cells. 
 	
-	For example,
+For example,
 
 
 ![3x3blank](./images/3x3blank.png)
@@ -133,7 +133,8 @@ commands a player may receive from the server:
 	* Game tree complexity
 
 * Implementation
-	* Improve algorithms implemented in solver 1.0
+	* Fix Solver 2.0
+		* Cannot play on rectangular board, how should the cell keys be computed?
 	* Good heuristic evaluation
 		* number of legal moves available from a state
 		* minimum number of stones to win
@@ -161,7 +162,7 @@ commands a player may receive from the server:
 ### What do we know about Nex so far?
 ##### Combinatorics behind 2x2 Nex and 2x2 Hex
 * Number of openings: 12 in Nex, 4 in Hex
-* The opening **Ba1?a2** is the unique winning opening in
+* The opening **Ba1?a2** and **Bb2?b1** are the winning openings in
 	2x2 Nex. Every other opening concludes in a draw.
 
 ![](./images/2x2_0.png)
@@ -174,7 +175,7 @@ Alternatively, if White responds by **Wb2?b1** to **Ba1?a2**,
 ![](./images/2x2_2_0.png)
 ![](./images/2x2_2_2.png)
 
-Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex.
+Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b1** can also be proved to be a winning opening.
 
 * There are 61 nodes in the game tree of 2x2 Nex, comparing 
 	with 65 nodes in the game tree of 2x2 Hex.
