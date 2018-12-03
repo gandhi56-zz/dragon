@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
 
 	// create player and try connecting to the server
 	Player player(serverIp, port);
-	player.run();
+	player.run(false);
 
 	return 0;
 }

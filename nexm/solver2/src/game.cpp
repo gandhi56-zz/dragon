@@ -26,8 +26,21 @@ void State::create_graph(){
 	for (uint i = 0; i < numRows*numColumns; ++i){
 		graph[i].first = EMPTY;
 		set_nbrs(graph[i].second, i);
+
+
 	}
 }
+
+
+/*
+
+R = 2
+C = 3
+
+\ 0 1 2 \
+ \ 3 4 5 \
+
+*/
 
 
 bool State::valid_pos(uint key){
@@ -36,10 +49,14 @@ bool State::valid_pos(uint key){
 void State::set_nbrs(vector<uint>& nbrs, uint key){
 	if (valid_pos(key+numColumns))	nbrs.push_back(key+numColumns);
 	if (valid_pos(key-numColumns))	nbrs.push_back(key-numColumns);
-	if (valid_pos(key-1))			nbrs.push_back(key-1);
-	if (valid_pos(key+1))			nbrs.push_back(key+1);
-	if (valid_pos(key-numColumns+1))nbrs.push_back(key-numColumns+1);
-	if (valid_pos(key+numColumns-1))nbrs.push_back(key+numColumns-1);
+	if (valid_pos(key-1) and (key%numColumns > 0))
+		nbrs.push_back(key-1);
+	if (valid_pos(key+1) and (key%numColumns < numColumns-1))
+		nbrs.push_back(key+1);
+	if (valid_pos(key-numColumns+1)and(key%numColumns < numColumns-1))
+		nbrs.push_back(key-numColumns+1);
+	if (valid_pos(key+numColumns-1) and (key%numColumns > 0))
+		nbrs.push_back(key+numColumns-1);
 }
 
 uint State::num_nbrs(uint row, uint col){
@@ -53,7 +70,7 @@ uint State::num_nbrs(uint row, uint col){
 }
 
 string State::get_value(uint row, uint col){
-	Valtype value = graph[row*numRows+col].first;
+	Valtype value = graph[row*numColumns+col].first;
 	if (value == BLACK)	return "B";
 	else if (value == WHITE)	return "W";
 	else if (value == NEUTRAL)	return "?";
@@ -128,7 +145,7 @@ void State::update(string move){
 				|| move[j]=='.'){
 			
 			pos = move.substr(i+1, j-i-1).c_str();
-			key = get_row(pos) * numRows + get_col(pos);
+			key = get_row(pos) * numColumns + get_col(pos);
 
 			if (graph[key].first != EMPTY){
 				if (graph[key].first == BLACK)		blackCount--;
@@ -213,17 +230,7 @@ void State::revert(string move, char stone){
 }
 
 char State::status(){
-	// Returns the status of the program:
-	// - 'B' if black has won, 'W' if white has won
-	// - '?' if the game has not finished yet
-	// - '#' if the game has ended in a draw
-	//
-
-	// To check if black has won, run dfs from
-	// every black stone in row 0. If an iteration
-	// reaches the last row of the state, return black
-	// has won.
-
+	// check if black has won
 	for (uint col = 0; col < numColumns; ++col){
 		if (graph[col].first == BLACK){
 			// run dfs
@@ -233,9 +240,10 @@ char State::status(){
 		}
 	}
 
+
 	// check if white has won yet
 	for (uint row = 0; row < numRows; ++row){
-		uint key = row * numRows;
+		uint key = row * numColumns;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
 				return WHITE_WIN;
@@ -271,8 +279,9 @@ bool State::connected(uint key0, uint end, bool blackConnect){
 		uint curr = keyStack.top();
 		keyStack.pop();
 
-		uint currRow = curr/numRows;
-		uint currCol = curr%numRows;
+
+		uint currCol = curr%numColumns;
+		uint currRow = (curr - currCol) / numColumns;
 		
 		if ((blackConnect and currRow == end) or 
 			(!blackConnect and currCol == end)){

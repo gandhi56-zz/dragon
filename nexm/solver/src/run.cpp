@@ -19,8 +19,13 @@ int main(int argc, char *argv[]){
 	Player player;
 	player.gameState.set_size(3,3);
 	player.gameState.create_graph();
-	cout << player.best_neg_move(player.gameState, 100, true, false) << endl;
-*/
+	//cout << player.best_neg_move(player.gameState, 100, true, true) << endl;
 
+	player.set_state("Bc1?c2;Wa1?a2;Bb1?b2;Wa3?b3;Ba2Bc2?c1;");
+
+	player.gameState.show();
+	cout << player.gameState.status() << endl;
+
+*/
 	return 0;
 }

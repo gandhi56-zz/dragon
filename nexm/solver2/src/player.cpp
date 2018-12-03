@@ -15,34 +15,10 @@ Player::Player(char* servIp, int port){
 	 */
 	
 	// initialize member variables
-	uint numRows;
-	uint numColumns;	
-	char buffer[40];
 	
 	init_vars();
 	attach_socket(servIp, port);
 
-	// read game settings
-	if (socketConnected){
-		memset(buffer, 0, sizeof(buffer));
-		read(_socket.clientSd, (char*)&buffer, 
-			sizeof(buffer));
-		cout << "rec:" << buffer << endl;
-		send(_socket.clientSd, "ok", strlen("ok"), 0);
-		
-		read_settings(buffer, numRows, numColumns);
-		
-		// create state instance
-		gameState.set_size(numRows, numColumns);
-		gameState.create_graph();
-
-		// set initial position of gameState
-		memset(&buffer, 0, sizeof(buffer));
-		read(_socket.clientSd, (char *)&buffer, 
-			sizeof(buffer));
-		set_state(string(buffer));
-		send(_socket.clientSd, "ok", strlen("ok"), 0);
-	}
 }
 
 Player::~Player(){
@@ -129,9 +105,9 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 	}
 
 	myStone = _buffer[_buffer.length() - 2];
-	cout << "rows=" << rows << endl;
-	cout << "cols=" << cols << endl;
-	cout << "stone=" << myStone << endl;
+	//cout << "rows=" << rows << endl;
+	//cout << "cols=" << cols << endl;
+	//cout << "stone=" << myStone << endl;
 	
 }
 
@@ -147,7 +123,7 @@ vector<string> Player::get_moves(State state, bool isMax){
 	vector<string> neutralPos;
 	for (uint row = 0; row < state.numRows; ++row){
 		for (uint col = 0; col < state.numColumns; ++col){
-			uint key = row * state.numRows + col;
+			uint key = row * state.numColumns + col;
 			if (state.graph[key].first == EMPTY){
 				emptyPos.push_back(state.get_key(row, col));
 			}
@@ -255,6 +231,8 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, boo
 	
 	if (disp)	state.show();
 
+	if (!depth)		return 0;	// return 0 if depth limit reached
+
 	char play0 = (char)(isMax?'B':'W');	// player to move
 	int value = evaluate(state, isMax);
 
@@ -284,13 +262,15 @@ void Player::run(bool disp){
 		Run game over server.
 	*/
 
+	uint numRows;
+	uint numColumns;	
 	string data;
 	char _data[40];
 	while (1){
 		memset(_data, 0, sizeof(_data));
 		read(this->_socket.clientSd, 
 			(char*)&_data, sizeof(_data));
-		cout << "rec:" << _data << endl;
+		//cout << "rec:" << _data << endl;
 
 		if (!strcmp(_data, "!")){
 			exit(1);
@@ -299,23 +279,21 @@ void Player::run(bool disp){
 
 			// send move here
 			//data =best_move(gameState, myStone, 0);
-			data = best_neg_move(gameState, 100, myStone == 'B', disp);
+			data = best_neg_move(gameState, 100, 
+				myStone == 'B', disp);
 
-			cout << "sending " << data.c_str() << endl;
+			//cout << "sending " << data.c_str() << endl;
 			send(this->_socket.clientSd, data.c_str(), 
 				strlen(data.c_str()), 0);
 		}
 		else if (!strcmp(_data, "+")){
-			cout << "Yahoo, I won!!" << endl;
-			break;
+			//cout << "Yahoo, I won!!" << endl;
 		}
 		else if (!strcmp(_data, "-")){
-			cout << "Ugh, I lost!" << endl;
-			break;
+			//cout << "Ugh, I lost!" << endl;
 		}
 		else if (!strcmp(_data, "#")){
-			cout << "Draw!" << endl;
-			break;
+			//cout << "Draw!" << endl;
 		}
 		else if(_data[0] == '>'){
 			// to update state in memory
@@ -326,8 +304,36 @@ void Player::run(bool disp){
 			send(this->_socket.clientSd, "ok", 
 				strlen("ok"), 0);
 			continue;
-			
 		}
+
+		else if (_data[0] == '$'){
+			// done all games
+			break;
+		}
+		else if (_data[0] == 'r'){
+			
+			// read game settings
+			if (socketConnected){
+
+				//cout << "rec:" << _data << endl;
+				send(_socket.clientSd, "ok", strlen("ok"), 0);
+				
+				read_settings(_data, numRows, numColumns);
+				
+				// create state instance
+				gameState.set_size(numRows, numColumns);
+				gameState.create_graph();
+
+				// set initial position of gameState
+				memset(&_data, 0, sizeof(_data));
+				read(_socket.clientSd, (char *)&_data, 
+					sizeof(_data));
+				set_state(string(_data));
+				send(_socket.clientSd, "ok", strlen("ok"), 0);
+				//gameState.show();
+			}
+		}
+
 		else{
 			cout << "breaking" << endl;
 			break;

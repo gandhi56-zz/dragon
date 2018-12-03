@@ -77,15 +77,14 @@ Server::Server(){
 	player2.stone = WHITE;
     cout << "Connected with player 2!" << endl;
 
+	state.set_size(numRows, numColumns);
+	state.create_graph();
+
+	cout << "Game created successfully." << endl;
 	configObj.read();
 	import_settings();
 	create_log();
 	
-	state.set_size(numRows, numColumns);
-	state.create_graph();
-
-	//cout << "#games = " << maxGames << endl;
-	cout << "Game created successfully." << endl;
 }
 
 Server::~Server(){
@@ -97,20 +96,19 @@ Server::~Server(){
 }
 
 void Server::init_mem(){
-	/*
-		initialize member variables
-	*/
 	step = 0;
     port = 21299;
-	maxGames = 1;	// default max number of games
 	numRows = 3;
 	numColumns = 3;
+
+
+	maxGames = 1;	// default max number of games
+	numBlackWin = 0;
+	numWhiteWin = 0;
+	numDraw = 0;
 }
 
 void Server::setup_socket(){
-    /*
-		configure server socket settings
-	*/
 	bzero((char*)&servAddr, sizeof(servAddr));
     servAddr.sin_family = AF_INET;
     servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -120,11 +118,6 @@ void Server::setup_socket(){
 }
 
 void Server::create_socket(){ 
-    /*
-		create socket here
-    	communication domain = AF_INET
-    	communication type = TCP
-	*/
     serverSd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSd < 0){
         cerr << "Error establishing the server socket";
@@ -189,6 +182,9 @@ void Server::set_state(string moves){
 			break;
 		}
 	}
+
+	cout << "State initialized." << endl;
+
 }
 
 void Server::set_step(string value){
@@ -226,24 +222,8 @@ void Server::import_settings(){
 	if (configObj.store_data("num-games", tmp)){
 		maxGames = atoi(tmp.c_str());
 	}
-	if (configObj.store_data("set-state", tmp)){
-		set_state(tmp);
-	}
-	if (configObj.store_data("turn", tmp)){
-		set_step(tmp);
-	}
 
 }
-
-void Server::run_games(){
-	for (uint gameNum = 1; gameNum <= maxGames; ++gameNum){
-		cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-		cout << "Game #" << gameNum << endl;
-		state.clear();
-		run();
-	}
-}
-
 void Server::run(){
 	/*
 		Run a game between two players. The players must be
@@ -255,134 +235,196 @@ void Server::run(){
     string _msg;
     char msg[40];
 	struct Player currPlayer;
+	bool gameNotDone = true;
+	string settings;
+
+	cout << "Max #games = " << maxGames << endl;
 
 	// send game settings to each player
-	_msg = "r" + configObj.data["rows"] + "-";
-	_msg += "c" + configObj.data["columns"] + "-";
-	_msg += "B#";
-
-	cout << "S>" << _msg << endl;
-	send(player1.socket, _msg.c_str(), (_msg).length(), 0);
- 	_msg[_msg.length() - 2] = 'W';
-	cout << "S>" << _msg << endl;
-	send(player2.socket, _msg.c_str(), _msg.length(), 0);
+	settings = "r" + configObj.data["rows"] + "-";
+	settings += "c" + configObj.data["columns"] + "-";
+	settings += "B#";
 	
-	//confirmation that players recieved game settings	
-	read(player1.socket, (char *)&msg, sizeof(msg));
-	read(player2.socket, (char *)&msg, sizeof(msg));
+	uint gameNum = 1;
+	while (gameNum <= maxGames){
+	
+		// configure initial state of the server
+		if (configObj.store_data("set-state", _msg)){
+			set_state(_msg);
+		}
+		if (configObj.store_data("turn", _msg)){
+			set_step(_msg);
+		}
 
-	configObj.store_data("set-state", _msg);
-	send(player1.socket, (_msg).c_str(), 
-		strlen((_msg).c_str()), 0);
-    send(player2.socket, (_msg).c_str(), 
-    	strlen((_msg).c_str()), 0);
-    
-	//confirmation that players recieved game state
-	read(player1.socket, (char *)&msg, sizeof(msg));
-	read(player2.socket, (char *)&msg, sizeof(msg));
+		cout << step << endl;
 
-	while (true){
-		// check if the game terminates yet
-		// print board state to standard output
-		result = state.status();
-		state.show();	
-		if (result == '?'){
-			// decide the player yet to move,
-			// send a move request to that player
-			// wait for response
-			currPlayer = step%2 == 0? player1:player2;
-			send(currPlayer.socket, "Move?", 
-				string("Move?").length(), 0);
-			
-			// start the decision time for player
-			auto start = high_resolution_clock::now();
-
-			cout << "S>?" << endl;
-			memset(&msg, 0, sizeof(msg));
-			
-			// record time server takes to receive
-			// a response from 'currPlayer'
-			read(currPlayer.socket, (char*)&msg, 
-				sizeof(msg));
-			cout << "S<" << msg << endl;
-			_msg = string(msg);
+		// send initial state settings
+		// "rR-cC-B#"
+		settings[settings.length() - 2] = 'B';
+		//cout << "S>" << settings << endl;
+		send(player1.socket, settings.c_str(), settings.length(), 0);
 		
-			// end the decision timer 
-			auto stop =  high_resolution_clock::now();
+		// "rR-cC-W#"
+		settings[settings.length() - 2] = 'W';
+		//cout << "S>" << settings << endl;
+		send(player2.socket, settings.c_str(), settings.length(), 0);
+		
+		//confirmation that players recieved game settings	
+		read(player1.socket, (char *)&msg, sizeof(msg));
+		read(player2.socket, (char *)&msg, sizeof(msg));
 
-			// output the time elapsed making the move
-			duration<double> elapsed = 
-				duration_cast<duration<double>>(stop - start);
-			cout << "Time elapsed: " << elapsed.count();
-			cout << " seconds" << endl;
-
-			if (state.is_valid(_msg, currPlayer.stone)){
-				// if move is valid, update game state
-				// append move to the logfile
-				// increment moves count
-				state.update(_msg);
-				logFile << _msg << ";";
-				step++;
-
-				// send move to each player
-				send(player1.socket, (">"+_msg).c_str(),
-					_msg.length() + 1, 0);
-				send(player2.socket, (">"+_msg).c_str(),
-					_msg.length() + 1, 0);
-				char moveRcv[40];
-				memset(&moveRcv, 0, sizeof(moveRcv));
-				read(player1.socket, (char *)&moveRcv,
-					sizeof(moveRcv));
-				cout << "S>B: " << moveRcv << endl;
-				memset(&moveRcv, 0, sizeof(moveRcv));
-				read(player2.socket, (char *)&moveRcv, 
-					sizeof(moveRcv));
-				cout << "S>W: " << moveRcv << endl;
-				cout << "S>" << _msg << endl;
+		// send initial state to each player
+		configObj.store_data("set-state", _msg);
+		send(player1.socket, (_msg).c_str(), 
+			strlen((_msg).c_str()), 0);
+		send(player2.socket, (_msg).c_str(), 
+			strlen((_msg).c_str()), 0);
+		
+		//confirmation that players recieved game state
+		read(player1.socket, (char *)&msg, sizeof(msg));
+		read(player2.socket, (char *)&msg, sizeof(msg));
+		while (gameNotDone){
+			result = state.status();
+			state.show();	
+			
+			if (result == '?'){
+				gameNotDone = receive_move();
 			}
 			else{
-				// report error 
-				send(player1.socket, "!", sizeof("!"), 0);
-				send(player2.socket, "!", sizeof("!"), 0);
-				cout << "S>!" << endl;
-				logFile << "!";
+				report_result(result);
 				break;
 			}
-		}
-		else{
-			if (result == BLACK){
-				cout << "Black wins!" << endl;
-				string win = "+";
-				string loose = "-";
-				send(player1.socket, win.c_str(), 
-					strlen(win.c_str()), 0);
-				send(player2.socket, loose.c_str(), 
-					strlen(loose.c_str()), 0);
-				cout << "S>+/-" << endl;
-				logFile << result;
-			}
-			else if (result == WHITE){
-				cout << "White wins!" << endl;
-				send(player1.socket, "-", 
-					strlen(string("-").c_str()), 0);
-				send(player2.socket, "+", 
-					strlen(string("+").c_str()), 0);
-				cout << "S>+/-" << endl;
-				logFile << result;
-			}
-			else{
-				cout << "Draw!" << endl;
-				send(player1.socket, "#", 
-					strlen(string("#").c_str()), 0);
-				send(player2.socket, "#", 
-					strlen(string("#").c_str()), 0);
-				cout << "S>#" << endl;
-				logFile << result;
-			}
-			break;
+
 		}
 
-    }
+		gameNum++;
+
+		// clear state here!
+		state.clear();
+	}
+
+	cout << "Number of games played       = " << maxGames << endl;
+	cout << "Number of games won by Black = " << numBlackWin << endl;
+	cout << "Number of games won by White = " << numWhiteWin << endl;
+	cout << "Number of games that drew    = " << numDraw << endl;
+	send(player1.socket, "$", strlen("$"), 0);
+	send(player2.socket, "$", strlen("$"), 0);
+
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+bool Server::receive_move(){
+
+	
+    string _msg;
+    char msg[40];
+
+	// decide the player yet to move,
+	// send a move request to that player
+	// wait for response
+	struct Player currPlayer = step%2 == 0? player1:player2;
+	send(currPlayer.socket, "Move?", string("Move?").length(), 0);
+	
+	// start the decision time for player
+	auto start = high_resolution_clock::now();
+
+	//cout << "S>?" << endl;
+	memset(&msg, 0, sizeof(msg));
+	
+	// record time server takes to receive
+	// a response from 'currPlayer'
+	read(currPlayer.socket, (char*)&msg, sizeof(msg));
+	//cout << "S<" << msg << endl;
+	_msg = string(msg);
+
+	// end the decision timer 
+	auto stop =  high_resolution_clock::now();
+
+	// output the time elapsed making the move
+	duration<double> elapsed = 
+		duration_cast<duration<double>>(stop - start);
+	cout << "Time elapsed: " << elapsed.count();
+	cout << " s." << endl;
+
+	if (state.is_valid(_msg, currPlayer.stone)){
+		// if move is valid, update game state
+		// append move to the logfile
+		// increment moves count
+		state.update(_msg);
+		logFile << _msg << ";";
+		step++;
+
+		// send move to each player
+		send(player1.socket, (">"+_msg).c_str(),_msg.length() + 1, 0);
+		send(player2.socket, (">"+_msg).c_str(),_msg.length() + 1, 0);
+		
+		char moveRcv[40];
+		memset(&moveRcv, 0, sizeof(moveRcv));
+		read(player1.socket, (char *)&moveRcv,sizeof(moveRcv));
+		//cout << "S>B: " << moveRcv << endl;
+		memset(&moveRcv, 0, sizeof(moveRcv));
+		read(player2.socket, (char *)&moveRcv, sizeof(moveRcv));
+		//cout << "S>W: " << moveRcv << endl;
+		//cout << "S>" << _msg << endl;
+	}
+	else{
+		// send error if invalid input
+		report_error();
+		return false;
+	}
+	return true;
+}
+
+void Server::report_error(){
+	send(player1.socket, "!", sizeof("!"), 0);
+	send(player2.socket, "!", sizeof("!"), 0);
+	cout << "S>!" << endl;
+	logFile << "!";
+}
+
+
+void Server::report_result(char result){
+	string win = "+";
+	string lose = "-";
+	
+	if (result == BLACK){
+		numBlackWin++;
+		cout << "*************************************************";
+		cout << endl;
+		cout << "*\tB\tl\ta\tc\tk\t*" << endl;
+		cout << "*************************************************";
+		cout << endl;
+		send(player1.socket, win.c_str(), strlen(win.c_str()), 0);
+		send(player2.socket, lose.c_str(), strlen(lose.c_str()), 0);
+		cout << "S>+/-" << endl;
+		logFile << result;
+	}
+	else if (result == WHITE){
+		numWhiteWin++;
+		cout << "*************************************************";
+		cout << endl;
+		cout << "*\tW\th\ti\tt\te\t*" << endl;
+		cout << "*************************************************";
+		cout << endl;
+		send(player2.socket, win.c_str(), strlen(win.c_str()), 0);
+		send(player1.socket, lose.c_str(), strlen(lose.c_str()), 0);
+		cout << "S>+/-" << endl;
+		logFile << result;
+	}
+	else{
+		numDraw++;
+		cout << "*****************************************" << endl;
+		cout << "*\tD\tR\tA\tW\t*" << endl;
+		cout << "*****************************************" << endl;
+		send(player2.socket, "#", strlen("#"), 0);
+		send(player1.socket, "#", strlen("#"), 0);
+		cout << "S>#" << endl;
+		logFile << result;
+	}
+
+
+}
+
+

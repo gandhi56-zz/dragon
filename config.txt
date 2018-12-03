@@ -10,10 +10,10 @@ player2-name=solver1.0
 log-title=temp.txt
 
 #set the initial board state
-set-state=;
+set-state=?a1Ba3;
 
 #set the player who plays the first move
-turn=BLACK;
+turn=WHITE;
 
 #set the number of games to run
-num-games=1;
+num-games=40;

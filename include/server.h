@@ -44,10 +44,14 @@ class Server{
 		int serverSd;
 
 		// game vars
-		uint maxGames;
 		uint numRows;
 		uint numColumns;
 
+		uint maxGames;
+		uint numBlackWin;
+		uint numWhiteWin;
+		uint numDraw;
+		
 		struct Player player1;
 		struct Player player2;
 		struct Config configObj;
@@ -62,6 +66,11 @@ class Server{
 		void set_state(string moves);
 		void set_step(string value);
 		void import_settings();
+
+		bool receive_move();
+		void report_result(char result);
+		void report_error();
+
 	public:
 		uint step;
 		uint movesCounter;

@@ -19,7 +19,7 @@ turn by turn. By convention, Black plays the first move. There are three kinds o
 For example,
 
 
-![3x3blank](./images/3x3blank.png)
+![3x3blank](./images/blank.png)
 ![3x3genmove](./images/3x3genmove.png)
 
 
@@ -130,9 +130,7 @@ commands a player may receive from the server:
 	* Game tree complexity
 
 * Implementation
-	* Fix Solver 2.0
-		* Cannot play on rectangular board, how should the cell keys be computed?
-	* Good heuristic evaluation
+	* Heuristic search
 		* number of legal moves available from a state
 		* minimum number of stones to win
 		* board dominance
@@ -184,6 +182,16 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 ![](./images/ss4.png)
 ![](./images/ss5.png)
 
+
+##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
+
+![](./images/2_1_black/blank.png)
+![](./images/2_1_black/0.png)
+![](./images/2_1_black/1.png)
+![](./images/2_1_black/2.png)
+![](./images/2_1_black/3.png)
+![](./images/2_1_black/4.png)
+
 ### Nex players
 * PseudoRand
 	* selects a move pseudorandomly
@@ -204,7 +212,7 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 
 ### Nex tournaments
 
-*	**November 28 Midnight Challenge**
+* **November 28 Midnight Challenge**
 
 	*	Game settings:
 		* Board size: 3 x 3
@@ -222,3 +230,21 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		| PseudoRand | Solver 1.0 | 5            | 0         | 3    | 2         |
 		| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
 		| PseudoRand | Solver 2.0 | 5            | 1         | 3    | 1         |
+
+* **December 2 Morning breakfast**
+	* Game settings:
+		* Board size : 3 x 3
+		* Time Control : None
+		* Handicap : None
+
+	* Results:
+		
+		| Black      | White      | Games played | Black won | Draw | White won |
+		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
+		| Solver 1.0 | Solver 2.0 | 2            | 2         | 0    | 0         |
+		| Solver 2.0 | Solver 1.0 | 2            | 2         | 0    | 0         |
+		| Solver 1.0 | PseudoRand | 5            | 5         | 0    | 0         |
+		| PseudoRand | Solver 1.0 | 5            | 0         | 1    | 4         |
+		| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
+		| PseudoRand | Solver 2.0 | 5            | 0         | 2    | 3         |
+

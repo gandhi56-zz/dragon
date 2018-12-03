@@ -52,7 +52,7 @@ public:
 	~Player();
 
 	void set_state(string moves);
-	void run();
+	void run(bool disp);
 };
 
 #endif // _PLAYER_

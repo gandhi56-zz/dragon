@@ -52,7 +52,7 @@ public:
 	~Player();
 
 	void set_state(string moves);
-	void run();
+	void run(bool disp);
 	void random_move(char stone, string& move);
 };
 

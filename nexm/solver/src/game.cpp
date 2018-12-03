@@ -264,6 +264,7 @@ bool State::connected(string key0, string key1){
 		cells 'key0' and 'key1' are connected. Returns 
 		true if they are, else returns false.
 	*/
+
 	map<string, bool> visited;
 	map<string, Cell>::iterator it = graph.begin();
 	stack<string> keyStack;
