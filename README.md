@@ -116,6 +116,10 @@ commands a player may receive from the server:
 
 ### Issues
 * Technical
+	* Implement predefined tournament modes:
+		* Rapid
+		* Blitz
+	* Record games into seperate text files
 	* Support for Mac and Windows
 	* Report search information
 		* number of nodes in the game tree

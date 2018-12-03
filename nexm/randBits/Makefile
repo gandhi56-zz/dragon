@@ -5,7 +5,7 @@ SRC = ./src/
 OBJ = ./obj/
 PORT = 21299
 
-$(OBJ)run: $(OBJ)*.o
+$(OBJ)run: $(OBJ)run.o $(OBJ)player.o $(OBJ)game.o
 	@$(CC) $(CCFLAGS) $(OBJ)run.o $(OBJ)player.o $(OBJ)game.o -o $(OBJ)run
 
 $(OBJ)game.o: $(SRC)game.cpp

@@ -77,14 +77,14 @@ Server::Server(){
 	player2.stone = WHITE;
     cout << "Connected with player 2!" << endl;
 
-	state.set_size(numRows, numColumns);
-	state.create_graph();
-
-	cout << "Game created successfully." << endl;
 	configObj.read();
 	import_settings();
 	create_log();
 	
+	state.set_size(numRows, numColumns);
+	state.create_graph();
+
+	cout << "Game created successfully." << endl;
 }
 
 Server::~Server(){
@@ -256,7 +256,6 @@ void Server::run(){
 			set_step(_msg);
 		}
 
-		cout << step << endl;
 
 		// send initial state settings
 		// "rR-cC-B#"

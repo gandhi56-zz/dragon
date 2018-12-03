@@ -1,19 +1,19 @@
 #set dimensions
-rows=3
-columns=3
+rows=4
+columns=4
 
 #set player names
-player1-name=solver2.0
-player2-name=solver1.0
+player1-name=PseudoRand
+player2-name=solver2.0
 
 #set log file name
 log-title=temp.txt
 
 #set the initial board state
-set-state=?a1Ba3;
+set-state=;
 
 #set the player who plays the first move
-turn=WHITE;
+turn=BLACK;
 
 #set the number of games to run
-num-games=40;
+num-games=3;
