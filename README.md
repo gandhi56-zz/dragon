@@ -182,7 +182,6 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 
 ##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
 
-![](./images/2_1_black/blank.png)
 ![](./images/2_1_black/0.png)
 ![](./images/2_1_black/1.png)
 ![](./images/2_1_black/2.png)
