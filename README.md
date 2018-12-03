@@ -116,14 +116,11 @@ commands a player may receive from the server:
 
 ### Issues
 * Technical
-	* Server to be able to run tournaments (/Makefile)
 	* Support for Mac and Windows
 	* Report search information
 		* number of nodes in the game tree
 		* number of nodes pruned
 		* number of moves simulated
-		* time taken to determine a move at various
-			depths
 		* number of leaf nodes
 
 * Theoretical
