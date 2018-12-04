@@ -1,17 +1,16 @@
-# nexC
+# NexC
 
 ### Project Overview
-nexC is a command-line interface for the game of Nex. This engine provides support for running Nex games amongst players upon a two-way communication link over a network. nexC also includes a Nex visualization tool, called nexViz. This tool can be used to visualize Nex games, either through a text file or a direct input of moves into the webpage.
+NexC is a command-line interface for the game of Nex. This engine provides support for running Nex games amongst players upon a two-way communication link over a network. NexC also includes a Nex visualization tool, called NexViz; this tool can be used to visualize Nex games, either through a text file or a direct input of moves into the webpage.
 
 ### Game description
-Nex is a connection game played between two players, namely Black and White. This game is a variation of the game of Hex. Fig.0 presents the board upon which this game is played, produced by nexC:
+Nex is a connection game played between two players, namely Black and White. This game is a variation of the game of Hex. Fig.0 presents the board upon which this game is played, produced by NexC:
 
 ![9x9Nex](./images/9x9nex.png)
 
 *Fig.0: Initial configuration of the 9 x 9 Nex board.*
 
-The game is played by placing stones on the board, 
-turn by turn. By convention, Black plays the first move. There are three kinds of stones: Black (**B**), White (**W**) and Neutral (**?**). Given a state of the game and the player to move, the player may either play a _Generate_ move or a _Transform_ move.
+The game starts with an empty board. Each cell can contain either a Black (**B**), White (**W**) or a Neutral (**?**) stone. By convention, Black plays the first move by playing a _generate_ move, as defined below.
 
 1. Generate move: The player places a stone of their colour and a 
 	Neutral stone into two distinct empty cells. 
@@ -23,23 +22,22 @@ For example,
 ![3x3genmove](./images/3x3genmove.png)
 
 
-*Fig.1 shows the state obtained after Black plays the move **_Ba1?c2_** on the starting position of 3 x 3 Nex, Black places a **B** on _a1_ and a **?** on _c2_.*
+*Fig.1 shows the state obtained after Black places a black stone in cell a1 and a neutral stone in cell c2.*
 
-2. Transform move: The player converts two Neutral stones on the  board into their colour and convert one of their coloured stones into a Neutral stone. 
+Alternatively, if a state contains at least two neutral stones, the player may choose to play the following move, called the _transform_ move:
+
+2. Transform move: The player converts two Neutral stones on the board into their colour and convert one of their coloured stones into a Neutral stone. 
 	
 For example,
 
 ![3x3transform1](./images/3x3transform1.png)
 ![3x3transform2](./images/3x3transform2.png)
 
-*Fig.4: The state obtained after Black plays the move **_Ba2Bc2?a1_**, where Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to **?**.*
-
+*Fig.4: The state obtained after Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to **?**.*
 
 #### Terminology
 
-A cell is _empty_ if it contains no stone.
-
-We say that two cells are connected if both cells are nonempty and both cells contain stones of the same kind.
+We say that two adjacent cells are connected if both cells are nonempty and both cells contain stones of the same kind.
 
 We define a connection between two cells, A and B, a nonempty sequence of cells such that every consecutive pair of cells in the sequence are connected, with A and B being the first and last cells in the sequence. A connection is a _B-connection_ if every cell in the connection is occupied by a **B** stone. Similarly, a connection is a _W-connection_ if every cell in the connection is occupied by a **W** stone.
 
@@ -71,12 +69,7 @@ mkdir obj
 make run
 ```
 
-Now attach each player by running their executables. For instance, to run Solver 1.0:
-
-```sh
-cd nexm/solver/
-make run
-```
+Now attach each player by running their executables over the socket port with port ID 21299.
 
 ##### Communication Protocol
 The server and the players are expected to follow the
@@ -87,48 +80,67 @@ commands a player may receive from the server:
 
 	* Server sends the game settings (format may be extended 
 	later). R denotes the number of rows of the board and
-	C denotes the number of columns.
+	C denotes the number of columns. 
+	
+	* Expected response: "ok"
 
 2. "!"
 	* Due to an unexpected error caused by a player or the
 	server, the player must exit with status 1.
 
+	* No response expected.
+
 3. "?"
-	* Server expects the player to send a move in the following
+	* The server is waiting for a move to be played.
+
+	* The server expects the player to send a move in the following
 	valid format and type; **"#RC#RC(#RC)"**. An invalid move
 	type or format will cause the server to terminate.
 
 4. "+"
-	* Server informs the player that it has won the game. The
+	* The server informs the player that it has won the game. The
 	player must also terminate upon receiving this input.
+
+	* No response expected.
 
 5. "-"
-	* Server informs the player that it has lost the game. The
+	* The server informs the player that it has lost the game. The
 	player must also terminate upon receiving this input.
 
+	* No response expected.
+
 6. "#"
-	* Server informs the player that the game ended in a draw.
+	* The server informs the player that the game ended in a draw.
 	The player must also terminate upon receiving this input.
 
 7. ">(...)" (string with '>' as the first character)
 	* The substring followed by '>' is the most recent move
-	that updated the server state. No response is expected.
+	that updated the server state.
+
+	* Expected response: "ok"
+
+8. "$"
+	* All games have been run successfully. 
+	
+	* The server expects the players to terminate.
 
 ### Issues
 * Technical
+	* Improve NexC
+		* handle unexpected exceptions
+	* Improve NexViz
+		* fix bugs
+		* implement an applet to visualize Nex games
 	* Implement predefined tournament modes:
 		* Rapid
 		* Blitz
 	* Record games into seperate text files
-	* Support for Mac and Windows
 	* Report search information
 		* number of nodes in the game tree
 		* number of nodes pruned
 		* number of moves simulated
 		* number of leaf nodes
-
-* Theoretical
-	* Game tree complexity
+	* Support for Mac and Windows
 
 * Implementation
 	* Heuristic search
@@ -137,7 +149,7 @@ commands a player may receive from the server:
 		* board dominance
 		* number of chains
 		* weak vs strong connections
-		* mustplay regions 
+		* mustplay regions
 			* preserving strong connections
 			* defensive plays
 
@@ -175,39 +187,27 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 
 * There are 61 nodes in the game tree of 2x2 Nex, comparing 
 	with 65 nodes in the game tree of 2x2 Hex.
-##### Solver 1.0 vs Solver 1.0 on 3x3 Nex
-
-![](./images/ss1.png)
-![](./images/ss2.png)
-![](./images/ss3.png)
-![](./images/ss4.png)
-![](./images/ss5.png)
 
 
-##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
-
-![](./images/2_1_black/0.png)
-![](./images/2_1_black/1.png)
-![](./images/2_1_black/2.png)
-![](./images/2_1_black/3.png)
-![](./images/2_1_black/4.png)
 
 ### Nex players
 * PseudoRand
-	* selects a move pseudorandomly
+	* Selects a move pseudorandomly
 * Solver 1.0
-	* implements Alpha-beta Negamax search
-	* state space complexity: ~200n bits, where n is the number of cells
-	* intractable for boards bigger than 3x3
-* Solver 2.0 (Under testing phase)
-	* implements Alpha-beta Negamax search
-	* state representation using a bitboard, where each cell is denoted using 2 bits
-	* state space complexity: ~10n bits, where n is the number of cells
-	* intractability?
-	* drew against Solver 1.0
-	* won 8, drew 2, lost 0; against a pseudorandom player
+	* Implements Alpha-beta Negamax search
+	* State space complexity: ~200n bits, where n is the number of cells
+	* Intractable for boards bigger than 3x3
+* Solver 2.0
+	* Implements Alpha-beta Negamax search
+	* Random shuffles the moves before move selection
+	* State representation using a bitboard, where each cell is denoted using 2 bits
+	* State space complexity: ~20n bits, where n is the number of cells
+	* Intractable for boards bigger than 3x3
+	* Records
+		* vs Solver 1.0, won 40/40 as Black
+		* vs PseudoRand, won 39/40 and drew 1/40 as Black
+* Solver 3.0 (Coming soon...)
 * Random Bits (Coming soon...)
-	* will implement Monte Carlo Tree Search
 	* state representation as in Solver 2.0
 
 ### Nex tournaments
@@ -247,4 +247,54 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		| PseudoRand | Solver 1.0 | 5            | 0         | 1    | 4         |
 		| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
 		| PseudoRand | Solver 2.0 | 5            | 0         | 2    | 3         |
+
+
+### Thrilling games to analyze
+
+##### Solver 1.0 vs Solver 1.0 on 3x3 Nex
+
+![](./images/solver1_solver1/blank.png)
+![](./images/solver1_solver1/0_1.png)
+![](./images/solver1_solver1/0_2.png)
+![](./images/solver1_solver1/0_3.png)
+![](./images/solver1_solver1/0_4.png)
+![](./images/solver1_solver1/0_5.png)
+
+##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
+
+![](./images/solver2_solver2/blank.png)
+![](./images/solver2_solver2/0_1.png)
+![](./images/solver2_solver2/0_2.png)
+![](./images/solver2_solver2/0_3.png)
+![](./images/solver2_solver2/0_4.png)
+![](./images/solver2_solver2/0_5.png)
+![](./images/solver2_solver2/0_6.png)
+![](./images/solver2_solver2/0_7.png)
+
+##### Solver 2.0 vs Solver 1.0 on 3x3 Nex
+![](./images/solver2_solver1/blank.png)
+![](./images/solver2_solver1/1_0.png)
+![](./images/solver2_solver1/1_1.png)
+![](./images/solver2_solver1/1_2.png)
+![](./images/solver2_solver1/1_3.png)
+![](./images/solver2_solver1/1_4.png)
+
+![](./images/solver2_solver1/blank.png)
+![](./images/solver2_solver1/0_0.png)
+![](./images/solver2_solver1/0_1.png)
+![](./images/solver2_solver1/0_2.png)
+![](./images/solver2_solver1/0_3.png)
+![](./images/solver2_solver1/0_4.png)
+
+
+##### Solver 2.0 vs PseudoRand on 3x3 Nex (Draw!)
+
+![](./images/solver2_solver2/draw/0_0.png)
+![](./images/solver2_solver2/draw/0_1.png)
+![](./images/solver2_solver2/draw/0_2.png)
+![](./images/solver2_solver2/draw/0_3.png)
+![](./images/solver2_solver2/draw/0_4.png)
+![](./images/solver2_solver2/draw/0_5.png)
+![](./images/solver2_solver2/draw/0_6.png)
+![](./images/solver2_solver2/draw/0_7.png)
 

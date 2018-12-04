@@ -20,7 +20,7 @@
 
 #include <vector>
 
-#include "../include/game.h"
+#include "../include/search.h"
 
 using namespace std;
 

@@ -285,7 +285,6 @@ void Server::run(){
 		while (gameNotDone){
 			result = state.status();
 			state.show();	
-			
 			if (result == '?'){
 				gameNotDone = receive_move();
 			}
@@ -293,7 +292,6 @@ void Server::run(){
 				report_result(result);
 				break;
 			}
-
 		}
 
 		gameNum++;
@@ -302,10 +300,10 @@ void Server::run(){
 		state.clear();
 	}
 
-	cout << "Number of games played       = " << maxGames << endl;
-	cout << "Number of games won by Black = " << numBlackWin << endl;
-	cout << "Number of games won by White = " << numWhiteWin << endl;
-	cout << "Number of games that drew    = " << numDraw << endl;
+	cout << "Number of games played      \t\t= " << maxGames << endl;
+	cout << "Number of games won by " << configObj.data["player1-name"] << "\t= " << numBlackWin << endl;
+	cout << "Number of games won by " << configObj.data["player2-name"] << "\t= " << numWhiteWin << endl;
+	cout << "Number of games that drew   \t\t= " << numDraw << endl;
 	send(player1.socket, "$", strlen("$"), 0);
 	send(player2.socket, "$", strlen("$"), 0);
 

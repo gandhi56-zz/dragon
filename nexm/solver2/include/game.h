@@ -23,7 +23,7 @@
 using namespace std;
 
 typedef unsigned int uint;
-typedef	bitset<KEYBITS> Keytype;
+//typedef	bitset<KEYBITS> Keytype;
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint> > Cell;
 

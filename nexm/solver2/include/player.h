@@ -22,6 +22,8 @@
 
 #include "../include/game.h"
 
+#define DEPTH_LIMIT 100
+
 using namespace std;
 
 struct ClientSocket{

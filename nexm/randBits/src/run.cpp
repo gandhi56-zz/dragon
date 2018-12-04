@@ -4,6 +4,7 @@
 int main(int argc, char *argv[]){
 
 	
+/*
 	// fetch port number
 	char serverIp[] = "127.0.0.1";
   	int port;
@@ -25,24 +26,11 @@ int main(int argc, char *argv[]){
 	Player player(serverIp, port);
 	player.run(false);
 
-/*
+*/
+
+	cout << "Hello, Random Bits." << endl;
 	Player player;
 	player.gameState.set_size(3, 3);
 	player.gameState.create_graph();
-
-	player.set_state("Ba1?a2;Wc2?b1;Ba3?b2;Wa2Wb2?c2;");
-	vector<string> moves;
-	player.get_moves(player.gameState, moves, true);
-
-	player.gameState.show();
-
-	int count = 1;
-	for (string move : moves){
-		cout << count << " " << move << endl;
-		count++;
-	}
-
-*/
-
 	return 0;
 }
