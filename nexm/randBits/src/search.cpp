@@ -1,23 +1,31 @@
 #include "../include/search.h"
 
 MCTNode::MCTNode(){
-	state 	= 	nullptr;
 	move 	= 	"start";
 	wins	= 	0;
 	visits 	= 	0;
+
 }
 
-MCTNode::MCTNode(State *gameState, string _move){
+MCTNode::MCTNode(State gameState, string _move){
 	move = _move;
 	state = gameState;
+	wins	= 	0;
+	visits 	= 	0;
 }
 
 MCTNode::~MCTNode(){
 
 }
+/*
+MCTNode::has_children(){
+	
+}
 
-
-
+MCTNode::evaluate(){
+	
+}
+*/
 void MCTNode::get_moves(State state, vector<string>& moves, bool isMax){
 	string myStone = (isMax?"B":"W");
 
