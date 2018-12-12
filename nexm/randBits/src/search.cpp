@@ -1,17 +1,19 @@
 #include "../include/search.h"
 
 MCTNode::MCTNode(){
+	parent 	= 	nullptr;
 	move 	= 	"start";
 	wins	= 	0;
 	visits 	= 	0;
-
+	maxPtm	= 	true;
 }
 
-MCTNode::MCTNode(State gameState, string _move){
+MCTNode::MCTNode(MCTNode* parentNode, string _move, bool maxTurn){
+	parent = parentNode;
 	move = _move;
-	state = gameState;
 	wins	= 	0;
 	visits 	= 	0;
+	maxPtm = maxTurn;
 }
 
 MCTNode::~MCTNode(){
