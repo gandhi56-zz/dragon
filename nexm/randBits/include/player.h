@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "../include/search.h"
+#include "../include/game.h"
 
 using namespace std;
 

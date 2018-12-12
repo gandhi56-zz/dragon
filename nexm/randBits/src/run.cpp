@@ -32,5 +32,12 @@ int main(int argc, char *argv[]){
 	Player player;
 	player.gameState.set_size(3, 3);
 	player.gameState.create_graph();
+	player.set_state("Ba3?a1");
+
+
+	MCTNode node(&player.gameState, "start");
+
+	node.state->show();
+
 	return 0;
 }

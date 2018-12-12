@@ -5,21 +5,18 @@
 #include "../include/game.h"
 
 class MCTNode{
-private:
-	
+public:
 	string move;
-	MCTNode* parentNode;
+	State *state;
 	vector<MCTNode> childNodes;
 	uint wins;
 	uint visits;
-	vector<string> untriedMoves;
-	bool maxMoved;
-
-	MCTNode(const State& gameState);
+	bool maxPtm;
+	
+	MCTNode();
+	MCTNode(State *gameState, string _move);
 	~MCTNode();
-	bool has_children()	const	{
-		
-	}
+	bool has_children();
 	void get_moves(State state, vector<string>& moves, bool isMax);
 };
 

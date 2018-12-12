@@ -17,6 +17,7 @@ $(OBJ)player.o: $(SRC)player.cpp
 $(OBJ)run.o: $(SRC)run.cpp
 	@$(CC) $(CCFLAGS) $(SRC)run.cpp -c -o $(OBJ)run.o
 
+compile:	$(OBJ)run
 
 run: $(OBJ)run
 	$(OBJ)run $(PORT)

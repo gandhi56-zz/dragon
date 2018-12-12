@@ -1,8 +1,15 @@
 #include "../include/search.h"
 
+MCTNode::MCTNode(){
+	state 	= 	nullptr;
+	move 	= 	"start";
+	wins	= 	0;
+	visits 	= 	0;
+}
 
-MCTNode::MCTNode(const State& gameState){
-
+MCTNode::MCTNode(State *gameState, string _move){
+	move = _move;
+	state = gameState;
 }
 
 MCTNode::~MCTNode(){

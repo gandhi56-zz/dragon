@@ -35,12 +35,12 @@ bool State::valid_pos(uint key){
 void State::set_nbrs(vector<uint>& nbrs, uint key){
 	if (valid_pos(key+numColumns))	nbrs.push_back(key+numColumns);
 	if (valid_pos(key-numColumns))	nbrs.push_back(key-numColumns);
-	if (valid_pos(key-1) and (key%numColumns > 0))
-		nbrs.push_back(key-1);
+	if (valid_pos(key-1) and (key%numColumns > 0))nbrs.push_back(key-1);
 	if (valid_pos(key+1) and (key%numColumns < numColumns-1))
 		nbrs.push_back(key+1);
 	if (valid_pos(key-numColumns+1)and(key%numColumns < numColumns-1))
 		nbrs.push_back(key-numColumns+1);
+
 	if (valid_pos(key+numColumns-1) and (key%numColumns > 0))
 		nbrs.push_back(key+numColumns-1);
 }
@@ -285,7 +285,3 @@ bool State::connected(uint key0, uint end, bool blackConnect){
 	}
 	return false;
 }
-
-
-
-
