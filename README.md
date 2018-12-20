@@ -51,11 +51,7 @@ The _objective_ for Black is to form a B-connection between some cell in row _a_
 
 *Fig.6: White wins this position with the help of the W-connection (c1, c2, b3).*
 
-The game terminates when either player wins or no legal
-moves exist. Legal moves exist if and only if there are at least
-two empty cells for the player to play a generate move or
-at least one Neutral stone to allow a transform move to
-be playable.
+The game terminates when either player wins or no legal moves exist. Legal moves exist if and only if there are at least two empty cells for the player to play a generate move or at least one Neutral stone to allow a transform move to be playable.
 
 We define an _opening_, or an _opening move_, as the first move played on the initial state of the game. Let S be the initial state of the game. Let A be an opening and S' be the state obtained after playing A on S. We say A is _winning_ if for every A' that can be played on S' there exists a sequence of moves that satifies the objective for Black. Such a sequence is defined as a _winning strategy_ for Black. We say A is _losing_ if there exists a move sequence which satisfies the objective for White. Such a move sequence is defined as the _winning strategy_ for White.
 
@@ -143,7 +139,8 @@ commands a player may receive from the server:
 	* Support for Mac and Windows
 
 * Implementation
-	* Heuristic search
+	* Finish implementing Monte Carlo Tree Search
+    * Heuristic search
 		* number of legal moves available from a state
 		* minimum number of stones to win
 		* board dominance
@@ -249,7 +246,7 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		| PseudoRand | Solver 2.0 | 5            | 0         | 2    | 3         |
 
 
-### Thrilling games to analyze
+### Interesting games to analyze
 
 ##### Solver 1.0 vs Solver 1.0 on 3x3 Nex
 
