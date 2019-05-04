@@ -79,7 +79,7 @@ Board.prototype.init = function() {
         fontFamily: 'Arial, sans-serif',
         fontSize: '12',
         textFillColor: 'white',
-        textStrokeColor: 'black',
+        textStrokeColor: 'white',
         textStrokeWidth: 1
     }));
     for (var i=0; i<SIZE; ++i) {
@@ -90,8 +90,8 @@ Board.prototype.init = function() {
             y: i*SPACE*1.05+SPACE*2.5 + 4,
             fontFamily: 'Arial, sans-serif',
             fontSize: '12',
-            textFillColor: 'black',
-            textStrokeColor: 'black',
+            textFillColor: 'white',
+            textStrokeColor: 'white',
             textStrokeWidth: 1
         }));
         for (var j=0; j<SIZE; ++j)
@@ -103,8 +103,8 @@ Board.prototype.init = function() {
             y: i*SPACE*1.05+SPACE*2.5 + 4,
             fontFamily: 'Arial, sans-serif',
             fontSize: '12',
-            textFillColor: 'black',
-            textStrokeColor: 'black',
+            textFillColor: 'white',
+            textStrokeColor: 'white',
             textStrokeWidth: 1
         }));
     }
@@ -115,7 +115,7 @@ Board.prototype.init = function() {
         fontFamily: 'Arial, sans-serif',
         fontSize: '12',
         textFillColor: 'white',
-        textStrokeColor: 'black',
+        textStrokeColor: 'white',
         textStrokeWidth: 1
     }));
 

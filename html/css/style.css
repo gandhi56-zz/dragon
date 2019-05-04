@@ -1,6 +1,12 @@
 @import url(https://fonts.googleapis.com/css?family=Oswald:400,600);
 
-h1 {
+.game-header{
+	border: solid #40E0D0;
+	color: #40E0D0;
+	padding: 20px;
+}
+
+.game-title {
 	font-family: Oswald;
 	font-size: 50px;
 	font-style: normal;
@@ -8,6 +14,27 @@ h1 {
 	font-weight: 500;
 	line-height: 26.4px;
 }
+
+.game-subtitle{
+	font-family: Oswald;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 15.4px;
+}
+
+body {
+	background: #141E30;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to bottom, #243B55, #141E30);
+		/* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to bottom, #243B55, #141E30); 
+		/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+div{
+	padding: 10px;
+}
+
 h3 {
 	font-family: Oswald;
 	font-size: 14px;
@@ -26,15 +53,23 @@ p {
 }
 
 button {
-    -webkit-transition-duration: 0.4s;
-    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
 
-    background-color: #000000;
-    color: white;
+	width: 15%;
+	margin: 1%;
+
+    background-color: #141E30;
+	border-color: #40E0D0;
+	padding: 10px;
     border-radius: 12px;
+    
+	color: white;
+	font-size: 80%;
+	font-family: Oswald;
 }
 
 button:hover {
-    background-color: #fffeff;
+    background-color: #40E0D0;
     color: black;
 }
