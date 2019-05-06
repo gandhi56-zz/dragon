@@ -13,6 +13,8 @@
 	font-variant: normal;
 	font-weight: 500;
 	line-height: 26.4px;
+	letter-spacing: 30px;
+	text-align: center;
 }
 
 .game-subtitle{
@@ -20,7 +22,8 @@
 	font-style: normal;
 	font-variant: normal;
 	font-weight: 500;
-	line-height: 15.4px;
+	line-height: 16px;
+	text-align: center;
 }
 
 body {
@@ -55,15 +58,12 @@ p {
 button {
     -webkit-transition-duration: 0.2s;
     transition-duration: 0.2s;
-
 	width: 15%;
 	margin: 1%;
-
     background-color: #141E30;
 	border-color: #40E0D0;
 	padding: 10px;
     border-radius: 12px;
-    
 	color: white;
 	font-size: 80%;
 	font-family: Oswald;
@@ -72,4 +72,11 @@ button {
 button:hover {
     background-color: #40E0D0;
     color: black;
+}
+
+#game{
+	background-color: black;
+	margin: 10 10 10 10;
+	width = 60%;
+	height = 50px;
 }

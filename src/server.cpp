@@ -246,8 +246,14 @@ void Server::run(){
 	settings += "B#";
 	
 	uint gameNum = 1;
+
+	logFile << "Black:" + configObj.data["player1-name"] + "\n";
+	logFile << "White:" + configObj.data["player2-name"] + "\n";
+	logFile << "#games:" + configObj.data["num-games"] + "\n\n";
+
 	while (gameNum <= maxGames){
-	
+
+
 		// configure initial state of the server
 		if (configObj.store_data("set-state", _msg)){
 			set_state(_msg);
@@ -282,6 +288,12 @@ void Server::run(){
 		//confirmation that players recieved game state
 		read(player1.socket, (char *)&msg, sizeof(msg));
 		read(player2.socket, (char *)&msg, sizeof(msg));
+		
+		// write game settings to logFile
+		logFile << "Game#"+to_string(gameNum)+"\n";
+		logFile << "Board:" + settings.substr(0, settings.length()-3) << "\n";
+		logFile << "Init_State:"+_msg << "\n";
+		
 		while (gameNotDone){
 			result = state.status();
 			state.show();	
@@ -298,6 +310,8 @@ void Server::run(){
 
 		// clear state here!
 		state.clear();
+
+		logFile << "\n\n";
 	}
 
 	cout << "Number of games played      \t\t= " << maxGames << endl;

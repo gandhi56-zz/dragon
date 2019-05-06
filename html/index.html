@@ -5,37 +5,34 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="js/menu.js"></script>
     <link rel="stylesheet" type="text/css" href="css/style.css">
+	<script type="text/javascript" src="js/angular.js"></script>
+	<script type="text/javascript" src="js/bonsai.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
 </head>
 
-<body>
+<body><center>
 	<div class="game-header">
 		<h1 class="game-title">NexViz</h1>
 		<h2 class="game-subtitle">the next level analysis of the game of Nex</h3>
 	</div>
 
+
     <div class="container">
 		<nav class="row">
 			<button type="button" id="btn_newgame" onclick="">New Game</button>
-			<button type="button" id="btn_loadgame" onclick="">Load Game</button>
-			<button type="button" id="btn_savegame" onclick="">Save Game</button>
-			<button type="button" id="btn_analyzegame" onclick="">Analyze Game</button>
-			<button type="button" id="btn_help" onclick="ShowHelp()">Game Rules</button>
-			
-			<br><br>
-			<button type="button" id="btn_clear" onClick="Reload()">
-				Upload and Resize
+			<button type="button" id="btn_loadgame" onclick="Reload()">
+				Load Game
 			</button>
-			<textarea id="field_size" rows="1" cols="20"></textarea>
+			<button type="button" id="btn_savegame" onclick="">Save Game</button>
+			<button type="button" id="btn_analyzegame" onclick="">
+				Analyze Game
+			</button>
+			<button type="button" id="btn_help" onclick="ShowHelp()">
+				Game Rules
+			</button>
 		</nav>
-		<div class="game-footer">
-			<input type='file'  onchange='openInput(event)'><br>
-			<button type="button" id="save" onClick='save()'>Save</button>
-			<textarea id='file-output' onchange='' rows="20" cols="55"></textarea>
-		</div>
 
-		<script src="js/bonsai.js"></script>
 		
 		<div id="game"></div>
 		
@@ -66,9 +63,21 @@
 			});
 		</script>
 		
+<!--remove after -->
+
+			<br><br>
+			<button type="button" id="btn_clear" onClick="Reload()">
+				Upload and Resize
+			</button>
+			<textarea id="field_size" rows="1" cols="20"></textarea>
+		<div class="game-footer">
+			<input type='file'  onchange='openInput(event)'><br>
+			<button type="button" id="save" onClick='save()'>Save</button>
+			<textarea id='file-output' onchange='' rows="20" cols="55"></textarea>
+		</div>
 		<div id="game-footer"></div>
 	</div>
 
-</body>
+</center></body>
 
 </html>

@@ -16,7 +16,7 @@ function clear() {}
 
 function exit() {}
 
-// ~~~~~~~~~~~~~~~~~~~~~~ File Read/Write ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~ File Read/Write ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function openInput(e) {
     var file = e.target.files[0];
