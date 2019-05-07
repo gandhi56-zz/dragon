@@ -16,6 +16,31 @@ function clear() {}
 
 function exit() {}
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~New Game~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function newGame(){
+	var modal = document.getElementById('newgame_modal');
+	var eventBtn = document.getElementById('btn_newgame');
+	
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+
+	eventBtn.onclick = function(){
+		modal.style.display = "block";
+	}
+
+	span.onclick = function(){
+		modal.style.display = "none";
+	}
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	}
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~ File Read/Write ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function openInput(e) {

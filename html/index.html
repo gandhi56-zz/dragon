@@ -20,7 +20,9 @@
 
     <div class="container">
 		<nav class="row">
-			<button type="button" id="btn_newgame" onclick="">New Game</button>
+			<button type="button" id="btn_newgame" onclick="newGame()">
+				New Game
+			</button>
 			<button type="button" id="btn_loadgame" onclick="Reload()">
 				Load Game
 			</button>
@@ -28,11 +30,29 @@
 			<button type="button" id="btn_analyzegame" onclick="">
 				Analyze Game
 			</button>
-			<button type="button" id="btn_help" onclick="ShowHelp()">
+			<button type="button" id="btn_rules" onclick="ShowHelp()">
 				Game Rules
 			</button>
 		</nav>
 
+		<!---------------------- new game modal -------------------------->
+		<div id="newgame_modal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2> Game Configuration </h2> <br>
+				Number of rows:
+				<button type="button" id="btn_dec">-</button>
+				<textarea id="field_size" rows="1" cols="2"></textarea>
+				<button type="button" id="btn_inc">+</button><br>
+				
+				Number of columns:
+				<button type="button" id="btn_dec">-</button>
+				<textarea id="field_size" rows="1" cols="2"></textarea>
+				<button type="button" id="btn_inc">+</button><br>
+			</div>
+		</div>
+		
+		<!---------------------------------------------------------------->
 		
 		<div id="game"></div>
 		
