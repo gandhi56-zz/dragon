@@ -5,39 +5,30 @@
 #include "../include/game.h"
 
 class MCTNode{
-private:
-	State state;
+public:
+	
 	string move;
-	MCTNode* parent;
-	vector<MCTNode*> children;
+	MCTNode* parentNode;
+	vector<MCTNode> childNodes;
+	vector<string> untriedMoves;
+	State currState;
 	int wins;
 	int visits;
-	uint depth;
-	bool maxPtm;	// Black to move, by default
+	Valtype ptm;
 	
-public:
 	MCTNode();
-	MCTNode(const State& gameState, MCTNode* parent, 
-		string _move, bool maxTurn);
-	~MCTNode();
+	MCTNode(string _move, MCTNode* parentNode, State state, Valtype currPlayer);
+	//void UCT_select(vector<>);
+	void add_child(string move, State state);
+	void update(int result);
+	void print();
+	void get_random_move(string& move);
 
-	// -----------------------------------------------------------
-	// getters
-	const State& get_state()  const	{	return state;	}
-	const string& get_move()  const	{	return move;	}
-	bool is_fully_expanded()  const	{return !children.empty();}
-	int get_num_visits()	  const	{return visits;	}
-	int get_num_wins()		  const	{return wins;}
-	uint get_depth()		  const	{return depth;}
-	int count_children()	  const	{return	children.size();}
-	MCTNode* get_child(int i) const	{return children[i].get();}
-	MCTNode* get_parent()	  const	{return parent;}
+	void expand_node();
 
-	bool is_terminal();
-	void get_moves(State state, vector<string>& moves, bool isMax);
-	// -----------------------------------------------------------
+	void operator=(MCTNode node);
 
-
+	void uct_simulation(State state, int maxiter, Valtype currPlayer);
 };
 
 #endif	//	_SEARCH_

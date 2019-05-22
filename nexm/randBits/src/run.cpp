@@ -32,14 +32,12 @@ int main(int argc, char *argv[]){
 	Player player;
 	player.gameState.set_size(3, 3);
 	player.gameState.create_graph();
-	player.set_state("Ba3?a1");
+	player.set_state("?a1Ba3;Wa2?b1;Bb2?b3;Wc1?c2;");
 
-	
-
-	player.gameState.update("Wb2?c2");
-
-
-	node.state.show();
+	MCTNode node("None", NULL, player.gameState, true);
+	for (auto move : node.untriedMoves){
+		cout << move << endl;
+	}
 
 	return 0;
 }

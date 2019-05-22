@@ -16,6 +16,19 @@ State::~State(){
 
 }
 
+void State::operator=(State& state){
+	numRows = state.numRows;
+	numColumns = state.numColumns;
+	for (Cell c : state.graph)
+		graph.push_back({c.first, c.second});
+	
+	emptyCount = state.emptyCount;
+	neutralCount = state.neutralCount;
+	blackCount = state.blackCount;
+	whiteCount = state.whiteCount;
+	movesCount = state.movesCount;
+}
+
 void State::set_size(uint rows, uint cols){
 	numRows = rows;
 	numColumns = cols;

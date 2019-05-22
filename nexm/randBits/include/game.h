@@ -19,6 +19,7 @@
 #include <stack>
 #include <bitset>
 #include <cstring>
+#include <algorithm>
 
 using namespace std;
 
@@ -28,37 +29,38 @@ typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint> > Cell;
 
 class State{
-	public:
-		uint numRows;
-		uint numColumns;
-		vector< Cell > graph;
-		
-		uint emptyCount;
-		uint neutralCount;
-		uint blackCount;
-		uint whiteCount;
-		
-		uint movesCount;
+public:
+	uint numRows;
+	uint numColumns;
+	vector< Cell > graph;
+	
+	uint emptyCount;
+	uint neutralCount;
+	uint blackCount;
+	uint whiteCount;
+	
+	uint movesCount;
 
-		State();
-		~State();
-		void set_size(uint rows, uint cols);
-		void create_graph();
-		void set_nbrs(vector<uint>& nbrs, uint key);
-		string get_value(uint row, uint col);
-		void show();
-		string get_key(uint row, uint col);
-		void update(string move);
-		bool connected(uint key0, uint end, bool blackConnect);
-		char status();
-		void revert(string move, char stone);
+	State();
+	~State();
+	void set_size(uint rows, uint cols);
+	void create_graph();
+	void set_nbrs(vector<uint>& nbrs, uint key);
+	string get_value(uint row, uint col);
+	void show();
+	string get_key(uint row, uint col);
+	void update(string move);
+	bool connected(uint key0, uint end, bool blackConnect);
+	char status();
+	void revert(string move, char stone);
+	void operator=(State& state);
 
-	private:
-		uint num_nbrs(uint row, uint col);
-		uint get_row(string pos);
-		uint get_col(string pos);
-		bool valid_pos(uint key);
-		bool valid_pos(uint row, uint col);
+private:
+	uint num_nbrs(uint row, uint col);
+	uint get_row(string pos);
+	uint get_col(string pos);
+	bool valid_pos(uint key);
+	bool valid_pos(uint row, uint col);
 };
 
 

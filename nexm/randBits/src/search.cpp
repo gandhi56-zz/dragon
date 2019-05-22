@@ -1,52 +1,135 @@
 #include "../include/search.h"
 
-MCTNode::MCTNode(){
-	parent 	= 	nullptr;
-	move 	= 	"start";
-	wins	= 	0;
-	visits 	= 	0;
-	maxPtm	= 	true;
-}
-
-MCTNode::MCTNode(MCTNode* parentNode, string _move, bool maxTurn){
-	parent = parentNode;
-	move = _move;
-	wins	= 	0;
-	visits 	= 	0;
-	maxPtm = maxTurn;
-}
-
-MCTNode::~MCTNode(){
-
-}
 /*
-MCTNode::has_children(){
+	string move;
+	MCTNode* parentNode;
+	vector<MCTNode> childNodes;
+	State state;
+	int wins;
+	int visits;
+*/
 	
+MCTNode::MCTNode(){
+	parentNode = NULL;
 }
 
-MCTNode::evaluate(){
-	
+MCTNode::MCTNode(string _move, MCTNode* parent, State state, Valtype currPlayer){
+	move = _move;	// move that reached this state
+	parentNode = parent;
+	currState = state;
+	ptm = currPlayer;
+	expand_node();
 }
-*/
-void MCTNode::get_moves(State state, vector<string>& moves, bool isMax){
-	string myStone = (isMax?"B":"W");
+
+void MCTNode::add_child(string move, State childState){
+	// implement binary search here?
+	vector<string>::iterator it = 
+		find(untriedMoves.begin(), untriedMoves.end(), move);
+	if (it != untriedMoves.end()){
+		untriedMoves.erase(it);
+	}
+	else{
+		cout << "Error: move " << move << "  not found." << endl;
+	}
+
+	childNodes.push_back(
+		MCTNode(move, this, childState, (ptm==BLACK?WHITE:BLACK)));
+}
+
+
+void MCTNode::update(int result){
+	visits++;
+	wins += result;
+}
+
+void MCTNode::print(){
+	cout << "[M:" << move << " W/V:" << wins << "/" << visits << "]" << endl;
+}
+
+void MCTNode::operator=(MCTNode node){
+	move = node.move;
+	parentNode = node.parentNode;
+	currState = node.currState;
+	wins = node.wins;
+	visits = node.visits;
+	ptm = node.ptm;
+
+	for (string move : node.untriedMoves){
+		untriedMoves.push_back(move);
+	}
+	for (auto child : node.childNodes){
+		childNodes.push_back(child);
+	}
+}
+
+bool cmp(MCTNode& node1, MCTNode& node2){
+	// TODO test various child selection policies
+	return node1.wins/node2.visits > node2.wins/node2.visits;
+}
+
+void MCTNode::get_random_move(string& move){
+	//TODO
+}
+
+void MCTNode::uct_simulation(State state, int maxiter, Valtype currPlayer){
+	MCTNode rootNode("None", NULL, state, ptm);
+	MCTNode node;
+	State currState;
+
+	for (int iter = 1; iter <= maxiter; ++iter){
+		node = rootNode;
+		currState = state;
+
+		// Selection --------------------------------------------------------
+		sort(node.childNodes.begin(), node.childNodes.end(), cmp);
+		while (node.untriedMoves.size() == 0 and node.childMoves.size() != 0){
+			node = node.childNodes[0];
+			currState.update(node.move);
+		}
+		// ------------------------------------------------------------------
+		
+		// Expansion---------------------------------------------------------
+		if (node.untriedMoves.size() != 0){
+			string move;
+			get_random_move(move);
+			currState.update(move);
+			node.add_child(move, currState);
+			node = node.childNodes.back();
+		}
+		// ------------------------------------------------------------------
+	
+		// Rollout-----------------------------------------------------------
+		//while not leaf node
+		//	play random simulation
+		// ------------------------------------------------------------------
+		
+		// Backpropagation---------------------------------------------------
+		//while node is not root
+		//	update node stats
+		// ------------------------------------------------------------------
+	}
+}
+
+void MCTNode::expand_node(){
+	string myStone = "B";
+	if (ptm == WHITE)	myStone = "W";
 
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
 	vector<string> stonePos;
 	vector<string> neutralPos;
-	for (uint row = 0; row < state.numRows; ++row){
-		for (uint col = 0; col < state.numColumns; ++col){
-			uint key = row * state.numColumns + col;
-			if (state.graph[key].first == EMPTY){
-				emptyPos.push_back(state.get_key(row, col));
+	for (uint row = 0; row < currState.numRows; ++row){
+		for (uint col = 0; col < currState.numColumns; ++col){
+			uint key = row * currState.numColumns + col;
+			if (currState.graph[key].first == EMPTY){
+				emptyPos.push_back(currState.get_key(row, col));
 			}
-			else if((state.graph[key].first==BLACK and isMax) or
-				(state.graph[key].first == WHITE and !isMax)){
-				stonePos.push_back(state.get_key(row, col));
+			else if((currState.graph[key].first==BLACK and ptm==BLACK) or
+				(currState.graph[key].first == WHITE and ptm==WHITE)){
+				stonePos.push_back(currState.get_key(row, col));
 			}
-			else if (state.graph[key].first == NEUTRAL){
-				neutralPos.push_back(state.get_key(row, col));
+			else if (currState.graph[key].first == NEUTRAL){
+				neutralPos.push_back(currState.get_key(row, col));
 			}
 		}
 	}
@@ -58,11 +141,11 @@ void MCTNode::get_moves(State state, vector<string>& moves, bool isMax){
 			for (uint j = i+1; j < emptyPos.size(); ++j){
 				string key0 = myStone;
 				key0 += emptyPos[i] + "?" + emptyPos[j];
-				moves.push_back(key0);
+				untriedMoves.push_back(key0);
 
 				string key1 = "?";
 				key1 += emptyPos[i] + myStone  + emptyPos[j];
-				moves.push_back(key1);
+				untriedMoves.push_back(key1);
 			}
 		}
 	}
@@ -75,7 +158,7 @@ void MCTNode::get_moves(State state, vector<string>& moves, bool isMax){
 					string key = myStone;
 					key += neutralPos[i]+myStone+neutralPos[j];
 					key += "?" + stonePos[k];
-					moves.push_back(key);
+					untriedMoves.push_back(key);
 				}
 			}
 		}
