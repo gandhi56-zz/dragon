@@ -301,7 +301,7 @@ void Server::run(){
 				gameNotDone = receive_move();
 			}
 			else{
-				report_result(result);
+				report_result(gameNum, result);
 				break;
 			}
 		}
@@ -396,7 +396,7 @@ void Server::report_error(){
 }
 
 
-void Server::report_result(char result){
+void Server::report_result(int gameId, char result){
 	string win = "+";
 	string lose = "-";
 	
@@ -404,6 +404,7 @@ void Server::report_result(char result){
 		numBlackWin++;
 		cout << "*************************************************";
 		cout << endl;
+		cout << "Game #" << gameId << endl;
 		cout << "*\tB\tl\ta\tc\tk\t*" << endl;
 		cout << "*************************************************";
 		cout << endl;

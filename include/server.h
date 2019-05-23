@@ -68,7 +68,7 @@ class Server{
 		void import_settings();
 
 		bool receive_move();
-		void report_result(char result);
+		void report_result(int gameId, char result);
 		void report_error();
 
 	public:

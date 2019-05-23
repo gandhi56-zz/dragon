@@ -35,9 +35,9 @@ int main(int argc, char *argv[]){
 	player.set_state("?a1Ba3;Wa2?b1;Bb2?b3;Wc1?c2;");
 
 	MCTNode node("None", NULL, player.gameState, true);
-	for (auto move : node.untriedMoves){
-		cout << move << endl;
-	}
-
+	MCTNode* nodeptr = &node;
+	nodeptr->add_child("Ba1Bb1?a3");
+	cout << "child added" << endl;
+	nodeptr->childNodes[0]->state.show();
 	return 0;
 }
