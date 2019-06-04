@@ -36,8 +36,6 @@ int main(int argc, char *argv[]){
 
 	MCTNode node("None", NULL, player.gameState, true);
 	MCTNode* nodeptr = &node;
-	nodeptr->add_child("Ba1Bb1?a3");
-	cout << "child added" << endl;
-	nodeptr->childNodes[0]->state.show();
+	nodeptr->state.show();
 	return 0;
 }

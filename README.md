@@ -33,7 +33,7 @@ For example,
 ![3x3transform1](./images/3x3transform1.png)
 ![3x3transform2](./images/3x3transform2.png)
 
-*Fig.4: The state obtained after Black converts **?** at _a2_ and _c2_ to **B** and **B** at _a1_ to **?**.*
+*Fig.4: The state obtained after Black converts **?** at a2 and c2 to **B** and **B** at a1 to **?**.*
 
 #### Terminology
 
@@ -57,7 +57,13 @@ We define an _opening_, or an _opening move_, as the first move played on the in
 
 ### How to use NexC
 Follow the steps below to run the program:
-After cloning this repository,
+After cloning this repository, edit config.txt to configure:
+* size of the board
+* names of the two players
+* name of the generated log file
+* initial state of the board
+* player to move
+* number of games to simulate
 
 ```sh
 cd nexc
@@ -200,9 +206,16 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		
 		| Black      | White      | Games played | Black won | Draw | White won |
 		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
-		| Solver 2.0 | PseudoRand | 50           | 50        | 0    | 0         |
+		| Solver 2.0 | PseudoRand | 100          | 100       | 0    | 0         |
 		| PseudoRand | Solver 1.0 | 50           | 1         | 21   | 28        |
 		| PseudoRand | Solver 2.0 | 50           | 2         | 22   | 26        |
+		| Solver 1.0 | PseudoRand | 50           | 50        | 0    | 0         |
+	
+	* Analysis:
+		* PseudoRand vs Solver 2.0 (Game #33)
+			Black opens with **Ba3?b3**. (TBC)
+		* PsuedoRand vs Solver 2.0 (Game #47)
+			Black opens with **Ba3?c2**. (TBC)
 
 ### Interesting games to analyze
 ##### Solver 1.0 vs Solver 1.0 on 3x3 Nex
@@ -213,6 +226,8 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 ![](./images/solver1_solver1/0_3.png)
 ![](./images/solver1_solver1/0_4.png)
 ![](./images/solver1_solver1/0_5.png)
+
+
 
 ##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
 
@@ -225,6 +240,8 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 ![](./images/solver2_solver2/0_6.png)
 ![](./images/solver2_solver2/0_7.png)
 
+* Move 3, **Ba3?a2**, appears to be a powerful move. This pattern may be useful in developing heuristics for Solver 3.0.
+
 ##### Solver 2.0 vs Solver 1.0 on 3x3 Nex
 ![](./images/solver2_solver1/blank.png)
 ![](./images/solver2_solver1/1_0.png)
@@ -232,13 +249,6 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 ![](./images/solver2_solver1/1_2.png)
 ![](./images/solver2_solver1/1_3.png)
 ![](./images/solver2_solver1/1_4.png)
-
-![](./images/solver2_solver1/blank.png)
-![](./images/solver2_solver1/0_0.png)
-![](./images/solver2_solver1/0_1.png)
-![](./images/solver2_solver1/0_2.png)
-![](./images/solver2_solver1/0_3.png)
-![](./images/solver2_solver1/0_4.png)
 
 
 ##### Solver 2.0 vs PseudoRand on 3x3 Nex (Draw!)

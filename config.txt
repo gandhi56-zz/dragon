@@ -16,4 +16,4 @@ set-state=;
 turn=BLACK;
 
 #set the number of games to run
-num-games=50;
+num-games=1;
