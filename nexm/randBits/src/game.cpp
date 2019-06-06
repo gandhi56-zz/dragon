@@ -176,8 +176,6 @@ void State::update(string move){
 		}
 		j++;
 	}
-
-
 }
 
 void State::revert(string move, char stone){

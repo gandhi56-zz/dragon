@@ -3,14 +3,16 @@
 #define _SEARCH_
 
 #include "../include/game.h"
+#include <unordered_map>
+
+typedef unordered_map<string, double> umap;
 
 class MCTNode{
 public:
 	
 	string move;
 	MCTNode* parentNode;
-	vector<MCTNode*> childNodes;
-	vector<string> untriedMoves;
+	umap childValues;
 	State state;
 	int wins;
 	int visits;
@@ -18,16 +20,14 @@ public:
 	
 	MCTNode();
 	MCTNode(string _move, MCTNode* parentNode, State gameState, Valtype currPlayer);
-	//void UCT_select(vector<>);
-	void add_child(string move);
 	void update(int result);
 	void print();
 
+	void operator=(MCTNode node);
 	void expand_node();
 
-	void operator=(MCTNode node);
-
-	void uct_simulation(State gameState, int maxiter, Valtype currPlayer);
+	bool is_leaf();
+	bool has_parent();
 };
 
 #endif	//	_SEARCH_
