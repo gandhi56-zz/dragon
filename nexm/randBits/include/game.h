@@ -61,6 +61,9 @@ private:
 	uint get_col(string pos);
 	bool valid_pos(uint key);
 	bool valid_pos(uint row, uint col);
+
+protected:
+	// friend ostream& operator<<(std::ostream& strm, State& s)	override;
 };
 
 

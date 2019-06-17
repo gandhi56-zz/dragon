@@ -1,8 +1,6 @@
 #ifndef _PLAYER_
 #define _PLAYER_
 
-#include <iostream>
-#include <string>
 #include <stdio.h> 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -18,12 +16,12 @@
 #include <fcntl.h>
 #include <fstream>
 
-#include <vector>
-
 #include "../include/search.h"
-#include "../include/game.h"
+// #include <mcts.h>
 
 using namespace std;
+
+// typedef MCTS<State, string, NexExpansionStrategy, NexPlayoutStrategy> nex_mcts;
 
 struct ClientSocket{
 	int port;
@@ -33,7 +31,11 @@ struct ClientSocket{
 };
 
 class Player{
+	State* state;
+	// nex_mcts* mcts;
+};
 
+class Client{
 private:
 	ClientSocket _socket;
 	uint movesCount;
@@ -48,9 +50,9 @@ public:
 	char myStone;
 	State gameState;
 
-	Player();
-	Player(char* servIp, int port);
-	~Player();
+	Client();
+	Client(char* servIp, int port);
+	~Client();
 
 	void set_state(string moves);
 	void run(bool disp);

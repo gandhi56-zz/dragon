@@ -184,7 +184,7 @@ void State::update(string move){
 	uint i = 0;
 	uint j = 1;
 	while (j < move.length()){
-		if (move[j]==BLACK || move[j]==WHITE || move[j]==NEUTRAL){
+		if (move[j]==BLACK or move[j]==WHITE or move[j]==NEUTRAL){
 			string pos = move.substr(i+1, j-i-1);
 
 			if (graph[pos].value != EMPTY){

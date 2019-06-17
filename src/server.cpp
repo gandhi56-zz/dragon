@@ -113,7 +113,6 @@ void Server::setup_socket(){
     servAddr.sin_family = AF_INET;
     servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servAddr.sin_port = htons(port);
-	
 	cout << "Server socket has been set up." << endl;
 }
 
@@ -182,9 +181,7 @@ void Server::set_state(string moves){
 			break;
 		}
 	}
-
 	cout << "State initialized." << endl;
-
 }
 
 void Server::set_step(string value){
@@ -338,11 +335,10 @@ bool Server::receive_move(){
 	struct Player currPlayer = step%2 == 0? player1:player2;
 	send(currPlayer.socket, "Move?", string("Move?").length(), 0);
 	
+	memset(&msg, 0, sizeof(msg));
+
 	// start the decision time for player
 	auto start = high_resolution_clock::now();
-
-	//cout << "S>?" << endl;
-	memset(&msg, 0, sizeof(msg));
 	
 	// record time server takes to receive
 	// a response from 'currPlayer'

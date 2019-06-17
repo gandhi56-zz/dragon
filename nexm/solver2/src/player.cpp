@@ -48,7 +48,6 @@ void Player::attach_socket(char* servIp, int port){
 		cout << "Error connecting to _socket!" << endl;
 	}
 	cout << "Connected to the server!" << endl;
-	
 	socketConnected = true;
 }
 
@@ -302,8 +301,7 @@ void Player::run(bool disp){
 			
 			// read game settings
 			if (socketConnected){
-
-				//cout << "rec:" << _data << endl;
+				cout << "rec:" << _data << endl;
 				send(_socket.clientSd, "ok", strlen("ok"), 0);
 				
 				read_settings(_data, numRows, numColumns);
@@ -318,11 +316,11 @@ void Player::run(bool disp){
 					sizeof(_data));
 				set_state(string(_data));
 				send(_socket.clientSd, "ok", strlen("ok"), 0);
-				//gameState.show();
 			}
 		}
 
 		else{
+			send(_socket.clientSd, "exit", strlen("exit"), 0);
 			cout << "breaking" << endl;
 			break;
 		}

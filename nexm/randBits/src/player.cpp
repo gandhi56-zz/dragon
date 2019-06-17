@@ -2,13 +2,13 @@
 #include "../include/player.h"
 #include <algorithm>	// for random_shuffle
 
-Player::Player(){
+Client::Client(){
 	init_vars();
 }
 
-Player::Player(char* servIp, int port){
+Client::Client(char* servIp, int port){
 	/*
-	 * Constructor: initialize player sockets
+	 * Constructor: initialize Client sockets
 	 * and create a game instance once the
 	 * necessary game settings are read from
 	 * the connected server.
@@ -19,16 +19,16 @@ Player::Player(char* servIp, int port){
 
 }
 
-Player::~Player(){
+Client::~Client(){
 	if (socketConnected)	close(this->_socket.clientSd);
 }
 
-void Player::init_vars(){
+void Client::init_vars(){
 	movesCount = 0;
 	socketConnected = false;
 }
 
-void Player::attach_socket(char* servIp, int port){
+void Client::attach_socket(char* servIp, int port){
 	
 	// setup client-side socket
 	_socket.port = port;
@@ -52,7 +52,7 @@ void Player::attach_socket(char* servIp, int port){
 	socketConnected = true;
 }
 
-void Player::set_state(string moves){
+void Client::set_state(string moves){
     uint i = 0;
     uint j = 1;
 	if(moves == ";") return;
@@ -70,7 +70,7 @@ void Player::set_state(string moves){
     }
 }
 
-void Player::read_settings(char* buff, uint& rows, uint& cols){	
+void Client::read_settings(char* buff, uint& rows, uint& cols){	
 	string _buffer = string(buff);
 	uint i = 0;
 	while (_buffer[i] != 'r')	i++;
@@ -98,7 +98,7 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 
 
 // -------------------------------------------------------------------
-void Player::get_moves(State state, vector<string>& moves, bool isMax){
+void Client::get_moves(State state, vector<string>& moves, bool isMax){
 	string myStone = (isMax?"B":"W");
 
 	// store all cells where a stone may be placed
@@ -152,7 +152,7 @@ void Player::get_moves(State state, vector<string>& moves, bool isMax){
 	}
 }
 
-void Player::solve(State state, bool isMax, bool disp){
+void Client::solve(State state, bool isMax, bool disp){
 	int alpha = -100;
 	int beta = 100;
 	int value = negamax(state, 100, isMax, alpha, beta, disp);
@@ -161,7 +161,7 @@ void Player::solve(State state, bool isMax, bool disp){
 	cout << "value=" << value << endl;
 }
 
-int Player::evaluate(State state, bool isMax){
+int Client::evaluate(State state, bool isMax){
 	char gameStatus = state.status();
 	if (gameStatus == GAME_NOT_OVER)	return -100;
 	
@@ -173,7 +173,7 @@ int Player::evaluate(State state, bool isMax){
 	return value;
 }
 
-string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
+string Client::best_neg_move(State state, int depth, bool isMax, bool disp){
 	
 	if (disp)	state.show();
 
@@ -208,7 +208,7 @@ string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
 
 }
 
-int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp){
+int Client::negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp){
 	
 	if (disp)	state.show();
 
@@ -239,7 +239,7 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, boo
 }
 
 // -------------------------------------------------------------------
-void Player::run(bool disp){
+void Client::run(bool disp){
 	/*
 		Run game over server.
 	*/

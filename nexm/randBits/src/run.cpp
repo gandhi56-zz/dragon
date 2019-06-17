@@ -1,29 +1,78 @@
-#include "../include/player.h"
 
-MCTNode tree_policy(MCTNode node){
-	string bestMove;
-	double bestValue = 0.0;
-	for (string move : node.moves){
-		State tmpState = node.state;
-	}
-}
+#include <stdio.h> 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/uio.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <fstream>
 
-void mcts(State state){
-	MCTNode root("None", NULL, state, true);
-	MCTNode node;
-	State currState;
+#include "../include/search.h"
+// #include <mcts.h>
 
-	while (1){
+using namespace std;
 
-		node = root;
-		currState = state;
-		while (!node.is_leaf()){
-			node = tree_policy(node);
-			currState.update(node.move);
-		}
+struct ClientSocket{
+	int port;
+	struct hostent* host;
+	sockaddr_in sendSockAddr;
+	int clientSd;
+};
 
-	}
-}
+class Player{
+	State* state;
+	// nex_mcts* mcts;
+};
+
+class Client{
+private:
+	ClientSocket _socket;
+	uint movesCount;
+	bool socketConnected;
+
+	void init_vars();
+	void attach_socket(char* servIp, int port);
+	void read_settings(char* buff, uint& rows, uint& cols);
+	void connect_server();
+	
+public:
+	char myStone;
+	State gameState;
+
+	Client();
+	Client(char* servIp, int port);
+	~Client();
+
+	void set_state(string moves);
+	void run(bool disp);
+	void solve(State state, bool isMax, bool disp);
+	
+	void get_moves(State state, vector<string>& moves, bool isMax);
+	
+	// negamax
+	int evaluate(State state, bool isMax);
+	string best_neg_move(State state, int depth, bool isMax, bool disp);
+	int negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp);
+};
+
+
+/*
+TODO: to be implemented:
+	- ExpansionStrategy
+	- PlayoutStrategy
+	- Scoring
+	- Backpropagation
+	- TerminationCheck
+*/
+
+
 
 int main(int argc, char *argv[]){
 
@@ -53,15 +102,12 @@ int main(int argc, char *argv[]){
 */
 
 	cout << "Hello, Random Bits." << endl;
-	Player player;
+	Client player;
 	player.gameState.set_size(3, 3);
 	player.gameState.create_graph();
 	player.set_state("?a1Ba3;Wa2?b1;Bb2?b3;Wc1?c2;");
 
-	State state = player.gameState;
-	state.update("Ba1Bb?a3");
-	player.gameState.show();
-	state.show();
+
 
 	return 0;
 }

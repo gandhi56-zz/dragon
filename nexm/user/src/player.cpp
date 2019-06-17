@@ -184,6 +184,7 @@ void Player::run(bool disp){
 		}
 
 		else{
+			send(_socket.clientSd, "exit", strlen("exit"), 0);
 			cout << "breaking" << endl;
 			break;
 		}
