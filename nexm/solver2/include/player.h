@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <stdio.h> 
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
@@ -20,7 +20,7 @@
 
 #include <vector>
 
-#include "../include/game.h"
+#include "../include/board.h"
 
 #define DEPTH_LIMIT 100
 
@@ -37,14 +37,14 @@ class Player{
 
 private:
 	ClientSocket _socket;
-	uint movesCount;
+	uint16_t movesCount;
 	bool socketConnected;
 
 	void init_vars();
-	void attach_socket(char* servIp, int port);
-	void read_settings(char* buff, uint& rows, uint& cols);
+	void attach_socket(char* servIp, int port);```
+	void read_settings(char* buff, uint16_t& rows, uint16_t& cols);
 	void connect_server();
-	
+
 public:
 	char myStone;
 	State gameState;
@@ -56,12 +56,12 @@ public:
 	void set_state(string moves);
 	void run(bool disp);
 	void solve(State state, bool isMax, bool disp);
-	
+
 	vector<string> get_moves(State state, bool isMax);
-	
+
 	// negamax
 	int evaluate(State state, bool isMax);
-	string best_neg_move(State state, int depth, bool isMax, bool disp);
+	string best_move(State state, int depth, bool isMax, bool disp);
 	int negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp);
 };
 

@@ -13,7 +13,7 @@ Player::Player(char* servIp, int port){
 	 * necessary game settings are read from
 	 * the connected server.
 	 */
-	
+
 	init_vars();
 	attach_socket(servIp, port);
 }
@@ -33,16 +33,16 @@ void Player::attach_socket(char* servIp, int port){
 	_socket.port = port;
 	_socket.host = gethostbyname(servIp);
 	_socket.clientSd = socket(AF_INET, SOCK_STREAM, 0);
-	bzero((char*)&_socket.sendSockAddr, 
+	bzero((char*)&_socket.sendSockAddr,
 		sizeof(_socket.sendSockAddr));
 	_socket.sendSockAddr.sin_family = AF_INET;
-	_socket.sendSockAddr.sin_addr.s_addr = 
+	_socket.sendSockAddr.sin_addr.s_addr =
 		inet_addr(servIp);
 
 	// connect to port
 	_socket.sendSockAddr.sin_port = htons(port);
-	int status = connect(_socket.clientSd, 
-		(sockaddr*)&_socket.sendSockAddr, 
+	int status = connect(_socket.clientSd,
+		(sockaddr*)&_socket.sendSockAddr,
 		sizeof(_socket.sendSockAddr));
 	if (status < 0){
 		cout << "Error connecting to _socket!" << endl;
@@ -52,8 +52,8 @@ void Player::attach_socket(char* servIp, int port){
 }
 
 void Player::set_state(string moves){
-    uint i = 0;
-    uint j = 1;
+    uint16_t i = 0;
+    uint16_t j = 1;
 	if(moves == ";") return;
     while (i < moves.length()){
         if (moves[i]=='B'||moves[i]=='W'||moves[i]=='?'){
@@ -69,9 +69,9 @@ void Player::set_state(string moves){
     }
 }
 
-void Player::read_settings(char* buff, uint& rows, uint& cols){	
+void Player::read_settings(char* buff, uint16_t& rows, uint16_t& cols){
 	string _buffer = string(buff);
-	uint i = 0;
+	uint16_t i = 0;
 	while (_buffer[i] != 'r')	i++;
 	i++;
 	if (_buffer[i+1] == '-'){
@@ -94,9 +94,7 @@ void Player::read_settings(char* buff, uint& rows, uint& cols){
 	myStone = _buffer[_buffer.length() - 2];
 }
 
-
-
-// -------------------------------------------------------------------
+// #############################################################################
 vector<string> Player::get_moves(State state, bool isMax){
 	string myStone = (isMax?"B":"W");
 
@@ -104,9 +102,9 @@ vector<string> Player::get_moves(State state, bool isMax){
 	vector<string> emptyPos;
 	vector<string> stonePos;
 	vector<string> neutralPos;
-	for (uint row = 0; row < state.numRows; ++row){
-		for (uint col = 0; col < state.numColumns; ++col){
-			uint key = row * state.numColumns + col;
+	for (uint16_t row = 0; row < state.numRows; ++row){
+		for (uint16_t col = 0; col < state.numColumns; ++col){
+			uint16_t key = row * state.numColumns + col;
 			if (state.graph[key].first == EMPTY){
 				emptyPos.push_back(state.get_key(row, col));
 			}
@@ -123,9 +121,9 @@ vector<string> Player::get_moves(State state, bool isMax){
 	vector<string> moves;
 
 	if (emptyPos.size() >= 2){
-	
-		for (uint i = 0; i < emptyPos.size(); ++i){
-			for (uint j = i+1; j < emptyPos.size(); ++j){
+
+		for (uint16_t i = 0; i < emptyPos.size(); ++i){
+			for (uint16_t j = i+1; j < emptyPos.size(); ++j){
 				string key0 = myStone;
 				key0 += emptyPos[i] + "?" + emptyPos[j];
 				moves.push_back(key0);
@@ -138,10 +136,10 @@ vector<string> Player::get_moves(State state, bool isMax){
 	}
 
 	if (neutralPos.size() >= 2 && stonePos.size() >= 1){
-				
-		for (uint i = 0; i < neutralPos.size(); ++i){
-			for (uint j = i + 1; j < neutralPos.size(); ++j){
-				for (uint k = 0; k < stonePos.size(); ++k){
+
+		for (uint16_t i = 0; i < neutralPos.size(); ++i){
+			for (uint16_t j = i + 1; j < neutralPos.size(); ++j){
+				for (uint16_t k = 0; k < stonePos.size(); ++k){
 					string key = myStone;
 					key += neutralPos[i]+myStone+neutralPos[j];
 					key += "?" + stonePos[k];
@@ -175,7 +173,7 @@ int Player::evaluate(State state, bool isMax){
 	return value;
 }
 
-string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
+string Player::best_move(State state, int depth, bool isMax, bool disp){
 	if (disp)	state.show();
 	char play0 = (char)(isMax?'B':'W');	// player to move
 	vector<string> moves = get_moves(state, isMax);
@@ -191,11 +189,11 @@ string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
 	// for each move
 	for (string move : moves){
 		if (disp)	cout << "playing " << move << endl;
-		
+
 		// compute negamax value for the updated move
 		state.update(move);
 		int negVal =-negamax(state,depth-1,!isMax,-beta,-alpha,disp);
-		
+
 		// update best move
 		if (negVal > value){
 			value = negVal;
@@ -214,27 +212,23 @@ string Player::best_neg_move(State state, int depth, bool isMax, bool disp){
 }
 
 int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, bool disp){
-	if (disp)	state.show();
-	if (!depth)		return 0;	// return 0 if depth limit reached
-
+	if (disp)	state.show();			// print board
+	if (!depth)		return 0;			// return 0 if depth limit reached
 	char play0 = (char)(isMax?'B':'W');	// player to move
+
 	int value = evaluate(state, isMax);
 
 	// return value if game over
 	if (value != -100 or !depth)	return value;
-
 	vector<string> moves = get_moves(state, isMax);
 	if (moves.size() == 0){
 		return 0;	// return DRAW
 	}
-
 	value = -100;
-
-	// for each move
 	for (string move : moves){
 		if (disp)	cout << "playing " << move << endl;
 		state.update(move);
-		value = max(value, -negamax(state, depth-1, !isMax, 
+		value = max(value, -negamax(state, depth-1, !isMax,
 			-beta, -alpha, disp));
 		alpha = max(alpha, value);
 		if (alpha >= beta)	break;	// alpha-beta cutoff
@@ -243,19 +237,19 @@ int Player::negamax(State state, int depth, bool isMax, int alpha, int beta, boo
 	return value;
 }
 
-// -------------------------------------------------------------------
+// #############################################################################
 void Player::run(bool disp){
 	/*
 		Run game over server.
 	*/
 
-	uint numRows;
-	uint numColumns;	
+	uint16_t numRows;
+	uint16_t numColumns;
 	string data;
 	char _data[40];
 	while (1){
 		memset(_data, 0, sizeof(_data));
-		read(this->_socket.clientSd, 
+		read(this->_socket.clientSd,
 			(char*)&_data, sizeof(_data));
 		//cout << "rec:" << _data << endl;
 
@@ -266,11 +260,11 @@ void Player::run(bool disp){
 
 			// send move here
 			//data =best_move(gameState, myStone, 0);
-			data = best_neg_move(gameState, DEPTH_LIMIT, 
+			data = best_move(gameState, DEPTH_LIMIT,
 				myStone == 'B', disp);
 
 			//cout << "sending " << data.c_str() << endl;
-			send(this->_socket.clientSd, data.c_str(), 
+			send(this->_socket.clientSd, data.c_str(),
 				strlen(data.c_str()), 0);
 		}
 		else if (!strcmp(_data, "+")){
@@ -288,7 +282,7 @@ void Player::run(bool disp){
 			string move = data.substr(1, data.length() - 1);
 			gameState.update(move);
 			movesCount++;
-			send(this->_socket.clientSd, "ok", 
+			send(this->_socket.clientSd, "ok",
 				strlen("ok"), 0);
 			continue;
 		}
@@ -298,21 +292,21 @@ void Player::run(bool disp){
 			break;
 		}
 		else if (_data[0] == 'r'){
-			
+
 			// read game settings
 			if (socketConnected){
 				cout << "rec:" << _data << endl;
 				send(_socket.clientSd, "ok", strlen("ok"), 0);
-				
+
 				read_settings(_data, numRows, numColumns);
-				
+
 				// create state instance
 				gameState.set_size(numRows, numColumns);
 				gameState.create_graph();
 
 				// set initial position of gameState
 				memset(&_data, 0, sizeof(_data));
-				read(_socket.clientSd, (char *)&_data, 
+				read(_socket.clientSd, (char *)&_data,
 					sizeof(_data));
 				set_state(string(_data));
 				send(_socket.clientSd, "ok", strlen("ok"), 0);
@@ -327,4 +321,3 @@ void Player::run(bool disp){
 
 	}
 }
-
