@@ -6,7 +6,7 @@ NexC is a command-line interface for the playing, simulating and analyzing the g
 ### Game description
 Nex is a connection game played between two players, namely Black and White. This game is a variation of the game of Hex (https://en.wikipedia.org/wiki/Hex_(board_game)). Fig.0 presents a 9 x 9 board upon which this game is played, produced by NexC:
 
-![9x9Nex](./NexC_server/images/9x9nex.png)
+![9x9Nex](NexC_server/images/9x9nex.png)
 
 *Fig.0: Initial configuration of the 9 x 9 Nex board.*
 
@@ -22,7 +22,7 @@ For example,
 ![3x3genmove](./NexC_server/images/3x3genmove.png)
 
 
-*Fig.1 shows the state obtained after Black places a black stone in cell a1 and a neutral stone in cell c2.*
+*Fig.1 shows the state obtained after Black places a black stone in cell 1 and a neutral stone in cell c2.*
 
 Alternatively, if a state contains at least two neutral stones, the player may choose to play the following move, called the _transform_ move:
 
