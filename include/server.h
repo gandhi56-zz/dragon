@@ -58,9 +58,6 @@ class Server{
 		ofstream logFile;
 
    		void init_mem();
-   		void setup_socket();
-    	void create_socket();
-    	void bind_socket();
     	void receive_ack(int& sock);
 		void create_log();
 		void set_state(string moves);

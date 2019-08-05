@@ -63,19 +63,8 @@ Server::Server(){
 		Create a game if no error is encountered.
 	*/
 
-    init_mem();
-    create_socket();
-    setup_socket();
-    bind_socket();
-
-	cout << "Port = " << port << endl;
-	cout << "Waiting for players to connect..." << endl;
-	receive_ack(player1.socket);
 	player1.stone = BLACK;
-    cout << "Connected with player 1!" << endl;
-	receive_ack(player2.socket);
 	player2.stone = WHITE;
-    cout << "Connected with player 2!" << endl;
 
 	configObj.read();
 	import_settings();
@@ -97,7 +86,7 @@ Server::~Server(){
 
 void Server::init_mem(){
 	step = 0;
-    port = 21299;
+    //port = 21299;
 	numRows = 3;
 	numColumns = 3;
 
@@ -106,44 +95,6 @@ void Server::init_mem(){
 	numBlackWin = 0;
 	numWhiteWin = 0;
 	numDraw = 0;
-}
-
-void Server::setup_socket(){
-	bzero((char*)&servAddr, sizeof(servAddr));
-    servAddr.sin_family = AF_INET;
-    servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servAddr.sin_port = htons(port);
-	cout << "Server socket has been set up." << endl;
-}
-
-void Server::create_socket(){ 
-    serverSd = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSd < 0){
-        cerr << "Error establishing the server socket";
-        cerr << endl;
-        exit(0);
-    }
-	int opt=1;	
-	setsockopt(serverSd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT , 
-		&opt, sizeof(opt));
-	cout << "Server socket has been created." << endl;
-}
-
-void Server::bind_socket(){
-	int bindStatus = bind(serverSd, 
-    	(struct sockaddr*) &servAddr, sizeof(servAddr));
-    if (bindStatus < 0){
-        cerr << "Error binding socket to local";
-        cerr << " address" << endl;
-        exit(0);
-    }
-
-	cout << "Server socket binds successfully." << endl;
-	//listen to maximum 2 players at a time;
-	if(listen(serverSd, 2) < 0){
-		cerr << "No connection received" << endl;
-		exit(1);
-	}
 }
 
 void Server::receive_ack(int& sock){
