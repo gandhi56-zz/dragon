@@ -73,15 +73,15 @@ under construction...
 * The opening **Ba1?a2** and **Bb2?b1** are the winning openings in
 	2x2 Nex. Every other opening concludes in a draw.
 
-![](./images/2x2_0.png)
-![](./images/2x2_1.png)
-![](./images/2x2_2_1.png)
-![](./images/2x2_2_12.png)
+![](NexC_server/images/2x2_0.png)
+![](NexC_server/images/2x2_1.png)
+![](NexC_server/images/2x2_2_1.png)
+![](NexC_server/images/2x2_2_12.png)
 
 Alternatively, if White responds by **Wb2?b1** to **Ba1?a2**,
 
-![](./images/2x2_2_0.png)
-![](./images/2x2_2_2.png)
+![](NexC_server/images/2x2_2_0.png)
+![](NexC_server/images/2x2_2_2.png)
 
 Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b1** can also be proved to be a winning opening.
 
@@ -157,7 +157,7 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 
 ##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
 
-![](./NexC_server/images/solver2_solver2/blank.png)
+![](./NexC_server/imagesy/solver2_solver2/blank.png)
 ![](./NexC_server/images/solver2_solver2/0_1.png)
 ![](./NexC_server/images/solver2_solver2/0_2.png)
 ![](./NexC_server/images/solver2_solver2/0_3.png)
