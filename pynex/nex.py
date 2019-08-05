@@ -9,12 +9,15 @@ DRAW = 2
 NOT_DONE = 3
 
 class Nex( TwoPlayersGame ):
-	def __init__(self, players):
+	def __init__(self, players, startPos=None):
 		self.players = players
 		self.nplayer = 1 # player 1 starts.
 		self.board = { chr(j+ord('a')) : {str(i+1) : '.' for i in range(ncols)} for j in range(nrows)}
 		self.count = {'B':0, 'W':0, '?':0}
 		self.status = NOT_DONE
+
+		if startPos is not None:
+			self.make_move(startPos)
 
 	def possible_moves(self):
 		emptyPos = list()
@@ -243,11 +246,12 @@ class Nex( TwoPlayersGame ):
 
 if __name__ == "__main__":
 	
-	from easyAI import AI_Player, Negamax, DUAL, TT
+	from easyAI import AI_Player, Negamax, DUAL, SSS, TT
 	from easyAI.Player import Human_Player
 	import cProfile
-	ai_algo = DUAL(100, None, tt=TT())
-	nex = Nex( [AI_Player(ai_algo), AI_Player(ai_algo)])
+	player1 = Human_Player()
+	player2 = AI_Player(SSS(100, tt=TT()))
+	nex = Nex( [player1, player2], 'Bb2?c3Wc2?b3Ba1?a2Wd4?d3')
 
 	cProfile.run('nex.play(100)')
 
