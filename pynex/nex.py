@@ -1,8 +1,12 @@
 from easyAI import TwoPlayersGame
-from easyAI.Player import Human_Player
 
-nrows = 3
-ncols = 3
+nrows = 4
+ncols = 4
+
+BLACK_WON = 0
+WHITE_WON = 1
+DRAW = 2
+NOT_DONE = 3
 
 class Nex( TwoPlayersGame ):
 	def __init__(self, players):
@@ -10,14 +14,18 @@ class Nex( TwoPlayersGame ):
 		self.nplayer = 1 # player 1 starts.
 		self.board = { chr(j+ord('a')) : {str(i+1) : '.' for i in range(ncols)} for j in range(nrows)}
 		self.count = {'B':0, 'W':0, '?':0}
+		self.status = NOT_DONE
 
 	def possible_moves(self):
 		emptyPos = list()
 		stonePos = list()
 		neutralPos = list()
 		stone = 'B'
-		if self.nplayer == 2:
+		if self.nplayer == 1:
+			stone = 'B'
+		else:
 			stone = 'W'
+
 		for r in self.board.keys():
 			for c in self.board[r].keys():
 				if self.board[r][c] == '.':
@@ -41,12 +49,12 @@ class Nex( TwoPlayersGame ):
 		return moves
 
 
-	def make_move(self, move):
-
+	def make_move(self, move, used_by_undo = False):
 		def submove(board, count, m):
 			stone, row, col = m[0], m[1], m[2:]
-			board[row][str(int(col))] = stone
-			count[stone] += 1
+			board[row][col] = stone
+			if not used_by_undo:
+				count[stone] += 1
 
 		i = 0
 		j = 1
@@ -56,19 +64,56 @@ class Nex( TwoPlayersGame ):
 				i = j
 			j += 1
 		submove(self.board, self.count, move[i:j])
-		#self.nplayer = 1 if self.nplayer == 2 else 2
-
-	def unmake_move(self, move): # optional method (speeds up the AI)
-		#self.board[int(move)-1] = 0
-		pass
 	
+	def unmake_move(self, move):
+		playerStone = 'B'
+		if move.count('B') == 0:
+			playerStone = 'W'
+		def undo_genmove(board, count, m):
+			stone, row, col = m[0], m[1], m[2:]
+			board[row][col] = '.'
+			count[stone] -= 1
+		
+		def undo_transform_move(board, count, m):
+			stone, row, col = m[0], m[1], m[2:]
+			if stone == '?':
+				board[row][col] = playerStone
+				count[stone] += 1
+				count['?'] -= 1
+			else:
+				board[row][col] = '?'
+				count[stone] -= 1
+				count['?'] += 1
+		moveType = 'transform'
+		if move.count(playerStone) == 1:
+			moveType = 'generate'
+		i = 0
+		j = 1
+		while j < len(move):
+			if move[j] == playerStone or move[j] == '?':
+				if moveType == 'generate':
+					undo_genmove(self.board, self.count, move[i:j])
+				else:
+					undo_transform_move(self.board, self.count, move[i:j])
+				i = j
+			j += 1
+		
+		if moveType == 'generate':
+			undo_genmove(self.board, self.count, move[i:j])
+		else:
+			undo_transform_move(self.board, self.count, move[i:j])
+
 	def lose(self):
-		pass
+		return ((self.nplayer == 1 and self.status == WHITE_WON) or 
+				(self.nplayer == 2 and self.status == BLACK_WON))
 
 	def is_over(self):
+		self.status = DRAW
 		if self.connected(('B','0'), ('B','1')):
+			self.status = BLACK_WON
 			return True
 		elif self.connected(('W','0'), ('W','1')):
+			self.status = WHITE_WON
 			return True
 		emptyCells = (nrows*ncols) - self.count['B'] - self.count['W'] - self.count['?']
 		if emptyCells <= 1:
@@ -76,10 +121,11 @@ class Nex( TwoPlayersGame ):
 				return True
 		if len(self.possible_moves()) == 0:
 			return True
+		self.status = NOT_DONE
 		return False
 
 	def show(self):
-		print()
+		print('nplayer = ', self.nplayer)
 		print('  ', end='')
 		for c in range(1, ncols+1):
 			if c < 10:
@@ -104,14 +150,7 @@ class Nex( TwoPlayersGame ):
 				print('  {}'.format(c), end='')
 			else:
 				print(' {}'.format(c), end='')
-		'''		
-		for c in range(1, ncols+1):
-			if c < 10:
-				print('  ', end='')
-			else:
-				print(' ', end='')
-		'''
-		print()
+		print('\n')
 
 	def scoring(self):
 		return -100 if self.lose() else 0
@@ -192,14 +231,24 @@ class Nex( TwoPlayersGame ):
 						visited[adj] = True
 		return isConnected
 
+	def ttentry(self):
+
+		# TODO use polynomial hashing to store the game state as key
+
+		state = ''
+		for r in self.board.keys():
+			for c in self.board[r].keys():
+				state += self.board[r][c]
+		return state
+
 if __name__ == "__main__":
 	
-	from easyAI import AI_Player, Negamax
-	ai_algo = Negamax(100)
-	nex = Nex( [Human_Player(), AI_Player(ai_algo)])
+	from easyAI import AI_Player, Negamax, DUAL, TT
+	from easyAI.Player import Human_Player
+	import cProfile
+	ai_algo = DUAL(100, None, tt=TT())
+	nex = Nex( [AI_Player(ai_algo), AI_Player(ai_algo)])
 
-	nex.show()
-	nex.make_move('Ba1?a2')
-	nex.show()
-	nex.make_move('Wc2?c1')
-	nex.show()
+	cProfile.run('nex.play(100)')
+
+
