@@ -1,9 +1,0 @@
-Black:pseudoRand
-White:solver1.0
-#games:1;
-
-Game#1
-Board:r3-c3
-Init_State:;
-Bb2?c3;Wa3?b3;Ba2?c1;Wc2?b1;Bb1Bc1?b2;B
-
