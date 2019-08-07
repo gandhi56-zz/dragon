@@ -99,6 +99,10 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 	* Random shuffles the moves before move selection
 	* State representation using a bitboard, where each cell is represented using 2 bits
 	* Intractable for boards bigger than 3x3
+* Solver 2.1
+	* Implements Alpha-beta Negamax search with a transposition table using easyAI
+* mcts
+	* Implements Monte Carlo Tree Search with UCB
 * Solver 3.0 (Coming soon...)
 * Random Bits (Coming soon...)
 	* state representation as in Solver 2.0
