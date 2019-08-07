@@ -1,4 +1,7 @@
 from easyAI import TwoPlayersGame
+from copy import deepcopy
+import random
+from math import sqrt, log
 
 nrows = 3
 ncols = 3
@@ -18,6 +21,9 @@ class Nex( TwoPlayersGame ):
 
 		if startPos is not None:
 			self.make_move(startPos)
+
+	def clone(self):
+		return deepcopy(self)
 
 	def possible_moves(self):
 		emptyPos = list()
@@ -244,15 +250,133 @@ class Nex( TwoPlayersGame ):
 				state += self.board[r][c]
 		return state
 
-if __name__ == "__main__":
+class MCTNode:
+	def __init__(self, move = None, parent = None, state = None):
+		self.move = move
+		self.parentNode = parent
+		self.childNodes = []
+		self.wins, self.visits = 0, 0
+		self.untriedMoves = state.possible_moves()
+		self.playerJustMoved = state.nplayer
+
+	def select_child(self):
+		return sorted(self.childNodes, key=lambda c : c.wins/c.visits + sqrt(2*log(self.visits)/c.visits))[-1]
+
+	def add_child(self, m, s):
+		node = MCTNode(move=m, parent=self, state=s)
+		self.untriedMoves.remove(m)
+		self.childNodes.append(node)
+		return node
+
+	def update(self, result):
+		self.visits += 1
+		self.wins += result
+
+def mcts(rootState, itermax, verbose=False):
+	if verbose:
+		print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+	rootNode = MCTNode(state = rootState)
+	for i in range(itermax):
+		node = rootNode
+		state = rootState.clone()
+
+		# selection
+		if verbose:
+			print('selection')
+		while len(node.untriedMoves) == 0 and len(node.childNodes) > 0:
+			node = node.select_child()
+			if verbose:
+				print('--', node.move)
+			state.make_move(node.move)
+			if state.is_over():
+				break
+		if verbose:
+			print()
+
+		# expansion
+		if verbose:
+			print('expansion')
+		if len(node.untriedMoves) > 0:
+			move = random.choice(node.untriedMoves)
+			state.make_move(move)
+			if verbose:
+				print('--', move)
+			node = node.add_child(move, state)
+		if verbose:
+			print()
+
+		# simulation
+		if verbose:
+			print('simulation')
+		while not state.is_over():
+			state.make_move(random.choice(state.possible_moves()))
+
+		result = 1
+		if (state.status == BLACK_WON and state.nplayer == 2) or (state.status == WHITE_WON and state.nplayer == 1):
+			result = -1
+		elif state.status == DRAW:
+			result = 0
+
+		if verbose:
+			print('result =', result)
+		if verbose:
+			print()
+		# backpropagation
+		if verbose:
+			print('simulation')
+		while node != None:
+			node.update(result)	# TODO
+			result *= -1
+			node = node.parentNode
 	
+	if verbose:
+		print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+
+	return sorted(rootNode.childNodes, key=lambda c : c.visits)[-1].move
+
+if __name__ == "__main__":
 	from easyAI import AI_Player, Negamax, DUAL, SSS, TT
 	from easyAI.Player import Human_Player
 	import cProfile
 	player2 = Human_Player()
 	player1 = AI_Player(SSS(100, tt=TT()))
-	nex = Nex( [player1, player2])
+	#cProfile.run('nex.play(100)')
 
-	cProfile.run('nex.play(100)')
+	black = 0
+	white = 0
+	draw = 0
 
+	for gameNum in range(5):
+		nex = Nex( [player1, player2])
+		while not nex.is_over():
+			#nex.show()
+
+			if nex.nplayer == 1:
+				move = mcts(nex, 1000)
+			elif nex.nplayer == 2:
+				#move = input('Move:').strip()
+				move = player1.ask_move(nex)
+				#move = random.choice(nex.possible_moves())
+			#print('playing', move)
+
+			nex.make_move(move)
+			nex.nplayer = 1 if nex.nplayer == 2 else 2
+
+		print('Game terminated.')
+
+		print(gameNum)
+		#nex.show()
+		if nex.status == BLACK_WON:
+			print('Black won!')
+			black += 1
+		elif nex.status == WHITE_WON:
+			print('White won!')
+			white += 1
+		else:
+			print('Draw!')
+			draw += 1
+
+	print(black)
+	print(white)
+	print(draw)
 

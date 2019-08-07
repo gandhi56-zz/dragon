@@ -104,7 +104,7 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 	* state representation as in Solver 2.0
 
 ### Nex tournaments
-* **December 2**
+* **December 2, 2018**
 	* Game settings:
 		* Board size : 3 x 3
 		* Time Control : None
@@ -122,26 +122,44 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		| PseudoRand | Solver 2.0 | 5            | 0         | 2    | 3         |
 
 
-* **May 23**
-	* Game settings:
-		* Board size : 3 x 3
-		* Time Control : None
-		* Handicap : None
+* **May 23, 2018**
+	* game settings:
+		* board size : 3 x 3
+		* time control : none
+		* handicap : none
 
-	* Results:
+	* results:
 		
-		| Black      | White      | Games played | Black won | Draw | White won |
+		| black      | white      | games played | black won | draw | white won |
 		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
-		| Solver 2.0 | PseudoRand | 100          | 100       | 0    | 0         |
-		| PseudoRand | Solver 1.0 | 50           | 1         | 21   | 28        |
-		| PseudoRand | Solver 2.0 | 50           | 2         | 22   | 26        |
-		| Solver 1.0 | PseudoRand | 50           | 50        | 0    | 0         |
+		| solver 2.0 | pseudorand | 100          | 100       | 0    | 0         |
+		| pseudorand | solver 1.0 | 50           | 1         | 21   | 28        |
+		| pseudorand | solver 2.0 | 50           | 2         | 22   | 26        |
+		| solver 1.0 | pseudorand | 50           | 50        | 0    | 0         |
 	
 	* Analysis:
 		* PseudoRand vs Solver 2.0 (Game #33)
 			Black opens with **Ba3?b3**. (TBC)
 		* PsuedoRand vs Solver 2.0 (Game #47)
 			Black opens with **Ba3?c2**. (TBC)
+
+* **August 6, 2019**
+	* game settings:
+		* board size 	: 3 x 3
+		* time control 	: none
+		* handicap 		: none
+
+	* player settings:
+		* mcts
+			* 1000 simulations per call
+
+	* results:
+		
+		| black      | white      | games played | black won | draw | white won |
+		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
+		| mcts		 | pseudorand | 50 	         | 40		 | 9    | 1         |
+		| mcts		 | solver 2.1 | 5            | 0         | 2	| 3	        |
+
 
 ### Interesting games to analyze
 ##### Solver 1.0 vs Solver 1.0 on 3x3 Nex
