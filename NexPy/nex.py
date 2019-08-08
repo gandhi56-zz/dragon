@@ -57,6 +57,9 @@ class Nex( TwoPlayersGame ):
 						moves.append(stone+neutralPos[i]+stone+neutralPos[j]+'?'+stonePos[k])
 		return moves
 
+	def do_move(self, move, used_by_undo = False):
+		self.make_move(move, used_by_undo)
+		self.nplayer = 3 - self.nplayer
 
 	def make_move(self, move, used_by_undo = False):
 		def submove(board, count, m):
@@ -241,14 +244,14 @@ class Nex( TwoPlayersGame ):
 		return isConnected
 
 	def ttentry(self):
-
-		# TODO use polynomial hashing to store the game state as key
-
 		state = ''
 		for r in self.board.keys():
 			for c in self.board[r].keys():
 				state += self.board[r][c]
 		return state
+
+	def get_result(self, playerJustMoved):
+		return 1.0 if self.nplayer == playerJustMoved else 0.0
 
 class MCTNode:
 	def __init__(self, move = None, parent = None, state = None):
@@ -257,13 +260,13 @@ class MCTNode:
 		self.childNodes = []
 		self.wins, self.visits = 0, 0
 		self.untriedMoves = state.possible_moves()
-		self.playerJustMoved = state.nplayer
+		self.playerJustMoved = 2 if state is None else state.nplayer
 
 	def select_child(self):
-		return sorted(self.childNodes, key=lambda c : c.wins/c.visits + sqrt(2*log(self.visits)/c.visits))[-1]
+		return sorted(self.childNodes, key=lambda c : c.wins/c.visits+sqrt(2*log(self.visits)/c.visits))[-1]
 
 	def add_child(self, m, s):
-		node = MCTNode(move=m, parent=self, state=s)
+		node = MCTNode(m, self, s)
 		self.untriedMoves.remove(m)
 		self.childNodes.append(node)
 		return node
@@ -287,35 +290,33 @@ def mcts(rootState, itermax, verbose=False):
 			node = node.select_child()
 			if verbose:
 				print('--', node.move)
-			state.make_move(node.move)
+			state.do_move(node.move)
 			if state.is_over():
 				break
-		if verbose:
-			print()
 
 		# expansion
 		if verbose:
-			print('expansion')
+			print('\nexpansion')
 		if len(node.untriedMoves) > 0:
 			move = random.choice(node.untriedMoves)
-			state.make_move(move)
+			state.do_move(move)
 			if verbose:
 				print('--', move)
 			node = node.add_child(move, state)
-		if verbose:
-			print()
 
 		# simulation
 		if verbose:
-			print('simulation')
+			print('\nsimulation')
 		while not state.is_over():
-			state.make_move(random.choice(state.possible_moves()))
+			state.do_move(random.choice(state.possible_moves()))
 
-		result = 1
-		if (state.status == BLACK_WON and state.nplayer == 2) or (state.status == WHITE_WON and state.nplayer == 1):
-			result = -1
-		elif state.status == DRAW:
-			result = 0
+		result = ''
+		if state.status == BLACK_WON:
+			result = 'black'
+		elif state.status == WHITE_WON:
+			result = 'white'
+		else:
+			result = 'draw'
 
 		if verbose:
 			print('result =', result)
@@ -325,8 +326,13 @@ def mcts(rootState, itermax, verbose=False):
 		if verbose:
 			print('simulation')
 		while node != None:
-			node.update(result)	# TODO
-			result *= -1
+			'''
+			if (result == 'black' and node.playerJustMoved == 2) or (result == 'white' and node.playerJustMoved == 1):
+				node.update(1)
+			else:
+				node.update(0)
+			'''
+			node.update(state.get_result(node.playerJustMoved))
 			node = node.parentNode
 	
 	if verbose:
@@ -346,13 +352,13 @@ if __name__ == "__main__":
 	white = 0
 	draw = 0
 
-	for gameNum in range(5):
+	for gameNum in range(1):
 		nex = Nex( [player1, player2])
 		while not nex.is_over():
-			#nex.show()
+			nex.show()
 
 			if nex.nplayer == 1:
-				move = mcts(nex, 1000)
+				move = mcts(nex, 10000)
 			elif nex.nplayer == 2:
 				#move = input('Move:').strip()
 				move = player1.ask_move(nex)
