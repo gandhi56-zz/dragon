@@ -61,11 +61,27 @@ under construction...
 
 #### NexPy
 
-under construction...
+* Features:
+	* implements the game of Nex in Python 3
+	* runs domain-independent AI search algorithms implemented in NexPy.ai
 
 ### Issues
 
-under construction...
+#### NexC
+* Write a single-file library that implements:
+	* Negamax search
+	* Monte Carlo Tree Search
+	* any other two player game search algorithms
+* Remove sockets engineering
+
+#### NexPy
+* Refactor and officialize AI search algorithms libraries
+* Document requirements and use inheritance of a general State class the AI algorithms expect
+* Error handlers
+
+#### NexViz
+* Complete the webpage
+* Connect the webpage to NexPy to be able to play Nex against an AI
 
 ### What do we know about Nex so far?
 ##### Combinatorics behind 2x2 Nex and 2x2 Hex
@@ -89,6 +105,7 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 	with 65 nodes in the game tree of 2x2 Hex.
 
 ### Nex players
+#### NexC
 * PseudoRand
 	* Selects a move pseudorandomly
 * Solver 1.0
@@ -102,6 +119,12 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 * Solver 3.0 (Coming soon...)
 * Random Bits (Coming soon...)
 	* state representation as in Solver 2.0
+
+#### NexPy
+* mcts
+	* Implements Monte Carlo Tree Search
+	* Child selection policy: # wins / # visits
+	* Can play on boards of all sizes, assuming that the number of simulations is set reasonably
 
 ### Nex tournaments
 * **December 2, 2018**
@@ -143,19 +166,19 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		* PsuedoRand vs Solver 2.0 (Game #47)
 			Black opens with **Ba3?c2**. (TBC)
 
-* **August 7, 2019**
+* **August 9, 2019**
 	* game settings:
-		* board size 	: 3 x 3
+		* board size : 3 x 3
 		* time control 	: none
 		* handicap 		: none
 
 	* results:
 		
-		| black (# simulations) | white      | games played | black won | draw | white won |
-		|:---------------------:|:----------:|:------------:|:---------:|:----:|:---------:|
-		| mcts  (1000) 			| solver 2.1 | 5            | 0         | 5	   | 0	       |
-		| mcts  (5000) 			| solver 2.1 | 5            | 0         | 5	   | 0	       |
-		| mcts (10000) 			| solver 2.1 | 1            | 0         | 1	   | 0	       |
+		| black 	  | white 	     | games played | black won | draw | white won |
+		|:-----------:|:------------:|:------------:|:---------:|:----:|:---------:|
+		| mcts (100)  | mcts (100)   | 100          | 62        | 18   | 20	       |
+		| mcts (100)  | mcts (1000)  | 100          | 63        | 14   | 23	       |
+		| mcts (1000) | mcts (1000)  | 100          | 61        | 15   | 24	       |
 
 
 ### Interesting games to analyze
