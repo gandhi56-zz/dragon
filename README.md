@@ -8,7 +8,7 @@ NexPy is an implementation of the game of Nex that implements algorithms written
 ### Game description
 Nex is a connection game played between two players, namely Black and White. This game is a variation of the game of Hex (https://en.wikipedia.org/wiki/Hex_(board_game)). Fig.0 presents a 9 x 9 board upon which this game is played, produced by NexC:
 
-![9x9Nex](NexC_server/images/9x9nex.png)
+![9x9Nex](cpp/images/9x9nex.png)
 
 *Fig.0: Initial configuration of the 9 x 9 Nex board.*
 
@@ -20,8 +20,8 @@ Neutral stone into two distinct empty cells.
 For example,
 
 
-![3x3blank](./NexC_server/images/blank.png)
-![3x3genmove](./NexC_server/images/3x3genmove.png)
+![3x3blank](./cpp/images/blank.png)
+![3x3genmove](./cpp/images/3x3genmove.png)
 
 
 *Fig.1 shows the state obtained after Black places a black stone in cell 1 and a neutral stone in cell c2.*
@@ -32,8 +32,8 @@ Alternatively, if a state contains at least two neutral stones, the player may c
 	
 For example,
 
-![3x3transform1](./NexC_server/images/3x3transform1.png)
-![3x3transform2](./NexC_server/images/3x3transform2.png)
+![3x3transform1](./cpp/images/3x3transform1.png)
+![3x3transform2](./cpp/images/3x3transform2.png)
 
 *Fig.4: The state obtained after Black converts **?** at a2 and c2 to **B** and **B** at a1 to **?**.*
 
@@ -45,11 +45,11 @@ We define a connection between two cells, A and B, a nonempty sequence of cells 
 
 The _objective_ for Black is to form a B-connection between some cell in row _a_ and a cell in the bottommost row. Likewise, the _objective_ for White is to form a W-connection between some cell in column _1_ and some cell in the rightmost column. If neither objective is satisfied and there is no legal move that can be played by the player to move, then we conclude that the game has terminated in a _draw_.
 
-![3x3Blackwin](./NexC_server/images/3x3blackwin.png)
+![3x3Blackwin](./cpp/images/3x3blackwin.png)
 
 *Fig.5: Black wins this position with the help of the B-connection (a2, b2, c2).*
 
-![3x3Whitewin](./NexC_server/images/whitewin.png)
+![3x3Whitewin](./cpp/images/whitewin.png)
 
 *Fig.6: White wins this position with the help of the W-connection (c1, c2, b3).*
 
@@ -93,15 +93,15 @@ under construction...
 * The opening **Ba1?a2** and **Bb2?b1** are the winning openings in
 	2x2 Nex. Every other opening concludes in a draw.
 
-![](NexC_server/images/2x2_0.png)
-![](NexC_server/images/2x2_1.png)
-![](NexC_server/images/2x2_2_1.png)
-![](NexC_server/images/2x2_2_12.png)
+![](cpp/images/2x2_0.png)
+![](cpp/images/2x2_1.png)
+![](cpp/images/2x2_2_1.png)
+![](cpp/images/2x2_2_12.png)
 
 Alternatively, if White responds by **Wb2?b1** to **Ba1?a2**,
 
-![](NexC_server/images/2x2_2_0.png)
-![](NexC_server/images/2x2_2_2.png)
+![](cpp/images/2x2_2_0.png)
+![](cpp/images/2x2_2_2.png)
 
 Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b1** can also be proved to be a winning opening.
 
@@ -211,47 +211,47 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 ### Interesting games to analyze
 ##### Solver 1.0 vs Solver 1.0 on 3x3 Nex
 
-![](./NexC_server/images/solver1_solver1/blank.png)
-![](./NexC_server/images/solver1_solver1/0_1.png)
-![](./NexC_server/images/solver1_solver1/0_2.png)
-![](./NexC_server/images/solver1_solver1/0_3.png)
-![](./NexC_server/images/solver1_solver1/0_4.png)
-![](./NexC_server/images/solver1_solver1/0_5.png)
+![](./cpp/images/solver1_solver1/blank.png)
+![](./cpp/images/solver1_solver1/0_1.png)
+![](./cpp/images/solver1_solver1/0_2.png)
+![](./cpp/images/solver1_solver1/0_3.png)
+![](./cpp/images/solver1_solver1/0_4.png)
+![](./cpp/images/solver1_solver1/0_5.png)
 
 
 
 ##### Solver 2.0 vs Solver 2.0 on 3x3 Nex
 
-![](./NexC_server/images/solver2_solver2/blank.png)
-![](./NexC_server/images/solver2_solver2/0_1.png)
-![](./NexC_server/images/solver2_solver2/0_2.png)
-![](./NexC_server/images/solver2_solver2/0_3.png)
-![](./NexC_server/images/solver2_solver2/0_4.png)
-![](./NexC_server/images/solver2_solver2/0_5.png)
-![](./NexC_server/images/solver2_solver2/0_6.png)
-![](./NexC_server/images/solver2_solver2/0_7.png)
+![](./cpp/images/solver2_solver2/blank.png)
+![](./cpp/images/solver2_solver2/0_1.png)
+![](./cpp/images/solver2_solver2/0_2.png)
+![](./cpp/images/solver2_solver2/0_3.png)
+![](./cpp/images/solver2_solver2/0_4.png)
+![](./cpp/images/solver2_solver2/0_5.png)
+![](./cpp/images/solver2_solver2/0_6.png)
+![](./cpp/images/solver2_solver2/0_7.png)
 
 * Move 3, **Ba3?a2**, appears to be a powerful move. This pattern may be useful in developing heuristics for Solver 3.0.
 
 ##### Solver 2.0 vs Solver 1.0 on 3x3 Nex
-![](./NexC_server/images/solver2_solver1/blank.png)
-![](./NexC_server/images/solver2_solver1/1_0.png)
-![](./NexC_server/images/solver2_solver1/1_1.png)
-![](./NexC_server/images/solver2_solver1/1_2.png)
-![](./NexC_server/images/solver2_solver1/1_3.png)
-![](./NexC_server/images/solver2_solver1/1_4.png)
+![](./cpp/images/solver2_solver1/blank.png)
+![](./cpp/images/solver2_solver1/1_0.png)
+![](./cpp/images/solver2_solver1/1_1.png)
+![](./cpp/images/solver2_solver1/1_2.png)
+![](./cpp/images/solver2_solver1/1_3.png)
+![](./cpp/images/solver2_solver1/1_4.png)
 
 
 ##### Solver 2.0 vs PseudoRand on 3x3 Nex (Draw!)
 
-![](./NexC_server/images/solver2_solver2/draw/0_0.png)
-![](./NexC_server/images/solver2_solver2/draw/0_1.png)
-![](./NexC_server/images/solver2_solver2/draw/0_2.png)
-![](./NexC_server/images/solver2_solver2/draw/0_3.png)
-![](./NexC_server/images/solver2_solver2/draw/0_4.png)
-![](./NexC_server/images/solver2_solver2/draw/0_5.png)
-![](./NexC_server/images/solver2_solver2/draw/0_6.png)
-![](./NexC_server/images/solver2_solver2/draw/0_7.png)
+![](./cpp/images/solver2_solver2/draw/0_0.png)
+![](./cpp/images/solver2_solver2/draw/0_1.png)
+![](./cpp/images/solver2_solver2/draw/0_2.png)
+![](./cpp/images/solver2_solver2/draw/0_3.png)
+![](./cpp/images/solver2_solver2/draw/0_4.png)
+![](./cpp/images/solver2_solver2/draw/0_5.png)
+![](./cpp/images/solver2_solver2/draw/0_6.png)
+![](./cpp/images/solver2_solver2/draw/0_7.png)
 
 
 ### Contributions
