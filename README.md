@@ -137,16 +137,14 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		* Time Control : None
 		* Handicap : None
 
-	* Results:
-		
-		| Black      | White      | Games played | Black won | Draw | White won |
-		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
-		| Solver 1.0 | Solver 2.0 | 2            | 2         | 0    | 0         |
-		| Solver 2.0 | Solver 1.0 | 2            | 2         | 0    | 0         |
-		| Solver 1.0 | PseudoRand | 5            | 5         | 0    | 0         |
-		| PseudoRand | Solver 1.0 | 5            | 0         | 1    | 4         |
-		| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
-		| PseudoRand | Solver 2.0 | 5            | 0         | 2    | 3         |
+	| Black      | White      | Games played | Black won | Draw | White won |
+	|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
+	| Solver 1.0 | Solver 2.0 | 2            | 2         | 0    | 0         |
+	| Solver 2.0 | Solver 1.0 | 2            | 2         | 0    | 0         |
+	| Solver 1.0 | PseudoRand | 5            | 5         | 0    | 0         |
+	| PseudoRand | Solver 1.0 | 5            | 0         | 1    | 4         |
+	| Solver 2.0 | PseudoRand | 5            | 5         | 0    | 0         |
+	| PseudoRand | Solver 2.0 | 5            | 0         | 2    | 3         |
 
 
 * **May 23, 2018**
@@ -155,14 +153,12 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		* time control : none
 		* handicap : none
 
-	* results:
-		
-		| black      | white      | games played | black won | draw | white won |
-		|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
-		| solver 2.0 | pseudorand | 100          | 100       | 0    | 0         |
-		| pseudorand | solver 1.0 | 50           | 1         | 21   | 28        |
-		| pseudorand | solver 2.0 | 50           | 2         | 22   | 26        |
-		| solver 1.0 | pseudorand | 50           | 50        | 0    | 0         |
+	| black      | white      | games played | black won | draw | white won |
+	|:----------:|:----------:|:------------:|:---------:|:----:|:---------:|
+	| solver 2.0 | pseudorand | 100          | 100       | 0    | 0         |
+	| pseudorand | solver 1.0 | 50           | 1         | 21   | 28        |
+	| pseudorand | solver 2.0 | 50           | 2         | 22   | 26        |
+	| solver 1.0 | pseudorand | 50           | 50        | 0    | 0         |
 	
 	* Analysis:
 		* PseudoRand vs Solver 2.0 (Game #33)
@@ -176,13 +172,11 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 		* time control 	: none
 		* handicap 		: none
 
-	* results:
-		
-		| black 	  | white 	     | games played | black won | draw | white won |
-		|:-----------:|:------------:|:------------:|:---------:|:----:|:---------:|
-		| mcts (100)  | mcts (100)   | 100          | 62        | 18   | 20	       |
-		| mcts (100)  | mcts (1000)  | 100          | 63        | 14   | 23	       |
-		| mcts (1000) | mcts (1000)  | 100          | 61        | 15   | 24	       |
+	| black 	  | white 	     | games played | black won | draw | white won |
+	|:-----------:|:------------:|:------------:|:---------:|:----:|:---------:|
+	| mcts (100)  | mcts (100)   | 100          | 62        | 18   | 20	       |
+	| mcts (100)  | mcts (1000)  | 100          | 63        | 14   | 23	       |
+	| mcts (1000) | mcts (1000)  | 100          | 61        | 15   | 24	       |
 
 * **August 10, 2019**
 	* game settings:
@@ -193,14 +187,25 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 	* hypothesis:
 		* If a generate move exists in a position, disregard any transform moves.
 
-	* results:
-		
-		| black 	   | white 	       | games played | black won | draw | white won |
-		|:------------:|:-------------:|:------------:|:---------:|:----:|:---------:|
-		| mcts (1000)  | mcts (1000)   | 100          | 65        | 14   | 21	     |
-		| mcts (1000)  | mcts (1000)   | 100          | 72        | 17   | 11	     |
-		| mcts (1000)  | mcts (1000)   | 100          | 67        | 15   | 18	     |
-		| mcts (1000)  | mcts (1000)   | 100          | 66        | 13   | 21	     |
+	| black 	   | white 	       | games played | black won | draw | white won |
+	|:------------:|:-------------:|:------------:|:---------:|:----:|:---------:|
+	| mcts (1000)  | mcts (1000)   | 100          | 65        | 14   | 21	     |
+	| mcts (1000)  | mcts (1000)   | 100          | 72        | 17   | 11	     |
+	| mcts (1000)  | mcts (1000)   | 100          | 67        | 15   | 18	     |
+	| mcts (1000)  | mcts (1000)   | 100          | 66        | 13   | 21	     |
+
+
+* **August 11, 2019**
+	* game settings:
+		* board size : 4 x 4
+		* time control 	: none
+		* handicap 		: none
+
+	| black 	   | white 	       | games played | black won | draw | white won |
+	|:------------:|:-------------:|:------------:|:---------:|:----:|:---------:|
+	| mcts (1000)  | mcts (1000)   | 100          | 59        | 0    | 41	     |
+	| mcts (1000)  | mcts (1000)   | 100          | 47        | 0    | 53	     |
+	| mcts (1000)  | mcts (1000)   | 100          | 57        | 0    | 43	     |
 
 
 ### Interesting games to analyze

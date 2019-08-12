@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Nexc</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+	<script type="text/javascript" src="js/angular.js"></script>
+	<script type="text/javascript" src="js/bonsai.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
+</head>
+
+<body><center>
+	<div class="game-header">
+		<h1 class="game-title">NexViz</h1>
+		<h2 class="game-subtitle">the next level analysis of the game of Nex</h3>
+	</div>
+
+
+    <div class="container">
+		<nav class="row">
+			<button type="button" id="btn_newgame" onclick="newGame()">
+				New Game
+			</button>
+			<button type="button" id="btn_loadgame" onclick="Reload()">
+				Load Game
+			</button>
+			<button type="button" id="btn_savegame" onclick="">Save Game</button>
+			<button type="button" id="btn_analyzegame" onclick="">
+				Analyze Game
+			</button>
+			<button type="button" id="btn_rules" onclick="ShowHelp()">
+				Game Rules
+			</button>
+		</nav>
+
+		<!---------------------- new game modal -------------------------->
+		<div id="newgame_modal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2> Game Configuration </h2> <br>
+				Number of rows:
+				<button type="button" id="btn_dec">-</button>
+				<textarea id="field_size" rows="1" cols="2"></textarea>
+				<button type="button" id="btn_inc">+</button><br>
+				
+				Number of columns:
+				<button type="button" id="btn_dec">-</button>
+				<textarea id="field_size" rows="1" cols="2"></textarea>
+				<button type="button" id="btn_inc">+</button><br>
+			</div>
+		</div>
+		
+		<!---------------------------------------------------------------->
+		
+		<div id="game"></div>
+		
+		<script>
+			var log = localStorage.getItem("logFile");
+			var size = localStorage.getItem("sizeFile");
+
+			if(isNaN(size) || size<3 || size>13) size = 11;
+
+			var game = bonsai.run(document.getElementById('game'), {
+				url: 'js/script.js',
+				initialData1: { bonsai: 'tree' },
+				initialData2: size,
+				initialData3: log
+			});
+			game.on('load', function() {
+				// receive event from the runner context
+				game.on('message:ready', function() {
+					// send a categorized message to the runner context
+					game.sendMessage('externalData', {
+						nodeData: document.getElementById('game').innerHTML
+					});
+					// send just a message to the runner context
+					game.sendMessage({
+						bonsai: 'tree'
+					});
+				});
+			});
+		</script>
+		
+<!--remove after -->
+
+			<br><br>
+			<button type="button" id="btn_clear" onClick="Reload()">
+				Upload and Resize
+			</button>
+			<textarea id="field_size" rows="1" cols="20"></textarea>
+		<div class="game-footer">
+			<input type='file'  onchange='openInput(event)'><br>
+			<button type="button" id="save" onClick='save()'>Save</button>
+			<textarea id='file-output' onchange='' rows="20" cols="55"></textarea>
+		</div>
+		<div id="game-footer"></div>
+	</div>
+
+</center></body>
+
+</html>
