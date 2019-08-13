@@ -48,6 +48,8 @@ class MCTNode:
 		return self.parentNode is not None
 
 class MCTNode_greedy(MCTNode):
+	def __init__(self, move=None, parent=None, state=None):
+		super().__init__(move, parent, state)
 	def select_policy(self, c):
 		return c.wins/c.visits
 
@@ -111,5 +113,6 @@ def mcts(rootState, itermax, verbose=False, select_policy=None):
 	if verbose:
 		print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
-	return sorted(rootNode.childNodes, key=lambda c : c.visits)[-1].move
+	bestChild = sorted(rootNode.childNodes, key=lambda c : c.visits)[-1]
+	return bestChild.move, bestChild.wins/bestChild.visits
 

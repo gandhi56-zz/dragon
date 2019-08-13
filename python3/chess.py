@@ -5,7 +5,6 @@ from __future__ import print_function
 import re, sys, time
 from itertools import count
 from collections import OrderedDict, namedtuple
-from copy import deepcopy
 
 ###############################################################################
 # Piece-Square tables. Tune these to change sunfish's behaviour
@@ -131,21 +130,6 @@ class Position(namedtuple('Position', 'board score wc bc ep kp')):
     kp - the king passant square
     """
 
-    def __init__(self):
-    	self.playerJustMoved = None
-
-    def clone():
-    	return deepcopy(self)
-
-    def get_moves(self):
-    	pass
-
-    def do_move(self):
-    	pass
-
-    def get_result(self):
-    	pass
-
     def gen_moves(self):
         # For each of our pieces, iterate through each possible 'ray' of moves,
         # as defined in the 'directions' map. The rays are broken e.g. by
@@ -186,7 +170,6 @@ class Position(namedtuple('Position', 'board score wc bc ep kp')):
         i, j = move
         p, q = self.board[i], self.board[j]
         put = lambda board, i, p: board[:i] + p + board[i+1:]
-
         # Copy variables and reset ep and kp
         board = self.board
         wc, bc, ep, kp = self.wc, self.bc, 0, 0
@@ -407,7 +390,6 @@ if sys.version_info[0] == 2:
 
 def parse(c):
     fil, rank = ord(c[0]) - ord('a'), int(c[1]) - 1
-    print(A1 + fil - 10*rank)
     return A1 + fil - 10*rank
 
 
@@ -426,34 +408,24 @@ def print_pos(pos):
 
 
 def main():
-	from ai.mcts import MCTNode, mcts
     pos = Position(initial, 0, (True,True), (True,True), 0, 0)
     searcher = Searcher()
     while True:
         print_pos(pos)
-
 
         if pos.score <= -MATE_LOWER:
             print("You lost")
             break
 
         # We query the user until she enters a (pseudo) legal move.
-
-		''' Human play
-
         move = None
         while move not in pos.gen_moves():
-            match = re.match('([a-h][1-8])'*2, input('Your move: '))	# e2e4
+            match = re.match('([a-h][1-8])'*2, input('Your move: '))
             if match:
-                move = parse(match.group(1)), parse(match.group(2))		
+                move = parse(match.group(1)), parse(match.group(2))
             else:
                 # Inform the user when invalid input (e.g. "help") is entered
                 print("Please enter a move like g8f6")
-
-        '''
-
-		move = mcts(rootState = pos, itermax = 100, verbose = False)
-
         pos = pos.move(move)
 
         # After our move we rotate the board and print it again.

@@ -8,7 +8,7 @@ DRAW = 2
 NOT_DONE = 3
 
 
-class NexState:
+class HexState:
 	def __init__(self, nrows=3, ncols=3):
 		self.playerJustMoved = 2
 		self.board = { chr(j+ord('a')) : {str(i+1) : '.' for i in range(ncols)} for j in range(nrows)}
@@ -38,19 +38,12 @@ class NexState:
 			if not used_by_undo:
 				count[stone] += 1
 
-		i = 0
-		j = 1
-		while j < len(move):
-			if move[j] == 'B' or move[j] == 'W' or move[j] == '?':
-				submove(self.board, self.count, move[i:j])
-				i = j
-			j += 1
-		submove(self.board, self.count, move[i:j])
-	
+		stone, row, col = move[0], move[1], move[2:]
+		self.board[row][col] = stone
+		self.count[stone] += 1
+
 	def get_moves(self, allMoves=True):
-		emptyPos = list()
-		stonePos = list()
-		neutralPos = list()
+		moves = list()
 		stone = 'B'
 		if self.playerJustMoved == 2:
 			stone = 'B'
@@ -60,23 +53,7 @@ class NexState:
 		for r in self.board.keys():
 			for c in self.board[r].keys():
 				if self.board[r][c] == '.':
-					emptyPos.append(r+c)
-				elif self.board[r][c] == stone:
-					stonePos.append(r+c)
-				elif self.board[r][c] == '?':
-					neutralPos.append(r+c)
-		moves = list()
-		if len(emptyPos) >= 2:
-			for i in range(len(emptyPos)):
-				for j in range(i+1, len(emptyPos)):
-					moves.append(stone+emptyPos[i]+'?'+emptyPos[j])
-					moves.append(stone+emptyPos[j]+'?'+emptyPos[i])
-
-		if len(neutralPos) >= 2 and len(stonePos) >= 1 and allMoves:
-			for i in range(len(neutralPos)):
-				for j in range(i+1, len(neutralPos)):
-					for k in range(len(stonePos)):
-						moves.append(stone+neutralPos[i]+stone+neutralPos[j]+'?'+stonePos[k])
+					moves.append(stone+r+c)
 		return moves
 	
 	def get_result(self, player):
@@ -89,9 +66,6 @@ class NexState:
 			self.status = WHITE_WON
 			if player == 2:
 				return 1.0
-			return 0.0
-		elif len(self.get_moves()) == 0:
-			self.status = DRAW
 		return 0.0
 
 	def check_black_win(self):
@@ -219,9 +193,9 @@ def play_game(state):
 			break
 
 		if state.playerJustMoved == 1:
-			move = mcts(rootState = state, itermax = 1000, verbose = False)
+			move, rate = mcts(rootState = state, itermax = 1000, verbose = False)
 		else:
-			move = mcts(rootState = state, itermax = 1000, verbose = False)
+			move, rate = mcts(rootState = state, itermax = 1000, verbose = False)
 
 		#print('Best move estimate:', move)
 		state.do_move(move)
@@ -250,7 +224,7 @@ if __name__ == "__main__":
 	player1 = 'greedy'
 	player2 = 'greedy'
 
-	state = NexState()
+	state = HexState()
 	while True:
 		
 		'''
@@ -277,7 +251,7 @@ if __name__ == "__main__":
 			state.show()
 
 		elif cmd[0] == 'new':
-			state = NexState(int(cmd[1]), int(cmd[2]))
+			state = HexState(int(cmd[1]), int(cmd[2]))
 
 		elif cmd[0] == 'run':
 			showState = False
