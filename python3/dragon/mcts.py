@@ -14,6 +14,9 @@
 
 import random
 from copy import deepcopy
+from math import sqrt, log
+
+AI = ['greedy', 'uct']
 
 class MCTNode:
 	def __init__(self, move = None, parent = None, state = None):
@@ -26,7 +29,10 @@ class MCTNode:
 
 	def select_child(self):
 		# child selection policy
-		return sorted(self.childNodes, key=lambda c : c.wins/c.visits)[-1]
+		return sorted(self.childNodes, key=lambda c : self.select_policy(c))[-1]
+
+	def select_policy(self, c):
+		return 0
 
 	def add_child(self, m, s):
 		node = MCTNode(m, self, s)
@@ -38,10 +44,29 @@ class MCTNode:
 		self.visits += 1
 		self.wins += result
 
-def mcts(rootState, itermax, verbose=False):
+	def has_parent(self):
+		return self.parentNode is not None
+
+class MCTNode_greedy(MCTNode):
+	def select_policy(self, c):
+		return c.wins/c.visits
+
+class MCTNode_uct(MCTNode):
+	def __init__(self, move=None, parent=None, state=None):
+		super().__init__(move, parent, state)
+		self.eps = 0.5
+	def select_policy(self, c):
+		return c.wins/c.visits + self.eps * sqrt(log(c.parentNode.visits)/c.visits)
+
+def mcts(rootState, itermax, verbose=False, select_policy=None):
 	if verbose:
 		print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-	rootNode = MCTNode(state = rootState)
+	
+	rootNode = None
+	if select_policy == 'greedy':
+		rootNode = MCTNode_greedy(state = rootState)
+	elif select_policy == 'uct':
+		rootNode = MCTNode_uct(state = rootState)
 	for i in range(itermax):
 		node = rootNode
 		state = rootState.clone()
@@ -87,3 +112,4 @@ def mcts(rootState, itermax, verbose=False):
 		print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
 	return sorted(rootNode.childNodes, key=lambda c : c.visits)[-1].move
+

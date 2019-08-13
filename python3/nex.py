@@ -245,10 +245,12 @@ def play_game(state):
 
 if __name__ == "__main__":
 	import cProfile
-	from dragon.mcts import MCTNode, mcts
+	from dragon.mcts import *
+	
+	player1 = 'greedy'
+	player2 = 'greedy'
 
 	state = NexState()
-
 	while True:
 		
 		'''
@@ -257,6 +259,7 @@ if __name__ == "__main__":
 		- run <#games> [-state] [-estimate]
 		- search [#simulations]
 		- play <move>
+		- config <black/white> <selection_policy>
 		- switch
 		- quit
 		'''
@@ -267,6 +270,10 @@ if __name__ == "__main__":
 		if cmd[0] == 'quit':
 			break
 		elif cmd[0] == 'showboard':
+
+			print('############################################')
+			print('#  {} vs {} #'.format(player1, player2))
+			print('############################################')
 			state.show()
 
 		elif cmd[0] == 'new':
@@ -298,9 +305,15 @@ if __name__ == "__main__":
 					if state.status != NOT_DONE:
 						break
 					if state.playerJustMoved == 1:
-						move = mcts(rootState = state, itermax = 1000, verbose = False)
+						if player1 == 'human':
+							move = input('Enter move:')
+						else:
+							move = mcts(rootState=state, itermax=1000, verbose=False, select_policy=player1)
 					else:
-						move = mcts(rootState = state, itermax = 1000, verbose = False)
+						if player2 == 'human':
+							move = input('Enter move:')
+						else:
+							move = mcts(rootState=state, itermax=1000, verbose=False, select_policy=player2)
 					
 					if showEstimate:
 						print('Best move estimate:', move)
@@ -308,7 +321,7 @@ if __name__ == "__main__":
 					state.do_move(move)
 
 
-				print('Game #{} '.format(gameNum), end='')
+				print('Game #{} '.format(it), end='')
 				if state.status == BLACK_WON:
 					print('*** Black wins! ***')
 					blackWins += 1
@@ -342,6 +355,15 @@ if __name__ == "__main__":
 
 		elif cmd[0] == 'switch':
 			state.playerJustMoved = 3 - state.playerJustMoved
+
+		elif cmd[0] == 'config':
+			if cmd[1] == 'black' and (cmd[2] in AI or cmd[2] == 'human'):
+				player1 = cmd[2]
+			elif cmd[1] == 'white' and (cmd[2] in AI or cmd[2] == 'human'):
+				player2 = cmd[2]
+			else:
+				continue
+
 		else:
 			print('\t\t\tWelcome to dragon 1.0 manual')
 			print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
@@ -352,5 +374,6 @@ if __name__ == "__main__":
 			print('search [N]\t\t\t\tsearching for the best move in N simulations, 1000 simulations\n')
 			print('play <M>\t\t\t\tplays the given move M over the current state\n')
 			print('switch\t\t\t\t\tswitches the player to move\n')
+			print('config <black/white> <AI>\t\t\tconigure player modes\n')
 			print('quit\t\t\t\t\tquit the program\n')
 
