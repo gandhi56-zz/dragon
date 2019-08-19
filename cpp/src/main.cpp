@@ -3,6 +3,7 @@
 
 int main(){
 	Server server;
-	server.run();
+	Action b = a;
+	
     return 0;
 }

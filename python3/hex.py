@@ -140,7 +140,7 @@ class HexState:
 		return nbrs
 
 	def valid_pos(self, r,c):
-		return (r >= 'a' and r < chr(ord('a')+self.nrows) and c >= '1' and c < chr(ord('1')+self.ncols))
+		return (r >= 'a' and r < chr(ord('a')+self.nrows) and int(c) >= 1 and int(c) < self.ncols)
 
 	def connected(self, start, end):
 		isConnected = False

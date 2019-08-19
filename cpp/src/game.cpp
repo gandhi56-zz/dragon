@@ -22,7 +22,7 @@ State::State(){
 	count[BLACK] = 0;
 	count[WHITE] = 0;
 	count[NEUTRAL] = 0;
-	movesCount = 0;
+	playerJustMoved = 2;
 }
 
 State::~State(){
@@ -205,7 +205,6 @@ void State::update(string move){
 	count[move[i]]++;
 	graph[move.substr(i+1, j-i-1)].value = move[i];
 
-	movesCount++;
 }
 
 char State::status(){
@@ -346,7 +345,6 @@ void State::clear(){
 	count[BLACK] = 0;
 	count[WHITE] = 0;
 	count[NEUTRAL] = 0;
-	movesCount = 0;
 
 	create_graph();
 }

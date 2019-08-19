@@ -257,5 +257,3 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 ### Contributions
 
 I acknowledge Professor Ryan Hayward from the University of Alberta for inpiring me to undertake this project. I also acknowledge Ragur Krishnan and Shreyansh Jain for their contributions to this project.
-
-EasyAI is an amazing Python3 library and NexPy relies on the algorithms implemented under the EasyAI framework. The developers of EasyAI also have my gratitude.

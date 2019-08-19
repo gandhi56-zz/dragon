@@ -16,6 +16,20 @@ using namespace std;
 
 typedef unsigned int uint;
 
+class Action{
+	string move;
+	Action();
+	Action(string m)	:	move(m)	{}
+	Action& operator=(const Action& a){
+		move = a.move;
+		return *this;
+	}
+
+	friend ostream &operator<<(ostream &output){
+	
+	}
+};
+
 struct Cell{
 	string key;
 	char value;
@@ -31,10 +45,11 @@ class State{
 		uint numColumns;
 		map<string, Cell> graph;
 		map<char, uint> count;
-		uint movesCount;
+		uint playerJustMoved;
 
 		State();
 		~State();
+
 		void set_size(uint rows, uint cols);
 		void create_graph();
 		void show();
@@ -42,11 +57,11 @@ class State{
 		void update(string move);
 		bool connected(string key0, string key1);
 		char status();
-
 		bool valid_stone(char stone);
 		bool is_valid(string move, char stone);
-
 		void clear();
+
+		void do_move();
 
 	private:
 		void add_nbrs(uint row, uint col);
