@@ -374,9 +374,9 @@ if __name__ == "__main__":
 			print('new <R> <C>\t\t\t\tcreates an empty state of size R x C\n')
 			print('run <N> [-state] [-estimate]\t\truns N games between the players')
 			print('\t\t\t\t\tshowing the state and the estimate if the flags are provided\n')
-			print('search [N]\t\t\t\tsearching for the best move in N simulations, 1000 simulations\n')
+			print('search [N]\t\t\t\tsearching for the best move in N simulations, 1000 simulations by default\n')
 			print('play <M>\t\t\t\tplays the given move M over the current state\n')
 			print('switch\t\t\t\t\tswitches the player to move\n')
-			print('config <black/white> <AI>\t\t\tconigure player modes\n')
+			print('config <black/white> <AI>\t\t\tconfigure player modes\n')
 			print('quit\t\t\t\t\tquit the program\n')
 

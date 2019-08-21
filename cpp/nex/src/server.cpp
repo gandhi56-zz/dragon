@@ -4,7 +4,6 @@
 Server::Server(){
 	// initialize state here 
 	state.set_size(3, 3);	// default size is 3x3
-	state.create_graph();
 	maxGames = 1;	// default max number of games
 	numBlackWin = 0;
 	numWhiteWin = 0;
@@ -24,7 +23,7 @@ void Server::set_state(string moves){
 		if (state.valid_stone(moves[i])){
 			j = i + 1;
 			while (moves[j] != ';')	j++;
-			cout << "config:playing move "<<moves.substr(i,j-i);
+			cout << "playing move "<<moves.substr(i,j-i);
 			cout << endl;
 			state.update(moves.substr(i, j-i));
 			i = j+1;
@@ -34,12 +33,55 @@ void Server::set_state(string moves){
 			break;
 		}
 	}
-	cout << "State initialized." << endl;
 }
 
 
 void Server::run(){
+	string cmd;
+	while (1){
+		cout << "? ";
+		cin >> cmd;
 
+		if (cmd == "show"){
+			show();
+		}
+		else if (cmd == "new"){
+			int rows, cols;
+			cin >> rows >> cols;
+			state.set_size(rows, cols);
+		}
+		else if (cmd == "run"){
+		
+		}
+		else if (cmd == "search"){
+		
+		}
+		else if (cmd == "play"){
+			string move;
+			cin >> move;
+
+			Action a(move);
+		}
+		else if (cmd == "config"){
+		
+		}
+		else if (cmd == "quit"){
+			break;
+		}
+		else{
+			cout << "\t\t\tdragon 1.0 manual" << endl;
+			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+			cout << "showboard\t\t\t\tprints the current state of the board" << endl;
+			cout << "new <R> <C>\t\t\t\tcreates an empty state of size R X C" << endl;
+			cout << "run <N> [-state] [-estimate]\t\truns N games between players" << endl;
+			cout << "\t\t\t\t\tshowing the state and estimate if the flags are provided" << endl;
+			cout << "search <b/w>[N]\t\t\t\tsearching for the best move in N simulations, 1000 simulations by default" << endl;
+			cout << "play <M>\t\t\t\tplays the given move M over the current state" << endl;
+			cout << "config <b/w> <AI>\t\tconfigure the player modes" << endl;
+			cout << "quit\t\t\t\t\tquit the program" << endl;
+		}
+	}
+	cout << "Terminating dragon." << endl;
 }
 
 void Server::report_result(int gameId, char result){
@@ -75,4 +117,8 @@ void Server::report_result(int gameId, char result){
 
 }
 
+void Server::show(){
+	state.show();
+	cout << "Player to move: " << state.next() << endl;
+}
 

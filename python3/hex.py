@@ -249,6 +249,8 @@ if __name__ == "__main__":
 			print('#  {} vs {} #'.format(player1, player2))
 			print('############################################')
 			state.show()
+			print('Current player: {}'.format('1' if state.playerJustMoved == 2 else '2'))
+			print()
 
 		elif cmd[0] == 'new':
 			state = HexState(int(cmd[1]), int(cmd[2]))
@@ -282,18 +284,17 @@ if __name__ == "__main__":
 						if player1 == 'human':
 							move = input('Enter move:')
 						else:
-							move, rate = mcts(rootState=state, itermax=1000, verbose=False, select_policy=player1)
+							move, rate = mcts(rootState=state.clone(), itermax=10000, verbose=False, select_policy=player1)
 					else:
 						if player2 == 'human':
 							move = input('Enter move:')
 						else:
-							move, rate = mcts(rootState=state, itermax=1000, verbose=False, select_policy=player2)
+							move, rate = mcts(rootState=state.clone(), itermax=10000, verbose=False, select_policy=player2)
 					
 					if showEstimate:
 						print('Best move estimate:', move)
 					
 					state.do_move(move)
-
 
 				print('Game #{} '.format(it), end='')
 				if state.status == BLACK_WON:
@@ -322,7 +323,7 @@ if __name__ == "__main__":
 
 			state.show()
 
-			move, winRate = mcts(rootState = state, itermax = numSimulations, verbose = False, select_policy='uct')
+			move, winRate = mcts(rootState = state.clone(), itermax = numSimulations, verbose = False, select_policy='uct')
 			print('Best move found: %s\tWin ratio: %.3f' %(move, winRate))
 
 		elif cmd[0] == 'play':

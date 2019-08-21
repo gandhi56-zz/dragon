@@ -2,6 +2,9 @@
 
 #include "../include/game.h"
 
+// Action class methods ------------------------------------
+// ---------------------------------------------------------
+
 // Cell class methods --------------------------------------
 Cell::Cell(){
 	key = "";
@@ -29,9 +32,25 @@ State::~State(){
 
 }
 
+void State::reset(){
+	count[BLACK] = 0;
+	count[WHITE] = 0;
+	count[NEUTRAL] = 0;
+	playerJustMoved = 2;
+	for (auto it = graph.begin(); it != graph.end(); ++it){
+		it->second.value = EMPTY;
+	}
+}
+
+int State::next(){
+	return 3 - playerJustMoved;
+}
+
 void State::set_size(uint rows, uint cols){
 	numRows = rows;
 	numColumns = cols;
+	reset();
+	create_graph();
 }
 
 void State::create_graph(){
@@ -180,30 +199,30 @@ bool State::valid_pos(uint row, uint col){
 	return (row>=0 && row<numRows && col>=0 && col<numColumns);
 }
 
-void State::update(string move){
+void State::update(Action a){
 	uint i = 0;
 	uint j = 1;
-	while (j < move.length()){
-		if (move[j]==BLACK or move[j]==WHITE or move[j]==NEUTRAL){
-			string pos = move.substr(i+1, j-i-1);
+	while (j < a.move.length()){
+		if (a.move[j]==BLACK or a.move[j]==WHITE or a.move[j]==NEUTRAL){
+			string pos = a.move.substr(i+1, j-i-1);
 
 			if (graph[pos].value != EMPTY){
 				count[graph[pos].value]--;
 			}
-			count[move[i]]++;
+			count[a.move[i]]++;
 
-			graph[pos].value = move[i];
+			graph[pos].value = a.move[i];
 			i = j;
 		}
 		j++;
 	}
 
-	string pos = move.substr(i+1, j-i-1);
+	string pos = a.move.substr(i+1, j-i-1);
 	if (graph[pos].value != EMPTY){
 		count[graph[pos].value]--;
 	}
-	count[move[i]]++;
-	graph[move.substr(i+1, j-i-1)].value = move[i];
+	count[a.move[i]]++;
+	graph[a.move.substr(i+1, j-i-1)].value = a.move[i];
 
 }
 
@@ -276,26 +295,26 @@ bool State::valid_stone(char stone){
 			(stone == WHITE) || (stone == NEUTRAL));
 }
 
-bool State::is_valid(string move, char stone){
+bool State::is_valid(Action a, char stone){
 	uint i = 0;
 	uint count = 0;
 	vector<uint> ind;
-	while (i < move.length()){
-		if (valid_stone(move[i])){
+	while (i < a.move.length()){
+		if (valid_stone(a.move[i])){
 			ind.push_back(i);
 			i++;
 			uint j = i + 1;
-			while (j < move.length() && !valid_stone(move[j])){
+			while (j < a.move.length() && !valid_stone(a.move[j])){
 				j++;
 			}
 
-			string pos = move.substr(i, j-i);
+			string pos = a.move.substr(i, j-i);
 			if (!valid_pos(pos)){
 				return false;
 			}
 
-			if (move[i-1] == stone)			count++;
-			else if (move[i-1] == NEUTRAL)	count--;
+			if (a.move[i-1] == stone)			count++;
+			else if (a.move[i-1] == NEUTRAL)	count--;
 			else							return false;
 
 			i = j;
@@ -307,20 +326,20 @@ bool State::is_valid(string move, char stone){
 
 	string pos;
 	if (count == 0){
-		pos = move.substr(ind[0]+1, ind[1] - ind[0] - 1);
+		pos = a.move.substr(ind[0]+1, ind[1] - ind[0] - 1);
 		if (graph[pos].value != EMPTY){
 			return false;
 		}
 
-		pos = move.substr(ind[1]+1, move.size() - ind[1] - 1);
+		pos = a.move.substr(ind[1]+1, a.move.size() - ind[1] - 1);
 		if (graph[pos].value != EMPTY){
 			return false;
 		}
 	}
 	else if (count == 1){
 		for (i = 0; i < ind.size(); ++i){
-			pos = move.substr(ind[0]+1, ind[1]-ind[0]-1);
-			char moveStone = move[ind[0]];
+			pos = a.move.substr(ind[0]+1, ind[1]-ind[0]-1);
+			char moveStone = a.move[ind[0]];
 			char cellStone = graph[pos].value;
 
 			if (moveStone == NEUTRAL && cellStone == stone){
@@ -348,3 +367,67 @@ void State::clear(){
 
 	create_graph();
 }
+
+void State::get_moves(vector<Action>& actions, string& myStone){
+
+	// TODO change graph to the way solver 2 implements
+
+	// store all cells where a stone may be placed
+	vector<string> emptyPos;
+	vector<string> stonePos;
+	vector<string> neutralPos;
+	for (uint16_t row = 0; row < numRows; ++row){
+		for (uint16_t col = 0; col < numColumns; ++col){
+			uint16_t key = row * numColumns + col;
+			if (graph[key].first == EMPTY){
+				emptyPos.push_back(get_key(row, col));
+			}
+			else if((graph[key].first==BLACK and isMax) or
+				(graph[key].first == WHITE and !isMax)){
+				stonePos.push_back(get_key(row, col));
+			}
+			else if (graph[key].first == NEUTRAL){
+				neutralPos.push_back(get_key(row, col));
+			}
+		}
+	}
+
+	if (emptyPos.size() >= 2){
+
+		for (uint16_t i = 0; i < emptyPos.size(); ++i){
+			for (uint16_t j = i+1; j < emptyPos.size(); ++j){
+				string key0 = myStone;
+				key0 += emptyPos[i] + "?" + emptyPos[j];
+				actions.push_back(Action(key0));
+
+				string key1 = "?";
+				key1 += emptyPos[i] + myStone  + emptyPos[j];
+				actions.push_back(Action(key1));
+			}
+		}
+	}
+
+	if (neutralPos.size() >= 2 && stonePos.size() >= 1){
+
+		for (uint16_t i = 0; i < neutralPos.size(); ++i){
+			for (uint16_t j = i + 1; j < neutralPos.size(); ++j){
+				for (uint16_t k = 0; k < stonePos.size(); ++k){
+					string key = myStone;
+					key += neutralPos[i]+myStone+neutralPos[j];
+					key += "?" + stonePos[k];
+					actions.push_back(Action(key));
+				}
+			}
+		}
+	}
+
+
+
+}
+
+State State::clone(){
+	return *this;
+}
+
+
+
