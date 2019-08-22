@@ -20,7 +20,7 @@ void Server::set_state(string moves){
 	uint j = 1;
 	if(moves == ";"){ return;}
 	while (i < moves.length()){
-		if (state.valid_stone(moves[i])){
+		if (moves[i] == 'B' or moves[i] == 'W' or moves[i] == '?'){
 			j = i + 1;
 			while (moves[j] != ';')	j++;
 			cout << "playing move "<<moves.substr(i,j-i);
@@ -59,8 +59,21 @@ void Server::run(){
 		else if (cmd == "play"){
 			string move;
 			cin >> move;
+			state.update(Action(move));
+			state.switch_turns();
 
-			Action a(move);
+			// check win
+			char status = state.status();
+			cout << status << endl;
+			if (status == BLACK_WIN){
+				cout << "Black won!" << endl;
+			}
+			else if (status == WHITE_WIN){
+				cout << "White won!" << endl;
+			}
+			else if (status == DRAW){
+				cout << "Draw!" << endl;
+			}
 		}
 		else if (cmd == "config"){
 		
@@ -71,7 +84,7 @@ void Server::run(){
 		else{
 			cout << "\t\t\tdragon 1.0 manual" << endl;
 			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-			cout << "showboard\t\t\t\tprints the current state of the board" << endl;
+			cout << "show\t\t\t\t\tprints the current state of the board" << endl;
 			cout << "new <R> <C>\t\t\t\tcreates an empty state of size R X C" << endl;
 			cout << "run <N> [-state] [-estimate]\t\truns N games between players" << endl;
 			cout << "\t\t\t\t\tshowing the state and estimate if the flags are provided" << endl;

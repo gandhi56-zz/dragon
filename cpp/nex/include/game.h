@@ -2,22 +2,29 @@
 
 #define _GAME_
 
-#define BLACK   'B'
-#define WHITE   'W'
-#define NEUTRAL '?'
-#define EMPTY   '.'
+#define BLACK   		1
+#define WHITE   		(1<<1)
+#define NEUTRAL			((1<<1)|1)
+#define EMPTY   		0
+#define VALBITS			2		// number of bits for value
+#define DRAW			'#'
+#define BLACK_WIN		'B'
+#define WHITE_WIN		'W'
+#define GAME_NOT_OVER	'?'
 
 #include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <stack>
+#include <bitset>
+#include <cstring>
 
 using namespace std;
 
-typedef unsigned int uint;
+typedef bitset<VALBITS> Valtype;
+typedef pair<Valtype, vector<uint16_t> > Cell;
 
 class Action{
-private:
 public:
 	string move;
 	Action();
@@ -26,55 +33,44 @@ public:
 		move = a.move;
 		return *this;
 	}
-
-};
-
-struct Cell{
-	string key;
-	char value;
-	vector<string> adjKeys;
-
-	Cell();
-	Cell(string _key);
 };
 
 class State{
 public:
-	// change graph to be like solver2 graph
-	uint numRows;
-	uint numColumns;
-	map<string, Cell> graph;
-	map<char, uint> count;
-	uint playerJustMoved;
+	uint16_t numRows;
+	uint16_t numColumns;
+	vector< Cell > graph;
+	uint16_t emptyCount;
+	uint16_t neutralCount;
+	uint16_t blackCount;
+	uint16_t whiteCount;
+	uint16_t playerJustMoved;
 
 	State();
 	~State();
-
-	void set_size(uint rows, uint cols);
+	void set_size(uint16_t rows, uint16_t cols);
 	void create_graph();
+	void set_nbrs(vector<uint16_t>& nbrs, uint16_t key);
+	string get_value(uint16_t row, uint16_t col);
 	void show();
-	void reset();
-	string get_key(uint row, uint col);
-	void update(Action a);
-	bool connected(string key0, string key1);
+	string get_key(uint16_t row, uint16_t col);
+	void update(Action action);
+	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
 	char status();
-	bool valid_stone(char stone);
-	bool is_valid(Action a, char stone);
-	void clear();
+	void revert(Action action, char stone);
 	int next();
-	void get_moves(vector<Action>& actions, string& myStone);
-	State clone();
+	void get_moves(vector<Action>& actions, string myStone);
+	void switch_turns();
+	void do_move(Action action);
+	State& operator=(State& s);
 
 private:
-	void add_nbrs(uint row, uint col);
-	uint num_nbrs(uint row, uint col);
-	uint get_row(string key);
-	uint get_col(string key);
-	bool valid_pos(uint row, uint col);
-
-	bool valid_pos(string key);
+	uint16_t num_nbrs(uint16_t row, uint16_t col);
+	uint16_t get_row(string pos);
+	uint16_t get_col(string pos);
+	bool valid_pos(uint16_t key);
+	bool valid_pos(uint16_t row, uint16_t col);
 };
-
 
 
 

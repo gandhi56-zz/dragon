@@ -2,29 +2,13 @@
 
 #include "../include/game.h"
 
-// Action class methods ------------------------------------
-// ---------------------------------------------------------
-
-// Cell class methods --------------------------------------
-Cell::Cell(){
-	key = "";
-	value = EMPTY;
-}
-
-Cell::Cell(string _key){
-	key = _key;
-	value = EMPTY;
-}
-
-// ---------------------------------------------------------
-
-
 State::State(){
 	numRows = 0;
 	numColumns = 0;
-	count[BLACK] = 0;
-	count[WHITE] = 0;
-	count[NEUTRAL] = 0;
+	emptyCount = 0;
+	blackCount = 0;
+	whiteCount = 0;
+	neutralCount = 0;
 	playerJustMoved = 2;
 }
 
@@ -32,103 +16,38 @@ State::~State(){
 
 }
 
-void State::reset(){
-	count[BLACK] = 0;
-	count[WHITE] = 0;
-	count[NEUTRAL] = 0;
-	playerJustMoved = 2;
-	for (auto it = graph.begin(); it != graph.end(); ++it){
-		it->second.value = EMPTY;
-	}
-}
-
-int State::next(){
-	return 3 - playerJustMoved;
-}
-
-void State::set_size(uint rows, uint cols){
+void State::set_size(uint16_t rows, uint16_t cols){
 	numRows = rows;
 	numColumns = cols;
-	reset();
-	create_graph();
+	graph.resize(numRows*numColumns);
 }
 
 void State::create_graph(){
-	/*
-		Construct a graph corresponding to the board.
-		Assumes numRows and numColumns are assigned.
-	*/
-
-    string winStones[] = {"B0", "B1", "W0", "W1"};
-	for (string stone : winStones){
-		graph[stone] = Cell(stone);
-		graph[stone].value = stone[0];
-	}
-
-	// add interior cells to 'state' and their neighbours.
-	for (uint row = 0; row < numRows; ++row){
-		for (uint col = 0; col < numColumns; ++col){
-			string key = get_key(row, col);
-			graph[key] = Cell(key);
-			add_nbrs(row, col);
-		}
-	}
-
-	// connect each edge cell to its respective win 
-	// determining cells.
-	for (uint row = 0; row < numRows; ++row){
-		graph[get_key(row, 0)].adjKeys.push_back("W0");
-		graph["W0"].adjKeys.push_back(get_key(row, 0));
-		graph[get_key(row, numColumns-1)].adjKeys.push_back("W1");
-		graph["W1"].adjKeys.push_back(get_key(row, numColumns-1));
-	}
-	for (uint col = 0; col < numColumns; ++col){
-		graph[get_key(0, col)].adjKeys.push_back("B0");
-		graph["B0"].adjKeys.push_back(get_key(0, col));
-		graph[get_key(numRows-1, col)].adjKeys.push_back("B1");
-		graph["B1"].adjKeys.push_back(get_key(numRows-1, col));
+	for (uint16_t i = 0; i < numRows*numColumns; ++i){
+		graph[i].first = EMPTY;
+		set_nbrs(graph[i].second, i);
 	}
 }
 
+bool State::valid_pos(uint16_t key){
+	return 0 <= key and key < numRows*numColumns;
+}
+void State::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
+	if (valid_pos(key+numColumns))	nbrs.push_back(key+numColumns);
+	if (valid_pos(key-numColumns))	nbrs.push_back(key-numColumns);
+	if (valid_pos(key-1) and (key%numColumns > 0))nbrs.push_back(key-1);
+	if (valid_pos(key+1) and (key%numColumns < numColumns-1))
+		nbrs.push_back(key+1);
+	if (valid_pos(key-numColumns+1)and(key%numColumns < numColumns-1))
+		nbrs.push_back(key-numColumns+1);
 
-void State::add_nbrs(uint row, uint col){
-	/*
-		add neighbours to the cell positioned at 'row' 
-		and 'col'.	
-	*/
-
-	if (valid_pos(row+1, col))
-		graph[get_key(row,col)].
-			adjKeys.push_back(get_key(row+1,col));
-
-    if (valid_pos(row-1, col))
-    	graph[get_key(row,col)].
-			adjKeys.push_back(get_key(row-1,col));
-
-    if (valid_pos(row, col-1))
-    	graph[get_key(row,col)].
-			adjKeys.push_back(get_key(row,col-1));
-
-    if (valid_pos(row, col+1))
-        graph[get_key(row,col)].
-			adjKeys.push_back(get_key(row,col+1));
-
-    if (valid_pos(row-1, col+1))
-        graph[get_key(row,col)].
-			adjKeys.push_back(get_key(row-1,col+1));
-
-    if (valid_pos(row+1, col-1))
-        graph[get_key(row,col)].
-			adjKeys.push_back(get_key(row+1,col-1));
+	if (valid_pos(key+numColumns-1) and (key%numColumns > 0))
+		nbrs.push_back(key+numColumns-1);
 }
 
-uint State::num_nbrs(uint row, uint col){
-	/*
-		return the number of neighbouring cells to the 
-		cell at 'row' and 'col'.
-	*/
+uint16_t State::num_nbrs(uint16_t row, uint16_t col){
 	if (row == 0)	return (col == 0 ? 4 : 5);
-	else if (row == numRows - 1){	
+	else if (row == numRows - 1){
 		return (col == numColumns-1 ? 5 : 4);
 	}
 	else{
@@ -136,47 +55,58 @@ uint State::num_nbrs(uint row, uint col){
 	}
 }
 
+string State::get_value(uint16_t row, uint16_t col){
+	Valtype value = graph[row*numColumns+col].first;
+	if (value == BLACK)	return "B";
+	else if (value == WHITE)	return "W";
+	else if (value == NEUTRAL)	return "?";
+	else						return ".";
+}
+
+void State::switch_turns(){
+	playerJustMoved = 3 - playerJustMoved;
+}
+
+void State::do_move(Action action){
+	update(action);
+	switch_turns();
+}
+
 void State::show(){
-	/*
-		print board to standard output.
-	*/
-	cout << endl;
-	cout << " ";
-	for (uint col = 1; col <= numColumns; ++col){
+	cout << endl << " ";
+
+	for (uint16_t col = 1; col <= numColumns; ++col){
 		if (col < 10)	cout << "  " << col;
 		else			cout << " " << col;
 	}
 	cout << endl;
 
-	for (uint row = 0; row < numRows; ++row){
-		for (uint padRow = 0; padRow < row; ++padRow){
+	for (uint16_t row = 0; row < numRows; ++row){
+		for (uint16_t padRow = 0; padRow < row; ++padRow){
 			cout << " ";
 		}
 		cout << (char)('a'+row) << "\\";
-		for (uint col = 0; col < numColumns; ++col){
-			cout << "  " << graph[get_key(row, col)].value;
+		for (uint16_t col = 0; col < numColumns; ++col){
+			cout << "  " << get_value(row, col);
 		}
 		cout << "  \\" << (char)('a'+row) << endl;
 	}
-	for (uint row = 0; row < numRows+2; ++row){
+	for (uint16_t row = 0; row < numRows+2; ++row){
 		cout << " ";
 	}
 
-	for (uint col = 1; col <= numColumns; ++col){
+	for (uint16_t col = 1; col <= numColumns; ++col){
 		if (col < 10)	cout << "  " << col;
 		else			cout << " " << col;
 	}
 	cout << endl << endl;
 }
 
-string State::get_key(uint row, uint col){
-	/*
-		return key corresponding the cell at 'row' and 
-		'col'.
-	*/
+// pos to string
+string State::get_key(uint16_t row, uint16_t col){
 	string key;
 	key.push_back('a'+row);
-	
+
 	if (col < 9){
 		key.push_back('1'+col);
 	}
@@ -187,94 +117,184 @@ string State::get_key(uint row, uint col){
 	return key;
 }
 
-uint State::get_row(string key){
-	return key[0] - 'a';
-}
 
-uint State::get_col(string key){
-	return stoi(key.substr(1, key.length() - 1))-1;
-}
-
-bool State::valid_pos(uint row, uint col){
+bool State::valid_pos(uint16_t row, uint16_t col){
 	return (row>=0 && row<numRows && col>=0 && col<numColumns);
 }
 
-void State::update(Action a){
-	uint i = 0;
-	uint j = 1;
-	while (j < a.move.length()){
-		if (a.move[j]==BLACK or a.move[j]==WHITE or a.move[j]==NEUTRAL){
-			string pos = a.move.substr(i+1, j-i-1);
+// string to pos
+uint16_t State::get_row(string pos){
+	return (uint16_t)(pos[0] - 'a');
+}
 
-			if (graph[pos].value != EMPTY){
-				count[graph[pos].value]--;
+uint16_t State::get_col(string pos){
+	return (uint16_t)(pos[1] - '1');
+}
+
+void State::update(Action action){
+	uint16_t i = 0;
+	uint16_t j = 1;
+	string pos;
+	int key;
+	Valtype val;
+	while (i < action.move.length()){
+		if (action.move[j]=='B' || action.move[j]=='W' || action.move[j]=='?'
+				|| action.move[j]=='.'){
+
+			pos = action.move.substr(i+1, j-i-1).c_str();
+			key = get_row(pos) * numColumns + get_col(pos);
+
+			if (graph[key].first != EMPTY){
+				if (graph[key].first == BLACK)		blackCount--;
+				else if (graph[key].first == WHITE)	whiteCount--;
+				else if (graph[key].first == NEUTRAL)neutralCount--;
 			}
-			count[a.move[i]]++;
 
-			graph[pos].value = a.move[i];
+			if (action.move[i] == '.'){
+				if (graph[key].first == BLACK)	blackCount--;
+				else if (graph[key].first == WHITE)	whiteCount--;
+				else if (graph[key].first == NEUTRAL)neutralCount--;
+				graph[key].first = EMPTY;
+			}
+			else{
+				if (action.move[i] == 'B'){
+					blackCount++;
+					graph[key].first = BLACK;
+				}
+				else if (action.move[i] == 'W'){
+					whiteCount++;
+					graph[key].first = WHITE;
+				}
+				else if (action.move[i] == '?'){
+					neutralCount++;
+					graph[key].first = NEUTRAL;
+				}
+			}
 			i = j;
 		}
 		j++;
 	}
 
-	string pos = a.move.substr(i+1, j-i-1);
-	if (graph[pos].value != EMPTY){
-		count[graph[pos].value]--;
-	}
-	count[a.move[i]]++;
-	graph[a.move.substr(i+1, j-i-1)].value = a.move[i];
 
+}
+
+void State::revert(Action action, char stone){
+	uint16_t numStones = 0;
+	uint16_t numNeutrals = 0;
+	for (uint16_t i = 0; i < action.move.length(); ++i){
+		if (action.move[i] == stone)			numStones++;
+		else if (action.move[i] == '?')	numNeutrals++;
+	}
+
+	if (numNeutrals != 1)	return;
+
+	if (numStones == 1){
+		for (uint16_t i = 0; i < action.move.length(); ++i){
+			if (action.move[i] == stone){
+				if (stone == 'B')	blackCount--;
+				else				whiteCount--;
+				action.move[i] = '.';
+			}
+
+			if (action.move[i] == '?'){
+				neutralCount--;
+				action.move[i] = '.';
+			}
+		}
+	}
+	else if (numStones == 2){
+		for (uint16_t i = 0; i < action.move.length(); ++i){
+			if (action.move[i] == stone){
+				action.move[i] = '?';
+				if (stone == 'B')	blackCount--;
+				else				whiteCount--;
+				neutralCount++;
+			}
+			else if (action.move[i] == '?'){
+				if (stone == 'B'){
+					action.move[i] = 'B';
+					blackCount++;
+				}
+				else{
+					action.move[i] = 'W';
+					whiteCount++;
+				}
+				neutralCount--;
+			}
+		}
+	}
+	update(action);
 }
 
 char State::status(){
-	/*
-		Returns the stone corresponding to the winner if
-		the game is over. If the game draws, '#' is returned.
-
-		If a move can still be played, '?' is returned.
-	*/
-
-    if 		(connected("B0", "B1"))	return BLACK;
-	else if (connected("W0", "W1"))	return WHITE;
-	else{
-		uint emptyCount = numRows*numColumns - count[BLACK]
-			- count[WHITE] - count[NEUTRAL];
-		if (emptyCount <= 1){
-			if (count[NEUTRAL] <= 1)		return '#';
-			else						return '?';
+	// check if black has won
+	for (uint16_t col = 0; col < numColumns; ++col){
+		if (graph[col].first == BLACK){
+			// run dfs
+			if (connected(col, numRows-1, true)){
+				cout << "black won" << endl;
+				return BLACK_WIN;
+			}
 		}
 	}
 
-	return NEUTRAL;
-}
 
-bool State::connected(string key0, string key1){
-	/*
-		Depth-first Search implementation to check if
-		cells 'key0' and 'key1' are connected. Returns 
-		true if they are, else returns false.
-	*/
-	map<string, bool> visited;
-	map<string, Cell>::iterator it = graph.begin();
-	stack<string> keyStack;
-
-	// initialize 'visited' to all false
-	while (it != graph.end()){
-		visited[it->first] = false;
-		it++;
+	// check if white has won yet
+	for (uint16_t row = 0; row < numRows; ++row){
+		uint16_t key = row * numColumns;
+		if (graph[key].first == WHITE){
+			if (connected(key, numColumns-1, false)){
+				cout << "white won" << endl;
+				return WHITE_WIN;
+			}
+		}
 	}
 
+	uint16_t emptyCount = numRows*numColumns -
+		(blackCount+whiteCount+neutralCount);
+
+	if (emptyCount > 1){
+		return GAME_NOT_OVER;
+	}
+	else{
+		if (neutralCount >= 2){
+			return GAME_NOT_OVER;
+		}
+		else{
+			return DRAW;
+		}
+	}
+	cout << "game not over" << endl;
+	return GAME_NOT_OVER;
+}
+
+int State::next(){
+	return 3 - playerJustMoved;
+}
+
+bool State::connected(uint16_t key0, uint16_t end, bool blackConnect){
+	// construct a 'visited' array
+	bool visited[numRows * numColumns];
+	memset(visited, false, numRows*numColumns);
+
+	stack<uint16_t> keyStack;
 	keyStack.push(key0);
 	visited[key0] = true;
 	while (!keyStack.empty()){
-		string curr = keyStack.top();
+		uint16_t curr = keyStack.top();
 		keyStack.pop();
-		if (curr == key1){
+
+
+		uint16_t currCol = curr%numColumns;
+		uint16_t currRow = (curr - currCol) / numColumns;
+
+		if ((blackConnect and currRow == end) or
+			(!blackConnect and currCol == end)){
 			return true;
 		}
 
-		for (string adj : graph[curr].adjKeys){
-			if (graph[adj].value == graph[curr].value){
+		for (uint16_t adj : graph[curr].second){
+			if (graph[adj].first == graph[curr].first){
 				if (!visited[adj]){
 					keyStack.push(adj);
 					visited[adj] = true;
@@ -285,92 +305,8 @@ bool State::connected(string key0, string key1){
 	return false;
 }
 
-bool State::valid_pos(string key){
-	if (key.length() == 0)	return false;
-	return valid_pos(get_row(key), get_col(key));
-}
 
-bool State::valid_stone(char stone){
-	return ((stone == BLACK) || 
-			(stone == WHITE) || (stone == NEUTRAL));
-}
-
-bool State::is_valid(Action a, char stone){
-	uint i = 0;
-	uint count = 0;
-	vector<uint> ind;
-	while (i < a.move.length()){
-		if (valid_stone(a.move[i])){
-			ind.push_back(i);
-			i++;
-			uint j = i + 1;
-			while (j < a.move.length() && !valid_stone(a.move[j])){
-				j++;
-			}
-
-			string pos = a.move.substr(i, j-i);
-			if (!valid_pos(pos)){
-				return false;
-			}
-
-			if (a.move[i-1] == stone)			count++;
-			else if (a.move[i-1] == NEUTRAL)	count--;
-			else							return false;
-
-			i = j;
-		}
-		else{
-			return false;
-		}
-	}
-
-	string pos;
-	if (count == 0){
-		pos = a.move.substr(ind[0]+1, ind[1] - ind[0] - 1);
-		if (graph[pos].value != EMPTY){
-			return false;
-		}
-
-		pos = a.move.substr(ind[1]+1, a.move.size() - ind[1] - 1);
-		if (graph[pos].value != EMPTY){
-			return false;
-		}
-	}
-	else if (count == 1){
-		for (i = 0; i < ind.size(); ++i){
-			pos = a.move.substr(ind[0]+1, ind[1]-ind[0]-1);
-			char moveStone = a.move[ind[0]];
-			char cellStone = graph[pos].value;
-
-			if (moveStone == NEUTRAL && cellStone == stone){
-				continue;
-			}
-			else if (moveStone == stone && cellStone == NEUTRAL){
-				continue;
-			}
-			else{
-				return false;
-			}
-		}
-	}
-	else{
-		return false;
-	}
-	return true;
-}
-
-void State::clear(){
-	graph.clear();
-	count[BLACK] = 0;
-	count[WHITE] = 0;
-	count[NEUTRAL] = 0;
-
-	create_graph();
-}
-
-void State::get_moves(vector<Action>& actions, string& myStone){
-
-	// TODO change graph to the way solver 2 implements
+void State::get_moves(vector<Action>& actions, string myStone){
 
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
@@ -382,8 +318,8 @@ void State::get_moves(vector<Action>& actions, string& myStone){
 			if (graph[key].first == EMPTY){
 				emptyPos.push_back(get_key(row, col));
 			}
-			else if((graph[key].first==BLACK and isMax) or
-				(graph[key].first == WHITE and !isMax)){
+			else if((graph[key].first==BLACK and myStone == "B") or
+				(graph[key].first == WHITE and myStone == "W")){
 				stonePos.push_back(get_key(row, col));
 			}
 			else if (graph[key].first == NEUTRAL){
@@ -420,14 +356,12 @@ void State::get_moves(vector<Action>& actions, string& myStone){
 			}
 		}
 	}
-
-
-
 }
 
-State State::clone(){
-	return *this;
+State& State::operator=(State& s){
+	numRows = s.numRows;
+	numColumns = s.numColumns;
+	emptyCount = s.emptyCount;
+	
 }
-
-
 

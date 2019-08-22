@@ -221,8 +221,8 @@ if __name__ == "__main__":
 	import cProfile
 	from dragon.mcts import *
 	
-	player1 = 'greedy'
-	player2 = 'greedy'
+	player1 = 'uct'
+	player2 = 'uct'
 
 	state = HexState()
 	while True:
