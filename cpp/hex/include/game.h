@@ -1,7 +1,6 @@
 #ifndef _GAME_
 
 #define _GAME_
-
 #define BLACK   		1
 #define WHITE   		(1<<1)
 #define NEUTRAL			((1<<1)|1)
@@ -18,9 +17,7 @@
 #include <stack>
 #include <bitset>
 #include <cstring>
-
 using namespace std;
-
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint16_t> > Cell;
 
@@ -41,7 +38,6 @@ public:
 	uint16_t numColumns;
 	vector< Cell > graph;
 	uint16_t emptyCount;
-	uint16_t neutralCount;
 	uint16_t blackCount;
 	uint16_t whiteCount;
 	uint16_t playerJustMoved;

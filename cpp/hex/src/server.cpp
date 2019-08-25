@@ -39,8 +39,9 @@ void Server::set_state(string moves){
 void Server::run(){
 	string cmd;
 	while (1){
-		cout << "? ";
+		cout << "> ";
 		cin >> cmd;
+		cout << "user entered:" << cmd << endl;
 
 		if (cmd == "show"){
 			show();
@@ -63,17 +64,7 @@ void Server::run(){
 			state.switch_turns();
 
 			// check win
-			char status = state.status();
-			cout << status << endl;
-			if (status == BLACK_WIN){
-				cout << "Black won!" << endl;
-			}
-			else if (status == WHITE_WIN){
-				cout << "White won!" << endl;
-			}
-			else if (status == DRAW){
-				cout << "Draw!" << endl;
-			}
+
 		}
 		else if (cmd == "config"){
 		

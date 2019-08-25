@@ -219,7 +219,7 @@ def play_game(state):
 
 if __name__ == "__main__":
 	import cProfile
-	from dragon.mcts import *
+	from fire.mcts import *
 	
 	player1 = 'uct'
 	player2 = 'uct'
@@ -228,7 +228,7 @@ if __name__ == "__main__":
 	while True:
 		
 		'''
-		- showboard
+		- show
 		- new <R> <C>
 		- run <#games> [-state] [-estimate]
 		- search [#simulations]
@@ -243,7 +243,7 @@ if __name__ == "__main__":
 			continue
 		if cmd[0] == 'quit':
 			break
-		elif cmd[0] == 'showboard':
+		elif cmd[0] == 'show':
 
 			print('############################################')
 			print('#  {} vs {} #'.format(player1, player2))
@@ -345,7 +345,7 @@ if __name__ == "__main__":
 		else:
 			print('\t\t\tWelcome to dragon 1.0 manual')
 			print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-			print('showboard\t\t\t\tprints the current state of the board\n')
+			print('show\t\t\t\tprints the current state of the board\n')
 			print('new <R> <C>\t\t\t\tcreates an empty state of size R x C\n')
 			print('run <N> [-state] [-estimate]\t\truns N games between the players')
 			print('\t\t\t\t\tshowing the state and the estimate if the flags are provided\n')

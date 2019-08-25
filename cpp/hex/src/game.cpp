@@ -146,7 +146,6 @@ void State::update(Action action){
 			if (action.move[i] == '.'){
 				if (graph[key].first == BLACK)	blackCount--;
 				else if (graph[key].first == WHITE)	whiteCount--;
-				else if (graph[key].first == NEUTRAL)neutralCount--;
 				graph[key].first = EMPTY;
 			}
 			else{
@@ -163,8 +162,6 @@ void State::update(Action action){
 		}
 		j++;
 	}
-
-
 }
 
 void State::revert(Action action, char stone){
@@ -245,6 +242,10 @@ bool State::connected(uint16_t key0, uint16_t end, bool blackConnect){
 		}
 	}
 	return false;
+}
+
+bool State::check_win(){
+
 }
 
 
