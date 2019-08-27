@@ -13,53 +13,124 @@
 # --------------------------------------------------------------------------------
 
 import random
-from copy import deepcopy
+import time
+import copy
 from math import sqrt, log
 
 AI = ['greedy', 'uct']
 
 class MCTNode:
-	def __init__(self, move = None, parent = None, state = None):
+	def __init__(self, move = None, parent = None):
 		self.move = move
-		self.parentNode = parent
-		self.childNodes = []
+		self.parent = parent
+		self.children = list()
 		self.wins, self.visits = 0, 0
-		self.untriedMoves = state.get_moves()
-		self.playerJustMoved = state.playerJustMoved
 
-	def select_child(self):
-		# child selection policy
-		return sorted(self.childNodes, key=lambda c : self.select_policy(c))[-1]
+	def expand_node(self, state):
+		if state.gameover():
+			print('game over!')
+			return
 
-	def select_policy(self, c):
-		return 0
-
-	def add_child(self, m, s):
-		node = MCTNode(m, self, s)
-		self.untriedMoves.remove(m)
-		self.childNodes.append(node)
-		return node
+		for move in state.get_moves():
+			self.children.append(MCTNode(move, self))
 
 	def update(self, result):
 		self.visits += 1
-		self.wins += result
+		if result > 0:
+			self.wins += 1
+
+	def is_leaf(self):
+		return len(self.children) == 0
 
 	def has_parent(self):
-		return self.parentNode is not None
+		return self.parent is not None
 
-class MCTNode_greedy(MCTNode):
-	def __init__(self, move=None, parent=None, state=None):
-		super().__init__(move, parent, state)
-	def select_policy(self, c):
-		return c.wins/c.visits
+def mcts(currState, timeBudget):
 
-class MCTNode_uct(MCTNode):
-	def __init__(self, move=None, parent=None, state=None):
-		super().__init__(move, parent, state)
-		self.eps = 0.5
-	def select_policy(self, c):
-		return c.wins/c.visits + self.eps * sqrt(log(c.parentNode.visits)/c.visits)
+	'''
+	TODO
+	- troubleshoot mcts()
+	'''
 
+	startTime = time.time()
+	root = MCTNode()
+	player = currState.next()
+	depth = 0
+	while time.time() - startTime < timeBudget:
+		node, state = root, copy.deepcopy(currState)
+		print('before selection')
+		state.show()
+		while not node.is_leaf():
+			node, _ = select_policy(node, depth)
+			state.play(node.move)
+			depth += 1
+
+		print('after selection')
+		state.show()
+
+		print('before expansion')
+
+		if not state.gameover():
+			node.expand_node(state)
+			node, _ = select_policy(node, depth)
+			print('expanded new nodes')
+			depth += 1
+			while not state.gameover():
+				move = random.choice(state.get_moves())
+				state.play(move)
+				state.show()
+				print('status =', state.status)
+				print()
+				print()
+
+		print('after rollout')
+		state.show()
+
+		result = state.evaluate(player)
+		print('result =', result, 'player =', player)
+		while node.has_parent():
+			node.update(result)
+			node = node.parent
+			result *= -1
+
+		del state
+	bestValue, bestMove = select_policy(root, 0)
+	print('best move', bestMove)
+
+	for child in root.children:
+		print(child.move, child.wins/child.visits if child.visits > 0 else '0')
+
+
+def select_policy(node, depth):
+	bestValue = 1000 if depth&1 else -1000
+	bestNode = None
+	bestMove = None
+	for i in range(len(node.children)):
+		val = 0
+		if node.children[i].visits > 0:
+			w, v = node.children[i].wins, node.children[i].visits
+			val = w/v
+
+		if depth&1:
+			if val < bestValue:
+				bestValue = val
+				bestNode = node.children[i]
+				bestMove = node.children[i].move
+		else:
+			if val > bestValue:
+				bestValue = val
+				bestNode = node.children[i]
+				bestMove = node.children[i].move
+
+	return bestNode, bestMove
+
+def simulate(state):
+	move = random.choice(state.get_moves())
+	nextState = copy.deepcopy(state)
+	nextState.play(move)
+	return nextState
+
+'''
 def mcts(rootState, itermax, verbose=False, select_policy=None):
 	if verbose:
 		print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
@@ -115,4 +186,4 @@ def mcts(rootState, itermax, verbose=False, select_policy=None):
 
 	bestChild = sorted(rootNode.childNodes, key=lambda c : c.visits)[-1]
 	return bestChild.move, bestChild.wins/bestChild.visits
-
+'''

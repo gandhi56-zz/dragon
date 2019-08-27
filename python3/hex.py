@@ -14,24 +14,16 @@ class HexState:
 		self.board = { chr(j+ord('a')) : {str(i+1) : '.' for i in range(ncols)} for j in range(nrows)}
 		self.count = {'B':0, 'W':0, '?':0}
 		self.status = NOT_DONE
-
 		self.nrows = nrows
 		self.ncols = ncols
 
 	def get_size(self):
 		return (len(self.board), len(self.board['a']))
 
-	def clone(self):
-		return deepcopy(self)
+	def next(self):
+		return 3 - self.playerJustMoved
 
-	def do_move(self, move, usedByUndo=False):
-		# switch players
-		self.playerJustMoved = 3 - self.playerJustMoved
-
-		# play move
-		self.make_move(move, usedByUndo)
-	
-	def make_move(self, move, used_by_undo = False):
+	def play(self, move, used_by_undo = False):
 		def submove(board, count, m):
 			stone, row, col = m[0], m[1], m[2:]
 			board[row][col] = stone
@@ -42,7 +34,18 @@ class HexState:
 		self.board[row][col] = stone
 		self.count[stone] += 1
 
-	def get_moves(self, allMoves=True):
+		self.playerJustMoved = self.next()
+
+		if self.connected(('B', '0'), ('B', '1')):
+			self.status = BLACK_WON
+			print('black won')
+		elif self.connected(('W', '0'), ('W', '1')):
+			self.status = WHITE_WON
+			print('white won')
+
+	def get_moves(self):
+		assert(self.status == NOT_DONE)
+
 		moves = list()
 		stone = 'B'
 		if self.playerJustMoved == 2:
@@ -55,24 +58,15 @@ class HexState:
 				if self.board[r][c] == '.':
 					moves.append(stone+r+c)
 		return moves
-	
-	def get_result(self, player):
-		if self.check_black_win():
-			self.status = BLACK_WON
-			if player == 1:
-				return 1.0
-			return 0.0
-		elif self.check_white_win():
-			self.status = WHITE_WON
-			if player == 2:
-				return 1.0
-		return 0.0
 
-	def check_black_win(self):
-		return self.connected(('B', '0'), ('B', '1'))
-	
-	def check_white_win(self):
-		return self.connected(('W', '0'), ('W', '1'))
+	def gameover(self):
+		return self.status == BLACK_WON or self.status == WHITE_WON
+
+	def evaluate(self, player):
+		# assume terminal state has been reached
+		if (player == 1 and self.status == BLACK_WON) or (player == 2 and self.status == WHITE_WON):
+			return 1.0
+		return 0.0
 	
 	def show(self):
 		print('  ', end='')
@@ -81,9 +75,7 @@ class HexState:
 				print('  {}'.format(c), end='')
 			else:
 				print(' {}'.format(c), end='')
-				
 		print()
-
 		for r in self.board.keys():
 			print(' '*(ord(r)-ord('a')), end='')
 			print(r, end=' \\')
@@ -102,7 +94,6 @@ class HexState:
 		print('\n')
 
 	def nbrs(self, key):
-		# key is a tuple (r,c)
 		if key[0] == 'B':
 			r = 'a'
 			if key[1] == '1':
@@ -140,7 +131,7 @@ class HexState:
 		return nbrs
 
 	def valid_pos(self, r,c):
-		return (r >= 'a' and r < chr(ord('a')+self.nrows) and int(c) >= 1 and int(c) < self.ncols)
+		return (r >= 'a' and r < chr(ord('a')+self.nrows) and int(c) >= 1 and int(c) <= self.ncols)
 
 	def connected(self, start, end):
 		isConnected = False
@@ -175,12 +166,9 @@ class HexState:
 					if curr[0] == 'W' or self.board[curr[0]][curr[1]] == 'W':
 						stack.append(adj)
 						visited[adj] = True
+
+
 		return isConnected
-
-		def is_over(self):
-			self.get_result()
-			return self.status != NOT_DONE
-
 
 def play_game(state):
 	from dragon.mcts import MCTNode, mcts
@@ -224,20 +212,12 @@ if __name__ == "__main__":
 	player1 = 'uct'
 	player2 = 'uct'
 
-	state = HexState()
+	state = HexState(3, 3)
+
+	mcts(state, 5.0)
+
+	'''
 	while True:
-		
-		'''
-		- show
-		- new <R> <C>
-		- run <#games> [-state] [-estimate]
-		- search [#simulations]
-		- play <move>
-		- config <black/white> <selection_policy>
-		- switch
-		- quit
-		'''
-		
 		cmd = input('? ').strip().split()
 		if len(cmd) == 0:
 			continue
@@ -271,6 +251,9 @@ if __name__ == "__main__":
 			blackWins = 0
 			whiteWins = 0
 			draws = 0
+
+			print('{} vs {}'.format(player1, player2))
+			
 
 			for it in range(numGames):
 				state = _state.clone()
@@ -354,4 +337,8 @@ if __name__ == "__main__":
 			print('switch\t\t\t\t\tswitches the player to move\n')
 			print('config <black/white> <AI>\t\t\tconigure player modes\n')
 			print('quit\t\t\t\t\tquit the program\n')
+
+
+	'''
+
 
