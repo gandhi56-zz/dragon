@@ -31,10 +31,10 @@ int main(int argc, char *argv[]){
 
 	set<string> winOpenings;
 
-	for (int i =0; i < 100; ++i){
-		string move = player.best_neg_move(player.gameState, 100, true, false);
-		winOpenings.insert(move);
-		cout << "winning opening: " << move << " winning openings found so far : " << winOpenings.size() << endl;
-	}
+	// for (int i =0; i < 100; ++i){
+	// 	// string move = player.best_nesg_move(player.gameState, 100, true, false);
+	// 	winOpenings.insert(move);
+	// 	cout << "winning opening: " << move << " winning openings found so far : " << winOpenings.size() << endl;
+	// }
 	return 0;
 }

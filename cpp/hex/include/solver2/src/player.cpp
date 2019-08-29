@@ -1,6 +1,5 @@
 
 #include "../include/player.h"
-#include <algorithm>	// for random_shuffle
 
 Player::Player(){
 	init_vars();
