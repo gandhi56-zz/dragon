@@ -91,7 +91,7 @@ def mcts(currState, timeBudget):
 		while node.has_parent():
 			node.update(result)
 			node = node.parent
-			result *= -1
+			#result *= -1
 
 		del state
 	bestValue, bestMove = select_policy(root, 0)

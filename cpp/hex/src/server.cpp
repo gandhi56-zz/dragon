@@ -1,9 +1,11 @@
+//#include "../include/solver2/"
 #include "../include/server.h"
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
 	// initialize state here 
 	state.set_size(3, 3);	// default size is 3x3
+	state.create_graph();
 	maxGames = 1;	// default max number of games
 	numBlackWin = 0;
 	numWhiteWin = 0;
@@ -41,7 +43,6 @@ void Server::run(){
 	while (1){
 		cout << "> ";
 		cin >> cmd;
-		cout << "user entered:" << cmd << endl;
 
 		if (cmd == "show"){
 			show();
@@ -50,6 +51,7 @@ void Server::run(){
 			int rows, cols;
 			cin >> rows >> cols;
 			state.set_size(rows, cols);
+			state.create_graph();
 		}
 		else if (cmd == "run"){
 		
@@ -62,9 +64,7 @@ void Server::run(){
 			cin >> move;
 			state.update(Action(move));
 			state.switch_turns();
-
-			// check win
-
+			state.check_win();
 		}
 		else if (cmd == "config"){
 		

@@ -1,14 +1,15 @@
 // game.cpp
 
-#include "../include/game.h"
+#include "../include/board.h"
 
 State::State(){
 	numRows = 0;
 	numColumns = 0;
+	movesCount = 0;
 	emptyCount = 0;
 	blackCount = 0;
 	whiteCount = 0;
-	playerJustMoved = 2;
+	neutralCount = 0;
 }
 
 State::~State(){
@@ -39,25 +40,27 @@ void State::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
 		nbrs.push_back(key+1);
 	if (valid_pos(key-numColumns+1)and(key%numColumns < numColumns-1))
 		nbrs.push_back(key-numColumns+1);
+
 	if (valid_pos(key+numColumns-1) and (key%numColumns > 0))
 		nbrs.push_back(key+numColumns-1);
 }
 
+uint16_t State::num_nbrs(uint16_t row, uint16_t col){
+	if (row == 0)	return (col == 0 ? 4 : 5);
+	else if (row == numRows - 1){
+		return (col == numColumns-1 ? 5 : 4);
+	}
+	else{
+		return (col == 0 || col == numColumns-1 ? 5 : 6);
+	}
+}
+
 string State::get_value(uint16_t row, uint16_t col){
 	Valtype value = graph[row*numColumns+col].first;
-	if 		(value == BLACK)	return "B";
+	if (value == BLACK)	return "B";
 	else if (value == WHITE)	return "W";
+	else if (value == NEUTRAL)	return "?";
 	else						return ".";
-}
-
-void State::switch_turns(){
-	playerJustMoved = 3 - playerJustMoved;
-}
-
-void State::do_move(Action action){
-	update(action);
-	switch_turns();
-	status = check_win();
 }
 
 void State::show(){
@@ -119,62 +122,144 @@ uint16_t State::get_col(string pos){
 	return (uint16_t)(pos[1] - '1');
 }
 
-void State::update(Action action){
+void State::update(string move){
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
 	int key;
 	Valtype val;
-	while (i < action.move.length()){
-		if (action.move[j]=='B' || action.move[j]=='W' || action.move[j]=='.'){
-			pos = action.move.substr(i+1, j-i-1).c_str();
+	while (i < move.length()){
+		if (move[j]=='B' || move[j]=='W' || move[j]=='?'
+				|| move[j]=='.'){
+
+			pos = move.substr(i+1, j-i-1).c_str();
 			key = get_row(pos) * numColumns + get_col(pos);
+
 			if (graph[key].first != EMPTY){
 				if (graph[key].first == BLACK)		blackCount--;
 				else if (graph[key].first == WHITE)	whiteCount--;
+				else if (graph[key].first == NEUTRAL)neutralCount--;
 			}
 
-			if (action.move[i] == '.'){
+			if (move[i] == '.'){
 				if (graph[key].first == BLACK)	blackCount--;
 				else if (graph[key].first == WHITE)	whiteCount--;
+				else if (graph[key].first == NEUTRAL)neutralCount--;
 				graph[key].first = EMPTY;
 			}
 			else{
-				if (action.move[i] == 'B'){
+				if (move[i] == 'B'){
 					blackCount++;
 					graph[key].first = BLACK;
 				}
-				else if (action.move[i] == 'W'){
+				else if (move[i] == 'W'){
 					whiteCount++;
 					graph[key].first = WHITE;
+				}
+				else if (move[i] == '?'){
+					neutralCount++;
+					graph[key].first = NEUTRAL;
 				}
 			}
 			i = j;
 		}
 		j++;
 	}
+
+
 }
 
-void State::revert(Action action, char stone){
-	// FIXME
-	for (uint16_t i = 0; i < action.move.length(); ++i){
-		if (action.move[i] == stone){
-			if (stone == 'B')	blackCount--;
-			else				whiteCount--;
-			action.move[i] = '.';
+void State::revert(string move, char stone){
+	uint16_t numStones = 0;
+	uint16_t numNeutrals = 0;
+	for (uint16_t i = 0; i < move.length(); ++i){
+		if (move[i] == stone)			numStones++;
+		else if (move[i] == '?')	numNeutrals++;
+	}
+
+	if (numNeutrals != 1)	return;
+
+	if (numStones == 1){
+		for (uint16_t i = 0; i < move.length(); ++i){
+			if (move[i] == stone){
+				if (stone == 'B')	blackCount--;
+				else				whiteCount--;
+				move[i] = '.';
+			}
+
+			if (move[i] == '?'){
+				neutralCount--;
+				move[i] = '.';
+			}
 		}
 	}
-	update(action);
+	else if (numStones == 2){
+		for (uint16_t i = 0; i < move.length(); ++i){
+			if (move[i] == stone){
+				move[i] = '?';
+				if (stone == 'B')	blackCount--;
+				else				whiteCount--;
+				neutralCount++;
+			}
+			else if (move[i] == '?'){
+				if (stone == 'B'){
+					move[i] = 'B';
+					blackCount++;
+				}
+				else{
+					move[i] = 'W';
+					whiteCount++;
+				}
+				neutralCount--;
+			}
+		}
+	}
+	update(move);
 }
 
-int State::next(){
-	return 3 - playerJustMoved;
+char State::status(){
+	// check if black has won
+	for (uint16_t col = 0; col < numColumns; ++col){
+		if (graph[col].first == BLACK){
+			// run dfs
+			if (connected(col, numRows-1, true)){
+				return BLACK_WIN;
+			}
+		}
+	}
+
+
+	// check if white has won yet
+	for (uint16_t row = 0; row < numRows; ++row){
+		uint16_t key = row * numColumns;
+		if (graph[key].first == WHITE){
+			if (connected(key, numColumns-1, false)){
+				return WHITE_WIN;
+			}
+		}
+	}
+
+	uint16_t emptyCount = numRows*numColumns -
+		(blackCount+whiteCount+neutralCount);
+
+	if (emptyCount > 1){
+		return GAME_NOT_OVER;
+	}
+	else{
+		if (neutralCount >= 2){
+			return GAME_NOT_OVER;
+		}
+		else{
+			return DRAW;
+		}
+	}
 }
 
-bool State::connected(uint16_t key0, uint16_t key1, bool blackConnect){
-	
+bool State::connected(uint16_t key0, uint16_t end, bool blackConnect){
+	// construct a 'visited' array
 	bool visited[numRows * numColumns];
 	memset(visited, false, numRows*numColumns);
+
 	stack<uint16_t> keyStack;
 	keyStack.push(key0);
 	visited[key0] = true;
@@ -182,11 +267,12 @@ bool State::connected(uint16_t key0, uint16_t key1, bool blackConnect){
 		uint16_t curr = keyStack.top();
 		keyStack.pop();
 
-		uint16_t currRow = curr/numRows;
-		uint16_t currCol = curr%numRows;
 
-		if ((blackConnect and currRow == key1) or
-			(!blackConnect and currCol == key1)){
+		uint16_t currCol = curr%numColumns;
+		uint16_t currRow = (curr - currCol) / numColumns;
+
+		if ((blackConnect and currRow == end) or
+			(!blackConnect and currCol == end)){
 			return true;
 		}
 
@@ -201,54 +287,3 @@ bool State::connected(uint16_t key0, uint16_t key1, bool blackConnect){
 	}
 	return false;
 }
-
-char State::check_win(){
-	// check if black has won
-	for (uint16_t col = 0; col < numColumns; ++col){
-		if (graph[col].first == BLACK){
-			if (connected(col, numRows-1, true)){
-				cout << "black won" << endl;
-				return BLACK_WIN;
-			}
-		}
-	}
-
-
-	// check if white has won
-	for (uint16_t row = 0; row < numRows; ++row){
-		uint16_t key = row * numRows;
-		if (graph[key].first == WHITE){
-			if (connected(key, numColumns-1, false)){
-				cout << "white won" << endl;
-				return WHITE_WIN;
-			}
-		}
-	}
-
-	return '.';
-
-}
-
-void State::get_moves(vector<Action>& actions, string myStone){
-
-	// store all cells where a stone may be placed
-	vector<string> emptyPos;
-	vector<string> stonePos;
-	vector<string> neutralPos;
-	for (uint16_t row = 0; row < numRows; ++row){
-		for (uint16_t col = 0; col < numColumns; ++col){
-			uint16_t key = row * numColumns + col;
-			if (graph[key].first == EMPTY){
-				actions.push_back(Action(myStone+get_key(row, col)));
-			}
-		}
-	}
-}
-
-State& State::operator=(State& s){
-	// FIXME
-	numRows = s.numRows;
-	numColumns = s.numColumns;
-	emptyCount = s.emptyCount;
-}
-
