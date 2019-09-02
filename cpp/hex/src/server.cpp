@@ -56,18 +56,38 @@ void Server::run(){
 			solver.set_state(state);
 		}
 		else if (cmd == "run"){
-		
+
+			//while (1){
+			//	HexAction action = solver.solve();
+			//	state.update(action);
+			//	state.switch_turns();
+			//	state.check_win();
+			//	solver.set_state(state);
+			//	cout << state.status << endl;
+			//	if (state.status != '.')
+			//		break;
+			//}
+
 		}
 		else if (cmd == "search"){
-			solver.solve();
+			if (state.status == '.'){
+				solver.solve();			
+			}
+			else{
+				cout << state.status << " has already won." << endl;
+			}
 		}
 		else if (cmd == "play"){
-			string move;
-			cin >> move;
-			state.update(HexAction(move));
-			state.switch_turns();
-			state.check_win();
-			solver.set_state(state);
+			cout << "status = " << state.status << endl;
+			if (state.status == '.'){
+				string move;
+				cin >> move;
+				state.do_move(HexAction(move));
+				solver.set_state(state);
+			}
+			else{
+				cout << state.status << " has already won." << endl;
+			}
 		}
 		else if (cmd == "config"){
 		

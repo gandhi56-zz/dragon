@@ -228,7 +228,10 @@ char HexState::check_win(){
 
 }
 
-void HexState::get_moves(vector<HexAction>& actions, string myStone){
+void HexState::get_moves(vector<HexAction>& actions){
+	string myStone = "B";
+	if (playerJustMoved == 1)
+		myStone = "W";
 
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;

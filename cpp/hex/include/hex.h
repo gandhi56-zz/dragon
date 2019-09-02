@@ -57,7 +57,7 @@ public:
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
 	void revert(HexAction action, char stone);
 	int next();
-	void get_moves(vector<HexAction>& actions, string myStone);
+	void get_moves(vector<HexAction>& actions);
 	void switch_turns();
 	void do_move(HexAction action);
 	HexState& operator=(HexState& s);

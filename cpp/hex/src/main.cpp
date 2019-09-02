@@ -12,5 +12,6 @@ int main(){
 	//state.update(Action("Wa3Wc1Wb2"));
 	//state.show();
 
+
 	return 0;
 }

@@ -1,14 +1,13 @@
 #ifndef _SOLVER_
 #define _SOLVER_
 
-#include <algorithm>
+#include <algorithm>	// for random shuffle
 
 template <class state_t, class action_t>
 class Solver{
 public:
-
 	state_t state;
-
+	action_t optAction;
 	Solver(){
 		cout << "Solver says Hi!" << endl;
 	}
@@ -17,30 +16,23 @@ public:
 	}
 
 	// alpha beta negamax ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	void solve(){
+	action_t solve(){
 		cout << "solving state..." << endl;
+		vector<action_t> actions;
 		state_t s = state;
 		s.show();
-		string myStone = "B";
-		bool isMax = true;
-		if (s.playerJustMoved == 1){
-			myStone = "W";
-			isMax = false;
-		}
-
-		vector<action_t> actions;
-		s.get_moves(actions, myStone);
-
-		srand(time(nullptr));
-		random_shuffle(actions.begin(), actions.end());
-
+		s.get_moves(actions);
+		#ifdef RANDOM_FIRST_MOVE
+			srand(time(nullptr));
+			random_shuffle(actions.begin(), actions.end());
+		#endif
 		int alpha = -100;
 		int beta = 100;
 		int value = -100;
 		action_t bestAction;
 		for (auto action : actions){
-			s.update(action);
-			int negVal = -negamax(s, !isMax, -beta, -alpha);
+			s.do_move(action);
+			int negVal = -negamax(s, -beta, -alpha);
 			if (negVal > value){
 				value = negVal;
 				bestAction = action;
@@ -54,31 +46,44 @@ public:
 		}
 
 		cout << "best move = " << bestAction.move << endl;
-
+		return bestAction;
 	}
 	
-	int negamax(state_t s, bool isMax, int alpha, int beta){
-		string myStone = (isMax?"B":"W");
+	int negamax(state_t s, int alpha, int beta){
+		bool isMax = (s.playerJustMoved == 1 ? false : true);
 		int value = evaluate(s, isMax);
 
-		if (s.status == BLACK_WIN or s.status == WHITE_WIN){
+		if (s.status == BLACK_WIN){
+			//s.show();
+			//cout << "isMax = " << isMax << " ";
+			//cout << "b value = " << value << endl;
+			return value;
+		}
+		else if (s.status == WHITE_WIN){
+			//s.show();
+			//cout << "isMax = " << isMax << " ";
+			//cout << "w value = " << value << endl;
 			return value;
 		}
 
 		vector<action_t> actions;
-		s.get_moves(actions, myStone);
+		s.get_moves(actions);
 		value = -100;
 		for (auto action : actions){
-			s.update(action);
+			s.do_move(action);
 			s.status = s.check_win();
-			value = max(value, -negamax(s, !isMax,
-				-beta, -alpha));
+			int negVal = -negamax(s, -beta, -alpha);
+			if (negVal > value){
+				value = negVal;
+				optAction = action;
+			}
 			alpha = max(alpha, value);
 			if (alpha >= beta)	break;	// alpha-beta cutoff
 			action.move[0] = '.';
 			s.update(action);
 			s.status = s.check_win();
 		}
+
 		return value;
 	}
 	
