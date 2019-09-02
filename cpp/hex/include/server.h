@@ -2,10 +2,15 @@
 
 #define _SERVER_
 
-#include "game.h"
 #include <ctime>
 #include <string.h>
 #include <chrono>
+
+//#ifndef _STATE_
+	#include "state.h"
+//#endif
+#include "hex.h"
+#include "solver.h"
 
 using namespace std::chrono;
 		
@@ -17,7 +22,8 @@ public:
 	uint numWhiteWin;
 	uint numDraw;
 	
-	State state;
+	HexState state;
+	Solver<HexState, HexAction> solver;
 
 	Server();
 	~Server();

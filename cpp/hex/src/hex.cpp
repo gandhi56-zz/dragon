@@ -1,37 +1,38 @@
 // game.cpp
 
-#include "../include/game.h"
+#include "../include/hex.h"
 
-State::State(){
+HexState::HexState(){
 	numRows = 0;
 	numColumns = 0;
 	emptyCount = 0;
 	blackCount = 0;
 	whiteCount = 0;
 	playerJustMoved = 2;
+	status = '.';
 }
 
-State::~State(){
+HexState::~HexState(){
 
 }
 
-void State::set_size(uint16_t rows, uint16_t cols){
+void HexState::set_size(uint16_t rows, uint16_t cols){
 	numRows = rows;
 	numColumns = cols;
 	graph.resize(numRows*numColumns);
 }
 
-void State::create_graph(){
+void HexState::create_graph(){
 	for (uint16_t i = 0; i < numRows*numColumns; ++i){
 		graph[i].first = EMPTY;
 		set_nbrs(graph[i].second, i);
 	}
 }
 
-bool State::valid_pos(uint16_t key){
+bool HexState::valid_pos(uint16_t key){
 	return 0 <= key and key < numRows*numColumns;
 }
-void State::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
+void HexState::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
 	if (valid_pos(key+numColumns))	nbrs.push_back(key+numColumns);
 	if (valid_pos(key-numColumns))	nbrs.push_back(key-numColumns);
 	if (valid_pos(key-1) and (key%numColumns > 0))nbrs.push_back(key-1);
@@ -43,24 +44,24 @@ void State::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
 		nbrs.push_back(key+numColumns-1);
 }
 
-string State::get_value(uint16_t row, uint16_t col){
+string HexState::get_value(uint16_t row, uint16_t col){
 	Valtype value = graph[row*numColumns+col].first;
 	if 		(value == BLACK)	return "B";
 	else if (value == WHITE)	return "W";
 	else						return ".";
 }
 
-void State::switch_turns(){
+void HexState::switch_turns(){
 	playerJustMoved = 3 - playerJustMoved;
 }
 
-void State::do_move(Action action){
+void HexState::do_move(HexAction action){
 	update(action);
 	switch_turns();
 	status = check_win();
 }
 
-void State::show(){
+void HexState::show(){
 	cout << endl << " ";
 
 	for (uint16_t col = 1; col <= numColumns; ++col){
@@ -91,7 +92,7 @@ void State::show(){
 }
 
 // pos to string
-string State::get_key(uint16_t row, uint16_t col){
+string HexState::get_key(uint16_t row, uint16_t col){
 	string key;
 	key.push_back('a'+row);
 
@@ -106,20 +107,20 @@ string State::get_key(uint16_t row, uint16_t col){
 }
 
 
-bool State::valid_pos(uint16_t row, uint16_t col){
+bool HexState::valid_pos(uint16_t row, uint16_t col){
 	return (row>=0 && row<numRows && col>=0 && col<numColumns);
 }
 
 // string to pos
-uint16_t State::get_row(string pos){
+uint16_t HexState::get_row(string pos){
 	return (uint16_t)(pos[0] - 'a');
 }
 
-uint16_t State::get_col(string pos){
+uint16_t HexState::get_col(string pos){
 	return (uint16_t)(pos[1] - '1');
 }
 
-void State::update(Action action){
+void HexState::update(HexAction action){
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
@@ -155,7 +156,7 @@ void State::update(Action action){
 	}
 }
 
-void State::revert(Action action, char stone){
+void HexState::revert(HexAction action, char stone){
 	// FIXME
 	for (uint16_t i = 0; i < action.move.length(); ++i){
 		if (action.move[i] == stone){
@@ -167,11 +168,11 @@ void State::revert(Action action, char stone){
 	update(action);
 }
 
-int State::next(){
+int HexState::next(){
 	return 3 - playerJustMoved;
 }
 
-bool State::connected(uint16_t key0, uint16_t key1, bool blackConnect){
+bool HexState::connected(uint16_t key0, uint16_t key1, bool blackConnect){
 	
 	bool visited[numRows * numColumns];
 	memset(visited, false, numRows*numColumns);
@@ -202,12 +203,11 @@ bool State::connected(uint16_t key0, uint16_t key1, bool blackConnect){
 	return false;
 }
 
-char State::check_win(){
+char HexState::check_win(){
 	// check if black has won
 	for (uint16_t col = 0; col < numColumns; ++col){
 		if (graph[col].first == BLACK){
 			if (connected(col, numRows-1, true)){
-				cout << "black won" << endl;
 				return BLACK_WIN;
 			}
 		}
@@ -219,7 +219,6 @@ char State::check_win(){
 		uint16_t key = row * numRows;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
-				cout << "white won" << endl;
 				return WHITE_WIN;
 			}
 		}
@@ -229,7 +228,7 @@ char State::check_win(){
 
 }
 
-void State::get_moves(vector<Action>& actions, string myStone){
+void HexState::get_moves(vector<HexAction>& actions, string myStone){
 
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
@@ -239,16 +238,20 @@ void State::get_moves(vector<Action>& actions, string myStone){
 		for (uint16_t col = 0; col < numColumns; ++col){
 			uint16_t key = row * numColumns + col;
 			if (graph[key].first == EMPTY){
-				actions.push_back(Action(myStone+get_key(row, col)));
+				actions.push_back(HexAction(myStone+get_key(row, col)));
 			}
 		}
 	}
 }
 
-State& State::operator=(State& s){
-	// FIXME
+HexState& HexState::operator=(HexState& s){
 	numRows = s.numRows;
 	numColumns = s.numColumns;
-	emptyCount = s.emptyCount;
+	blackCount = s.blackCount;
+	whiteCount = s.whiteCount;
+	playerJustMoved = s.playerJustMoved;
+	status = s.status;
+	graph = s.graph;
+	return *this;
 }
 

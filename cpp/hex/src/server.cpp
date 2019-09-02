@@ -1,16 +1,17 @@
-//#include "../include/solver2/"
 #include "../include/server.h"
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
-	// initialize state here 
-	state.set_size(3, 3);	// default size is 3x3
+	state.set_size(3, 3);
 	state.create_graph();
-	maxGames = 1;	// default max number of games
+	solver.set_state(state);
+	maxGames = 1;
 	numBlackWin = 0;
 	numWhiteWin = 0;
 	numDraw = 0;
 	cout << "Game created successfully." << endl;
+
+
 }
 
 Server::~Server(){
@@ -52,19 +53,21 @@ void Server::run(){
 			cin >> rows >> cols;
 			state.set_size(rows, cols);
 			state.create_graph();
+			solver.set_state(state);
 		}
 		else if (cmd == "run"){
 		
 		}
 		else if (cmd == "search"){
-		
+			solver.solve();
 		}
 		else if (cmd == "play"){
 			string move;
 			cin >> move;
-			state.update(Action(move));
+			state.update(HexAction(move));
 			state.switch_turns();
 			state.check_win();
+			solver.set_state(state);
 		}
 		else if (cmd == "config"){
 		

@@ -5,8 +5,8 @@ SRC = ./src/
 OBJ = ./obj/
 HEADER = ./include/
 
-$(OBJ)main: $(OBJ)game.o $(OBJ)server.o $(OBJ)main.o 
-	$(CC) $^ -o $@
+$(OBJ)main: $(OBJ)hex.o $(OBJ)server.o $(OBJ)main.o 
+	$(CC) $(CCFLAGS) $^ -o $@
 
 $(OBJ)main.o: $(SRC)main.cpp
 	$(CC) $(CCFLAGS) $^ -c -o $@
@@ -14,7 +14,7 @@ $(OBJ)main.o: $(SRC)main.cpp
 $(OBJ)server.o: $(SRC)server.cpp
 	$(CC) $(CCFLAGS) $^ -c -o $@
 
-$(OBJ)game.o: $(SRC)game.cpp
+$(OBJ)hex.o: $(SRC)hex.cpp
 	mkdir -p $(@D)
 	$(CC) $(CCFLAGS) $^ -c -o $@
 

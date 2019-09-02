@@ -11,6 +11,8 @@
 #define WHITE_WIN		'W'
 #define GAME_NOT_OVER	'?'
 
+#include "state.h"
+
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -21,18 +23,18 @@ using namespace std;
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint16_t> > Cell;
 
-class Action{
+class HexAction: public Action{
 public:
 	string move;
-	Action();
-	Action(string m)	:	move(m)	{}
-	Action& operator=(const Action& a){
+	HexAction()	:	move("")	{}
+	HexAction(string m)	:	move(m)	{}
+	HexAction& operator=(const HexAction& a){
 		move = a.move;
 		return *this;
 	}
 };
 
-class State{
+class HexState: public State{
 public:
 	uint16_t numRows;
 	uint16_t numColumns;
@@ -43,22 +45,22 @@ public:
 	uint16_t playerJustMoved;
 	char status;
 
-	State();
-	~State();
+	HexState();
+	~HexState();
 	void set_size(uint16_t rows, uint16_t cols);
 	void create_graph();
 	void set_nbrs(vector<uint16_t>& nbrs, uint16_t key);
 	string get_value(uint16_t row, uint16_t col);
 	void show();
 	string get_key(uint16_t row, uint16_t col);
-	void update(Action action);
+	void update(HexAction action);
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
-	void revert(Action action, char stone);
+	void revert(HexAction action, char stone);
 	int next();
-	void get_moves(vector<Action>& actions, string myStone);
+	void get_moves(vector<HexAction>& actions, string myStone);
 	void switch_turns();
-	void do_move(Action action);
-	State& operator=(State& s);
+	void do_move(HexAction action);
+	HexState& operator=(HexState& s);
 	char check_win();
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);

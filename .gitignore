@@ -1,4 +1,12 @@
-.vscode/
-NexC_server/nexm/solver2/src/.player.cpp.swp
-pynex/.nex.py.swp
-NexC_server/obj
+.*.*.*
+cpp/.*.*.*
+cpp/hex/.*.*.*
+cpp/hex/include/.*.*.*
+cpp/hex/solver2
+cpp/hex/src/.*.*.*
+cpp/hex/obj
+cpp/nex/.*.*.*
+cpp/nex/include/.*.*.*
+cpp/nex/solver2
+cpp/nex/src/.*.*.*
+cpp/nex/obj

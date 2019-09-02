@@ -26,13 +26,6 @@
 
 using namespace std;
 
-struct ClientSocket{
-	int port;
-	struct hostent* host;
-	sockaddr_in sendSockAddr;
-	int clientSd;
-};
-
 class Player{
 
 private:
