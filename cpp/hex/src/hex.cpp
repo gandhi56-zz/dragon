@@ -6,8 +6,8 @@ HexState::HexState(){
 	numRows = 0;
 	numColumns = 0;
 	emptyCount = 0;
-	blackCount = 0;
-	whiteCount = 0;
+	//blackCount = 0;
+	//whiteCount = 0;
 	playerJustMoved = 2;
 	status = '.';
 }
@@ -121,6 +121,7 @@ uint16_t HexState::get_col(string pos){
 }
 
 void HexState::update(HexAction action){
+	cout << "playing " << action.move << endl;
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
@@ -130,23 +131,23 @@ void HexState::update(HexAction action){
 		if (action.move[j]=='B' || action.move[j]=='W' || action.move[j]=='.'){
 			pos = action.move.substr(i+1, j-i-1).c_str();
 			key = get_row(pos) * numColumns + get_col(pos);
-			if (graph[key].first != EMPTY){
-				if (graph[key].first == BLACK)		blackCount--;
-				else if (graph[key].first == WHITE)	whiteCount--;
-			}
+			//if (graph[key].first != EMPTY){
+			//	if (graph[key].first == BLACK)		blackCount--;
+			//	else if (graph[key].first == WHITE)	whiteCount--;
+			//}
 
 			if (action.move[i] == '.'){
-				if (graph[key].first == BLACK)	blackCount--;
-				else if (graph[key].first == WHITE)	whiteCount--;
+				//if (graph[key].first == BLACK)	blackCount--;
+				//else if (graph[key].first == WHITE)	whiteCount--;
 				graph[key].first = EMPTY;
 			}
 			else{
 				if (action.move[i] == 'B'){
-					blackCount++;
+					//blackCount++;
 					graph[key].first = BLACK;
 				}
 				else if (action.move[i] == 'W'){
-					whiteCount++;
+					//whiteCount++;
 					graph[key].first = WHITE;
 				}
 			}
@@ -156,13 +157,10 @@ void HexState::update(HexAction action){
 	}
 }
 
-void HexState::revert(HexAction action, char stone){
-	// FIXME
+void HexState::revert(HexAction& action){
 	for (uint16_t i = 0; i < action.move.length(); ++i){
-		if (action.move[i] == stone){
-			if (stone == 'B')	blackCount--;
-			else				whiteCount--;
-			action.move[i] = '.';
+		if (action.move[i] == BLACK or action.move[i] == WHITE){
+			action.move[i] = EMPTY;
 		}
 	}
 	update(action);
@@ -250,11 +248,20 @@ void HexState::get_moves(vector<HexAction>& actions){
 HexState& HexState::operator=(HexState& s){
 	numRows = s.numRows;
 	numColumns = s.numColumns;
-	blackCount = s.blackCount;
-	whiteCount = s.whiteCount;
+	//blackCount = s.blackCount;
+	//whiteCount = s.whiteCount;
 	playerJustMoved = s.playerJustMoved;
 	status = s.status;
 	graph = s.graph;
 	return *this;
 }
+
+uint16_t HexState::player1(){
+	return BLACK;
+}
+
+uint16_t HexState::player2(){
+	return WHITE;
+}
+
 

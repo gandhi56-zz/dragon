@@ -55,13 +55,15 @@ public:
 	string get_key(uint16_t row, uint16_t col);
 	void update(HexAction action);
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
-	void revert(HexAction action, char stone);
+	void revert(HexAction& action);
 	int next();
 	void get_moves(vector<HexAction>& actions);
 	void switch_turns();
 	void do_move(HexAction action);
 	HexState& operator=(HexState& s);
 	char check_win();
+	uint16_t player1();
+	uint16_t player2();
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);
 	uint16_t get_row(string pos);

@@ -9,7 +9,7 @@
 //#ifndef _STATE_
 	#include "state.h"
 //#endif
-#include "hex.h"
+#include "ttt.h"
 #include "../../solver/solver.h"
 
 using namespace std::chrono;
@@ -18,12 +18,9 @@ class Server{
 private:
 public:
 	uint maxGames;
-	uint numBlackWin;
-	uint numWhiteWin;
-	uint numDraw;
 	
-	HexState state;
-	Solver<HexState, HexAction> solver;
+	TTTState state;
+	Solver<TTTState, TTTAction> solver;
 
 	Server();
 	~Server();
