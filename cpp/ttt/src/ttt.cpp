@@ -21,6 +21,7 @@ void TTTState::set_size(uint16_t rows, uint16_t cols){
 
 void TTTState::create_graph(){
 	playerJustMoved = 2;
+	status = '.';
 	for (uint16_t i = 0; i < numRows*numColumns; ++i){
 		graph[i] = EMPTY;
 	}
@@ -85,7 +86,7 @@ uint16_t TTTState::get_col(string pos){
 }
 
 bool TTTState::update(TTTAction action){
-	cout << "playing " << action.move << endl;
+	//cout << "playing " << action.move << endl;
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
@@ -207,9 +208,14 @@ TTTState& TTTState::operator=(TTTState& s){
 	return *this;
 }
 
-bool TTTState::player1(){
-	return X_WIN;
+char TTTState::player1(){
+	return PLAYER_X;
 }
-bool TTTState::player2(){
-	return O_WIN;
+
+char TTTState::player2(){
+	return PLAYER_O;
+}
+
+char TTTState::draw(){
+	return DRAW;
 }

@@ -99,7 +99,7 @@ void Server::run(){
 		
 		}
 		else if (cmd == "neg"){
-			cout << "negamax value = " << solver.negamax(solver.state, -100, 100, true) << endl;
+			cout << "negamax value = " << solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0) << endl;
 		}
 		else if (cmd == "quit"){
 			break;

@@ -5,8 +5,6 @@
 #define PLAYER_O   		'o'
 #define EMPTY   		'.'
 #define DRAW			'#'
-#define X_WIN			'x'
-#define O_WIN			'o'
 #define GAME_NOT_OVER	'.'
 
 #include "state.h"
@@ -53,8 +51,9 @@ public:
 	void do_move(TTTAction action);
 	TTTState& operator=(TTTState& s);
 	char check_win();
-	bool player1();
-	bool player2();
+	char player1();
+	char player2();
+	char draw();
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);
 	uint16_t get_row(string pos);
