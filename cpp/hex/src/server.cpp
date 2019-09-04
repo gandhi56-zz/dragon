@@ -78,16 +78,31 @@ void Server::run(){
 			}
 		}
 		else if (cmd == "play"){
-			cout << "status = " << state.status << endl;
+			//cout << "status = " << state.status << endl;
 			if (state.status == '.'){
 				string move;
 				cin >> move;
-				state.do_move(HexAction(move));
-				solver.set_state(state);
+				if (state.update(HexAction(move))){
+					state.switch_turns();
+					state.status = state.check_win();
+					solver.set_state(state);
+				}
 			}
 			else{
 				cout << state.status << " has already won." << endl;
+				continue;
 			}
+
+			if (state.status == state.player1()){
+				cout << state.player1() << " wins!" << endl;
+			}
+			else if (state.status == state.player2()){
+				cout << state.player2() << " wins!" << endl;
+			}
+		}
+		else if (cmd == "neg"){
+			int neg = solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0);
+			cout << "negamax value = " << neg << endl;
 		}
 		else if (cmd == "config"){
 		

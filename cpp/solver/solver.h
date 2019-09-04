@@ -1,6 +1,8 @@
 #ifndef _SOLVER_
 #define _SOLVER_
 
+//#define SHUFFLE_MOVES
+
 #include <algorithm>	// for random shuffle
 
 template <class state_t, class action_t>
@@ -22,13 +24,24 @@ public:
 	int negamax(state_t s, int alpha, int beta, bool isMax, int depth){
 		//cout << "negmax call " << depth << endl;
 		int value = evaluate(s, isMax);
-		if (value != -100)
+		if (value != -100){
 			return value;
+		}
 
 		vector<action_t> actions;
-		s.get_moves(actions, (isMax?"x":"o"));
-		value = -100;
+		string myStone(1, s.player1());
+		if (!isMax){
+			myStone = "";
+			myStone.push_back(s.player2());
+		}
+		s.get_moves(actions, myStone);
 
+#ifdef SHUFFLE_MOVES
+		srand(time(nullptr));
+		random_shuffle(actions.begin(), actions.end());
+#endif
+
+		value = -100;
 		for (auto action : actions){
 			s.update(action);
 
@@ -58,9 +71,9 @@ public:
 		char gameStatus = s.check_win();
 		if (gameStatus == GAME_NOT_OVER)	return -100;
 		int value;
-		if (gameStatus == 'x')		value = 1;
-		else if (gameStatus == 'o')	value = -1;
-		else if (gameStatus == '#')		value = 0;
+		if (gameStatus == s.player1())		value = 1;
+		else if (gameStatus == s.player2())	value = -1;
+		else if (gameStatus == s.draw())		value = 0;
 		if (!isMax)	value *= -1;
 		return value;	
 	

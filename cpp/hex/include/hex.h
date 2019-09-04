@@ -7,9 +7,9 @@
 #define EMPTY   		0
 #define VALBITS			2		// number of bits for value
 #define DRAW			'#'
-#define BLACK_WIN		'B'
-#define WHITE_WIN		'W'
-#define GAME_NOT_OVER	'?'
+#define BLACK_STONE		'B'
+#define WHITE_STONE		'W'
+#define GAME_NOT_OVER	'.'
 
 #include "state.h"
 
@@ -53,17 +53,19 @@ public:
 	string get_value(uint16_t row, uint16_t col);
 	void show();
 	string get_key(uint16_t row, uint16_t col);
-	void update(HexAction action);
+	bool update(HexAction action);
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
 	void revert(HexAction& action);
 	int next();
 	void get_moves(vector<HexAction>& actions);
+	void get_moves(vector<HexAction>& actions, string myStone);
 	void switch_turns();
 	void do_move(HexAction action);
 	HexState& operator=(HexState& s);
 	char check_win();
-	uint16_t player1();
-	uint16_t player2();
+	char player1();
+	char player2();
+	char draw();
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);
 	uint16_t get_row(string pos);

@@ -23,6 +23,8 @@ void HexState::set_size(uint16_t rows, uint16_t cols){
 }
 
 void HexState::create_graph(){
+	playerJustMoved = 2;
+	status = '.';
 	for (uint16_t i = 0; i < numRows*numColumns; ++i){
 		graph[i].first = EMPTY;
 		set_nbrs(graph[i].second, i);
@@ -120,8 +122,8 @@ uint16_t HexState::get_col(string pos){
 	return (uint16_t)(pos[1] - '1');
 }
 
-void HexState::update(HexAction action){
-	cout << "playing " << action.move << endl;
+bool HexState::update(HexAction action){
+	//cout << "playing " << action.move << endl;
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
@@ -131,35 +133,34 @@ void HexState::update(HexAction action){
 		if (action.move[j]=='B' || action.move[j]=='W' || action.move[j]=='.'){
 			pos = action.move.substr(i+1, j-i-1).c_str();
 			key = get_row(pos) * numColumns + get_col(pos);
-			//if (graph[key].first != EMPTY){
-			//	if (graph[key].first == BLACK)		blackCount--;
-			//	else if (graph[key].first == WHITE)	whiteCount--;
-			//}
-
 			if (action.move[i] == '.'){
 				//if (graph[key].first == BLACK)	blackCount--;
 				//else if (graph[key].first == WHITE)	whiteCount--;
 				graph[key].first = EMPTY;
 			}
 			else{
-				if (action.move[i] == 'B'){
+				if (action.move[i] == BLACK_STONE){
 					//blackCount++;
 					graph[key].first = BLACK;
 				}
-				else if (action.move[i] == 'W'){
+				else if (action.move[i] == WHITE_STONE){
 					//whiteCount++;
 					graph[key].first = WHITE;
+				}
+				else{
+					return false;
 				}
 			}
 			i = j;
 		}
 		j++;
 	}
+	return true;
 }
 
 void HexState::revert(HexAction& action){
 	for (uint16_t i = 0; i < action.move.length(); ++i){
-		if (action.move[i] == BLACK or action.move[i] == WHITE){
+		if (action.move[i] == BLACK_STONE or action.move[i] == WHITE_STONE){
 			action.move[i] = EMPTY;
 		}
 	}
@@ -206,7 +207,7 @@ char HexState::check_win(){
 	for (uint16_t col = 0; col < numColumns; ++col){
 		if (graph[col].first == BLACK){
 			if (connected(col, numRows-1, true)){
-				return BLACK_WIN;
+				return BLACK_STONE;
 			}
 		}
 	}
@@ -217,12 +218,12 @@ char HexState::check_win(){
 		uint16_t key = row * numRows;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
-				return WHITE_WIN;
+				return WHITE_STONE;
 			}
 		}
 	}
 
-	return '.';
+	return GAME_NOT_OVER;
 
 }
 
@@ -231,6 +232,21 @@ void HexState::get_moves(vector<HexAction>& actions){
 	if (playerJustMoved == 1)
 		myStone = "W";
 
+	// store all cells where a stone may be placed
+	vector<string> emptyPos;
+	vector<string> stonePos;
+	vector<string> neutralPos;
+	for (uint16_t row = 0; row < numRows; ++row){
+		for (uint16_t col = 0; col < numColumns; ++col){
+			uint16_t key = row * numColumns + col;
+			if (graph[key].first == EMPTY){
+				actions.push_back(HexAction(myStone+get_key(row, col)));
+			}
+		}
+	}
+}
+
+void HexState::get_moves(vector<HexAction>& actions, string myStone){
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
 	vector<string> stonePos;
@@ -256,12 +272,16 @@ HexState& HexState::operator=(HexState& s){
 	return *this;
 }
 
-uint16_t HexState::player1(){
-	return BLACK;
+char HexState::player1(){
+	return BLACK_STONE;
 }
 
-uint16_t HexState::player2(){
-	return WHITE;
+char HexState::player2(){
+	return WHITE_STONE;
+}
+
+char HexState::draw(){
+	return DRAW;
 }
 
 
