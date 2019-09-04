@@ -11,7 +11,7 @@
 #define WHITE_STONE		'W'
 #define GAME_NOT_OVER	'.'
 
-#include "state.h"
+#include "../../solver/state.h"
 
 #include <iostream>
 #include <vector>
@@ -47,26 +47,38 @@ public:
 
 	HexState();
 	~HexState();
+	HexState& operator=(HexState& s);
+
+	// board construction
 	void set_size(uint16_t rows, uint16_t cols);
 	void create_graph();
 	void set_nbrs(vector<uint16_t>& nbrs, uint16_t key);
-	string get_value(uint16_t row, uint16_t col);
+	
+	// display
 	void show();
-	string get_key(uint16_t row, uint16_t col);
+
+	// transition
 	bool update(HexAction action);
-	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
 	void revert(HexAction& action);
 	int next();
-	void get_moves(vector<HexAction>& actions);
-	void get_moves(vector<HexAction>& actions, string myStone);
 	void switch_turns();
 	void do_move(HexAction action);
-	HexState& operator=(HexState& s);
+	
+	// get actions
+	void get_moves(vector<HexAction>& actions);
+	void get_moves(vector<HexAction>& actions, string myStone);
+	
+	// terminal test
 	char check_win();
+	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
+	
+	// terminal test accessors
 	char player1();
 	char player2();
 	char draw();
 private:
+	string get_key(uint16_t row, uint16_t col);
+	string get_value(uint16_t row, uint16_t col);
 	uint16_t num_nbrs(uint16_t row, uint16_t col);
 	uint16_t get_row(string pos);
 	uint16_t get_col(string pos);
