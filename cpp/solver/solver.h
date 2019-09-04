@@ -1,7 +1,7 @@
 #ifndef _SOLVER_
 #define _SOLVER_
 
-//#define SHUFFLE_MOVES
+#define SHUFFLE_MOVES
 
 #include <algorithm>	// for random shuffle
 

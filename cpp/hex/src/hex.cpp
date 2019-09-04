@@ -161,7 +161,7 @@ bool HexState::update(HexAction action){
 void HexState::revert(HexAction& action){
 	for (uint16_t i = 0; i < action.move.length(); ++i){
 		if (action.move[i] == BLACK_STONE or action.move[i] == WHITE_STONE){
-			action.move[i] = EMPTY;
+			action.move[i] = '.';
 		}
 	}
 	update(action);
