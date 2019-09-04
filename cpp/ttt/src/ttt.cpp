@@ -85,6 +85,7 @@ uint16_t TTTState::get_col(string pos){
 }
 
 bool TTTState::update(TTTAction action){
+	cout << "playing " << action.move << endl;
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
@@ -106,18 +107,14 @@ bool TTTState::update(TTTAction action){
 	return true;
 }
 
-/*
-void TTTState::revert(HexAction action, char stone){
+void TTTState::revert(TTTAction action){
 	for (uint16_t i = 0; i < action.move.length(); ++i){
-		if (action.move[i] == stone){
-			if (stone == 'B')	blackCount--;
-			else				whiteCount--;
+		if (action.move[i] == PLAYER_X or action.move[i] == PLAYER_O){
 			action.move[i] = '.';
 		}
 	}
 	update(action);
 }
-*/
 
 int TTTState::next(){
 	return 3 - playerJustMoved;
@@ -179,10 +176,19 @@ char TTTState::check_win(){
 }
 
 void TTTState::get_moves(vector<TTTAction>& actions){
-
 	string myStone = "x";
 	if (playerJustMoved == 1)
 		myStone = "o";
+	for (int r = 0; r < numRows; ++r){
+		for (int c = 0; c < numColumns; ++c){
+			if (graph[r*numRows+c] == EMPTY){
+				actions.push_back(TTTAction(myStone+get_key(r, c)));
+			}
+		}
+	}
+}
+
+void TTTState::get_moves(vector<TTTAction>& actions, string myStone){
 	for (int r = 0; r < numRows; ++r){
 		for (int c = 0; c < numColumns; ++c){
 			if (graph[r*numRows+c] == EMPTY){

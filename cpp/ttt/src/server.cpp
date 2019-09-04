@@ -98,6 +98,9 @@ void Server::run(){
 		else if (cmd == "config"){
 		
 		}
+		else if (cmd == "neg"){
+			cout << "negamax value = " << solver.negamax(solver.state, -100, 100, true) << endl;
+		}
 		else if (cmd == "quit"){
 			break;
 		}

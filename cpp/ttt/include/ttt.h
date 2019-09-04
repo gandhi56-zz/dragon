@@ -7,7 +7,7 @@
 #define DRAW			'#'
 #define X_WIN			'x'
 #define O_WIN			'o'
-#define GAME_NOT_OVER	'?'
+#define GAME_NOT_OVER	'.'
 
 #include "state.h"
 
@@ -45,9 +45,10 @@ public:
 	string get_key(uint16_t row, uint16_t col);
 	bool update(TTTAction action);
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
-	void revert(TTTAction action, char stone);
+	void revert(TTTAction action);
 	int next();
 	void get_moves(vector<TTTAction>& actions);
+	void get_moves(vector<TTTAction>& actions, string myStone);
 	void switch_turns();
 	void do_move(TTTAction action);
 	TTTState& operator=(TTTState& s);
