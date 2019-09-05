@@ -5,12 +5,7 @@
 #include <ctime>
 #include <string.h>
 #include <chrono>
-
-//#ifndef _STATE_
-	#include "state.h"
-//#endif
 #include "ttt.h"
-#include "../../solver/solver.h"
 
 using namespace std::chrono;
 		

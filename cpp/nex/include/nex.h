@@ -12,8 +12,6 @@
 #define WHITE_WIN		'W'
 #define GAME_NOT_OVER	'.'
 
-#include "../../solver/state.h"
-
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -23,6 +21,8 @@
 using namespace std;
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint16_t> > Cell;
+
+#include "../../solver/solver.h"
 
 class NexAction: public Action{
 public:

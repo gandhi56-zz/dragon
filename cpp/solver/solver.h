@@ -5,6 +5,24 @@
 
 #include <algorithm>	// for random shuffle
 
+class Action{
+public:
+	Action& operator=(const Action& a);
+};
+
+class State{
+public:
+	State& operator=(State& s);
+	void show();
+	bool update(Action action);
+	void revert(Action& action);
+	void get_moves(...);
+	char check_win();
+	char player1();
+	char player2();
+	char draw();
+};
+
 template <class state_t, class action_t>
 class Solver{
 public:

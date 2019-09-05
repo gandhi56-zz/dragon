@@ -11,8 +11,6 @@
 #define WHITE_STONE		'W'
 #define GAME_NOT_OVER	'.'
 
-#include "../../solver/state.h"
-
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -22,6 +20,8 @@
 using namespace std;
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint16_t> > Cell;
+
+#include "../../solver/solver.h"
 
 class HexAction: public Action{
 public:

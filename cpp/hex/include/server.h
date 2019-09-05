@@ -6,7 +6,6 @@
 #include <string.h>
 #include <chrono>
 #include "hex.h"
-#include "../../solver/solver.h"
 
 using namespace std::chrono;
 		

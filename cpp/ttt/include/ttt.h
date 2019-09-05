@@ -7,14 +7,14 @@
 #define DRAW			'#'
 #define GAME_NOT_OVER	'.'
 
-#include "state.h"
-
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <stack>
 #include <cstring>
 using namespace std;
+
+#include "../../solver/solver.h"
 
 class TTTAction: public Action{
 public:
