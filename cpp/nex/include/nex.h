@@ -10,7 +10,9 @@
 #define DRAW			'#'
 #define BLACK_WIN		'B'
 #define WHITE_WIN		'W'
-#define GAME_NOT_OVER	'?'
+#define GAME_NOT_OVER	'.'
+
+#include "../../solver/state.h"
 
 #include <iostream>
 #include <vector>
@@ -18,24 +20,22 @@
 #include <stack>
 #include <bitset>
 #include <cstring>
-
 using namespace std;
-
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint16_t> > Cell;
 
-class Action{
+class NexAction: public Action{
 public:
 	string move;
-	Action();
-	Action(string m)	:	move(m)	{}
-	Action& operator=(const Action& a){
+	NexAction()	:	move("")	{}
+	NexAction(string m)	:	move(m)	{}
+	NexAction& operator=(const NexAction& a){
 		move = a.move;
 		return *this;
 	}
 };
 
-class State{
+class NexState: public State{
 public:
 	uint16_t numRows;
 	uint16_t numColumns;
@@ -45,24 +45,39 @@ public:
 	uint16_t blackCount;
 	uint16_t whiteCount;
 	uint16_t playerJustMoved;
+	char status;
 
-	State();
-	~State();
+	NexState();
+	~NexState();
+	NexState& operator=(NexState& s);
+
+	// board construction
 	void set_size(uint16_t rows, uint16_t cols);
 	void create_graph();
 	void set_nbrs(vector<uint16_t>& nbrs, uint16_t key);
-	string get_value(uint16_t row, uint16_t col);
+	
+	// display
 	void show();
-	string get_key(uint16_t row, uint16_t col);
-	void update(Action action);
-	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
-	char status();
-	void revert(Action action, char stone);
+
+	// transition
+	bool update(NexAction action);
+	void revert(NexAction action);
 	int next();
-	void get_moves(vector<Action>& actions, string myStone);
 	void switch_turns();
-	void do_move(Action action);
-	State& operator=(State& s);
+	void do_move(NexAction action);
+
+	// get actions
+	void get_moves(vector<NexAction>& actions);
+	void get_moves(vector<NexAction>& actions, string myStone);
+
+	// terminal test
+	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
+	char check_win();
+
+	// terminal test accessors
+	char player1();
+	char player2();
+	char draw();
 
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);
@@ -70,6 +85,8 @@ private:
 	uint16_t get_col(string pos);
 	bool valid_pos(uint16_t key);
 	bool valid_pos(uint16_t row, uint16_t col);
+	string get_value(uint16_t row, uint16_t col);
+	string get_key(uint16_t row, uint16_t col);
 };
 
 

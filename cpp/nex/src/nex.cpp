@@ -1,8 +1,7 @@
-// game.cpp
 
-#include "../include/game.h"
+#include "../include/nex.h"
 
-State::State(){
+NexState::NexState(){
 	numRows = 0;
 	numColumns = 0;
 	emptyCount = 0;
@@ -10,29 +9,30 @@ State::State(){
 	whiteCount = 0;
 	neutralCount = 0;
 	playerJustMoved = 2;
+	status = '.';
 }
 
-State::~State(){
+NexState::~NexState(){
 
 }
 
-void State::set_size(uint16_t rows, uint16_t cols){
+void NexState::set_size(uint16_t rows, uint16_t cols){
 	numRows = rows;
 	numColumns = cols;
 	graph.resize(numRows*numColumns);
 }
 
-void State::create_graph(){
+void NexState::create_graph(){
 	for (uint16_t i = 0; i < numRows*numColumns; ++i){
 		graph[i].first = EMPTY;
 		set_nbrs(graph[i].second, i);
 	}
 }
 
-bool State::valid_pos(uint16_t key){
+bool NexState::valid_pos(uint16_t key){
 	return 0 <= key and key < numRows*numColumns;
 }
-void State::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
+void NexState::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
 	if (valid_pos(key+numColumns))	nbrs.push_back(key+numColumns);
 	if (valid_pos(key-numColumns))	nbrs.push_back(key-numColumns);
 	if (valid_pos(key-1) and (key%numColumns > 0))nbrs.push_back(key-1);
@@ -45,34 +45,25 @@ void State::set_nbrs(vector<uint16_t>& nbrs, uint16_t key){
 		nbrs.push_back(key+numColumns-1);
 }
 
-uint16_t State::num_nbrs(uint16_t row, uint16_t col){
-	if (row == 0)	return (col == 0 ? 4 : 5);
-	else if (row == numRows - 1){
-		return (col == numColumns-1 ? 5 : 4);
-	}
-	else{
-		return (col == 0 || col == numColumns-1 ? 5 : 6);
-	}
-}
-
-string State::get_value(uint16_t row, uint16_t col){
+string NexState::get_value(uint16_t row, uint16_t col){
 	Valtype value = graph[row*numColumns+col].first;
-	if (value == BLACK)	return "B";
+	if 		(value == BLACK)	return "B";
 	else if (value == WHITE)	return "W";
 	else if (value == NEUTRAL)	return "?";
 	else						return ".";
 }
 
-void State::switch_turns(){
+void NexState::switch_turns(){
 	playerJustMoved = 3 - playerJustMoved;
 }
 
-void State::do_move(Action action){
+void NexState::do_move(NexAction action){
 	update(action);
 	switch_turns();
+	status = check_win();
 }
 
-void State::show(){
+void NexState::show(){
 	cout << endl << " ";
 
 	for (uint16_t col = 1; col <= numColumns; ++col){
@@ -103,7 +94,7 @@ void State::show(){
 }
 
 // pos to string
-string State::get_key(uint16_t row, uint16_t col){
+string NexState::get_key(uint16_t row, uint16_t col){
 	string key;
 	key.push_back('a'+row);
 
@@ -118,20 +109,20 @@ string State::get_key(uint16_t row, uint16_t col){
 }
 
 
-bool State::valid_pos(uint16_t row, uint16_t col){
+bool NexState::valid_pos(uint16_t row, uint16_t col){
 	return (row>=0 && row<numRows && col>=0 && col<numColumns);
 }
 
 // string to pos
-uint16_t State::get_row(string pos){
+uint16_t NexState::get_row(string pos){
 	return (uint16_t)(pos[0] - 'a');
 }
 
-uint16_t State::get_col(string pos){
+uint16_t NexState::get_col(string pos){
 	return (uint16_t)(pos[1] - '1');
 }
 
-void State::update(Action action){
+bool NexState::update(NexAction action){
 	uint16_t i = 0;
 	uint16_t j = 1;
 	string pos;
@@ -169,21 +160,31 @@ void State::update(Action action){
 					neutralCount++;
 					graph[key].first = NEUTRAL;
 				}
+				else{
+					return false;
+				}
 			}
 			i = j;
 		}
 		j++;
 	}
-
-
+	return true;
 }
 
-void State::revert(Action action, char stone){
+void NexState::revert(NexAction action){
 	uint16_t numStones = 0;
 	uint16_t numNeutrals = 0;
+	char stone;
+	for (auto c : action.move){
+		if (c == 'B' or c == 'W'){
+			stone = c;
+			break;
+		}
+	}
+
 	for (uint16_t i = 0; i < action.move.length(); ++i){
-		if (action.move[i] == stone)			numStones++;
-		else if (action.move[i] == '?')	numNeutrals++;
+		if 		(action.move[i] == stone)	numStones++;
+		else if (action.move[i] == '?')		numNeutrals++;
 	}
 
 	if (numNeutrals != 1)	return;
@@ -226,33 +227,26 @@ void State::revert(Action action, char stone){
 	update(action);
 }
 
-char State::status(){
+char NexState::check_win(){
 	// check if black has won
 	for (uint16_t col = 0; col < numColumns; ++col){
 		if (graph[col].first == BLACK){
-			// run dfs
 			if (connected(col, numRows-1, true)){
-				cout << "black won" << endl;
 				return BLACK_WIN;
 			}
 		}
 	}
 
-
-	// check if white has won yet
 	for (uint16_t row = 0; row < numRows; ++row){
 		uint16_t key = row * numColumns;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
-				cout << "white won" << endl;
 				return WHITE_WIN;
 			}
 		}
 	}
 
-	uint16_t emptyCount = numRows*numColumns -
-		(blackCount+whiteCount+neutralCount);
-
+	uint16_t emptyCount = numRows*numColumns - (blackCount+whiteCount+neutralCount);
 	if (emptyCount > 1){
 		return GAME_NOT_OVER;
 	}
@@ -264,15 +258,14 @@ char State::status(){
 			return DRAW;
 		}
 	}
-	cout << "game not over" << endl;
 	return GAME_NOT_OVER;
 }
 
-int State::next(){
+int NexState::next(){
 	return 3 - playerJustMoved;
 }
 
-bool State::connected(uint16_t key0, uint16_t end, bool blackConnect){
+bool NexState::connected(uint16_t key0, uint16_t end, bool blackConnect){
 	// construct a 'visited' array
 	bool visited[numRows * numColumns];
 	memset(visited, false, numRows*numColumns);
@@ -305,8 +298,11 @@ bool State::connected(uint16_t key0, uint16_t end, bool blackConnect){
 	return false;
 }
 
+void NexState::get_moves(vector<NexAction>& actions){
 
-void State::get_moves(vector<Action>& actions, string myStone){
+	string myStone = "B";
+	if (playerJustMoved == 1)
+		myStone = "W";
 
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
@@ -334,11 +330,11 @@ void State::get_moves(vector<Action>& actions, string myStone){
 			for (uint16_t j = i+1; j < emptyPos.size(); ++j){
 				string key0 = myStone;
 				key0 += emptyPos[i] + "?" + emptyPos[j];
-				actions.push_back(Action(key0));
+				actions.push_back(NexAction(key0));
 
 				string key1 = "?";
 				key1 += emptyPos[i] + myStone  + emptyPos[j];
-				actions.push_back(Action(key1));
+				actions.push_back(NexAction(key1));
 			}
 		}
 	}
@@ -351,17 +347,87 @@ void State::get_moves(vector<Action>& actions, string myStone){
 					string key = myStone;
 					key += neutralPos[i]+myStone+neutralPos[j];
 					key += "?" + stonePos[k];
-					actions.push_back(Action(key));
+					actions.push_back(NexAction(key));
 				}
 			}
 		}
 	}
 }
 
-State& State::operator=(State& s){
+
+void NexState::get_moves(vector<NexAction>& actions, string myStone){
+
+	// store all cells where a stone may be placed
+	vector<string> emptyPos;
+	vector<string> stonePos;
+	vector<string> neutralPos;
+	for (uint16_t row = 0; row < numRows; ++row){
+		for (uint16_t col = 0; col < numColumns; ++col){
+			uint16_t key = row * numColumns + col;
+			if (graph[key].first == EMPTY){
+				emptyPos.push_back(get_key(row, col));
+			}
+			else if((graph[key].first==BLACK and myStone == "B") or
+				(graph[key].first == WHITE and myStone == "W")){
+				stonePos.push_back(get_key(row, col));
+			}
+			else if (graph[key].first == NEUTRAL){
+				neutralPos.push_back(get_key(row, col));
+			}
+		}
+	}
+
+	if (emptyPos.size() >= 2){
+
+		for (uint16_t i = 0; i < emptyPos.size(); ++i){
+			for (uint16_t j = i+1; j < emptyPos.size(); ++j){
+				string key0 = myStone;
+				key0 += emptyPos[i] + "?" + emptyPos[j];
+				actions.push_back(NexAction(key0));
+
+				string key1 = "?";
+				key1 += emptyPos[i] + myStone  + emptyPos[j];
+				actions.push_back(NexAction(key1));
+			}
+		}
+	}
+
+	if (neutralPos.size() >= 2 && stonePos.size() >= 1){
+
+		for (uint16_t i = 0; i < neutralPos.size(); ++i){
+			for (uint16_t j = i + 1; j < neutralPos.size(); ++j){
+				for (uint16_t k = 0; k < stonePos.size(); ++k){
+					string key = myStone;
+					key += neutralPos[i]+myStone+neutralPos[j];
+					key += "?" + stonePos[k];
+					actions.push_back(NexAction(key));
+				}
+			}
+		}
+	}
+}
+
+NexState& NexState::operator=(NexState& s){
 	numRows = s.numRows;
 	numColumns = s.numColumns;
 	emptyCount = s.emptyCount;
-	
+	blackCount = s.blackCount;
+	whiteCount = s.whiteCount;
+	playerJustMoved = s.playerJustMoved;
+	status = s.status;
+	graph = s.graph;
+	return *this;
 }
 
+
+char NexState::player1(){
+	return 'B';
+}
+
+char NexState::player2(){
+	return 'W';
+}
+
+char NexState::draw(){
+	return DRAW;
+}

@@ -62,7 +62,6 @@ public:
 	void revert(HexAction& action);
 	int next();
 	void switch_turns();
-	void do_move(HexAction action);
 	
 	// get actions
 	void get_moves(vector<HexAction>& actions);

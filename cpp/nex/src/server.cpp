@@ -2,9 +2,10 @@
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
-	// initialize state here 
-	state.set_size(3, 3);	// default size is 3x3
-	maxGames = 1;	// default max number of games
+	state.set_size(3, 3);
+	state.create_graph();
+	solver.set_state(state);
+	maxGames = 1;
 	numBlackWin = 0;
 	numWhiteWin = 0;
 	numDraw = 0;
@@ -39,7 +40,7 @@ void Server::set_state(string moves){
 void Server::run(){
 	string cmd;
 	while (1){
-		cout << "? ";
+		cout << "> ";
 		cin >> cmd;
 
 		if (cmd == "show"){
@@ -49,30 +50,37 @@ void Server::run(){
 			int rows, cols;
 			cin >> rows >> cols;
 			state.set_size(rows, cols);
+			state.create_graph();
+			solver.set_state(state);
 		}
 		else if (cmd == "run"){
 		
 		}
 		else if (cmd == "search"){
-		
+			int neg = solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0);
+			cout << "negamax value = " << neg << endl;
 		}
 		else if (cmd == "play"){
-			string move;
-			cin >> move;
-			state.update(Action(move));
-			state.switch_turns();
+			//cout << "status = " << state.status << endl;
+			if (state.status == '.'){
+				string move;
+				cin >> move;
+				if (state.update(NexAction(move))){
+					state.switch_turns();
+					state.status = state.check_win();
+					solver.set_state(state);
+				}
+			}
+			else{
+				cout << state.status << " has already won." << endl;
+				continue;
+			}
 
-			// check win
-			char status = state.status();
-			cout << status << endl;
-			if (status == BLACK_WIN){
-				cout << "Black won!" << endl;
+			if (state.status == state.player1()){
+				cout << state.player1() << " wins!" << endl;
 			}
-			else if (status == WHITE_WIN){
-				cout << "White won!" << endl;
-			}
-			else if (status == DRAW){
-				cout << "Draw!" << endl;
+			else if (state.status == state.player2()){
+				cout << state.player2() << " wins!" << endl;
 			}
 		}
 		else if (cmd == "config"){

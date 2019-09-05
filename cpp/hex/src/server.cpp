@@ -10,8 +10,6 @@ Server::Server(){
 	numWhiteWin = 0;
 	numDraw = 0;
 	cout << "Game created successfully." << endl;
-
-
 }
 
 Server::~Server(){
@@ -69,14 +67,6 @@ void Server::run(){
 			//}
 
 		}
-		else if (cmd == "search"){
-			if (state.status == '.'){
-				solver.solve();			
-			}
-			else{
-				cout << state.status << " has already won." << endl;
-			}
-		}
 		else if (cmd == "play"){
 			//cout << "status = " << state.status << endl;
 			if (state.status == '.'){
@@ -100,7 +90,7 @@ void Server::run(){
 				cout << state.player2() << " wins!" << endl;
 			}
 		}
-		else if (cmd == "neg"){
+		else if (cmd == "search"){
 			int neg = solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0);
 			cout << "negamax value = " << neg << endl;
 		}

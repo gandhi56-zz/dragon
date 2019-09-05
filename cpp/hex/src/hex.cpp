@@ -1,4 +1,3 @@
-// game.cpp
 
 #include "../include/hex.h"
 
@@ -55,12 +54,6 @@ string HexState::get_value(uint16_t row, uint16_t col){
 
 void HexState::switch_turns(){
 	playerJustMoved = 3 - playerJustMoved;
-}
-
-void HexState::do_move(HexAction action){
-	update(action);
-	switch_turns();
-	status = check_win();
 }
 
 void HexState::show(){

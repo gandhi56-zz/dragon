@@ -2,10 +2,11 @@
 
 #define _SERVER_
 
-#include "game.h"
 #include <ctime>
 #include <string.h>
 #include <chrono>
+#include "nex.h"
+#include "../../solver/solver.h"
 
 using namespace std::chrono;
 		
@@ -17,7 +18,8 @@ public:
 	uint numWhiteWin;
 	uint numDraw;
 	
-	State state;
+	NexState state;
+	Solver<NexState, NexAction> solver;
 
 	Server();
 	~Server();

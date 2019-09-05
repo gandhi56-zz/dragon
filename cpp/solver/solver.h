@@ -1,7 +1,7 @@
 #ifndef _SOLVER_
 #define _SOLVER_
 
-#define SHUFFLE_MOVES
+// #define SHUFFLE_MOVES
 
 #include <algorithm>	// for random shuffle
 
@@ -40,7 +40,6 @@ public:
 		srand(time(nullptr));
 		random_shuffle(actions.begin(), actions.end());
 #endif
-
 		value = -100;
 		for (auto action : actions){
 			s.update(action);
