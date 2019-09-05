@@ -4,10 +4,6 @@
 NexState::NexState(){
 	numRows = 0;
 	numColumns = 0;
-	emptyCount = 0;
-	blackCount = 0;
-	whiteCount = 0;
-	neutralCount = 0;
 	playerJustMoved = 2;
 	status = '.';
 }
@@ -55,12 +51,6 @@ string NexState::get_value(uint16_t row, uint16_t col){
 
 void NexState::switch_turns(){
 	playerJustMoved = 3 - playerJustMoved;
-}
-
-void NexState::do_move(NexAction action){
-	update(action);
-	switch_turns();
-	status = check_win();
 }
 
 void NexState::show(){
@@ -135,29 +125,17 @@ bool NexState::update(NexAction action){
 			pos = action.move.substr(i+1, j-i-1).c_str();
 			key = get_row(pos) * numColumns + get_col(pos);
 
-			if (graph[key].first != EMPTY){
-				if (graph[key].first == BLACK)		blackCount--;
-				else if (graph[key].first == WHITE)	whiteCount--;
-				else if (graph[key].first == NEUTRAL)neutralCount--;
-			}
-
 			if (action.move[i] == '.'){
-				if (graph[key].first == BLACK)	blackCount--;
-				else if (graph[key].first == WHITE)	whiteCount--;
-				else if (graph[key].first == NEUTRAL)neutralCount--;
 				graph[key].first = EMPTY;
 			}
 			else{
 				if (action.move[i] == 'B'){
-					blackCount++;
 					graph[key].first = BLACK;
 				}
 				else if (action.move[i] == 'W'){
-					whiteCount++;
 					graph[key].first = WHITE;
 				}
 				else if (action.move[i] == '?'){
-					neutralCount++;
 					graph[key].first = NEUTRAL;
 				}
 				else{
@@ -192,13 +170,10 @@ void NexState::revert(NexAction action){
 	if (numStones == 1){
 		for (uint16_t i = 0; i < action.move.length(); ++i){
 			if (action.move[i] == stone){
-				if (stone == 'B')	blackCount--;
-				else				whiteCount--;
 				action.move[i] = '.';
 			}
 
 			if (action.move[i] == '?'){
-				neutralCount--;
 				action.move[i] = '.';
 			}
 		}
@@ -207,20 +182,14 @@ void NexState::revert(NexAction action){
 		for (uint16_t i = 0; i < action.move.length(); ++i){
 			if (action.move[i] == stone){
 				action.move[i] = '?';
-				if (stone == 'B')	blackCount--;
-				else				whiteCount--;
-				neutralCount++;
 			}
 			else if (action.move[i] == '?'){
 				if (stone == 'B'){
 					action.move[i] = 'B';
-					blackCount++;
 				}
 				else{
 					action.move[i] = 'W';
-					whiteCount++;
 				}
-				neutralCount--;
 			}
 		}
 	}
@@ -232,7 +201,7 @@ char NexState::check_win(){
 	for (uint16_t col = 0; col < numColumns; ++col){
 		if (graph[col].first == BLACK){
 			if (connected(col, numRows-1, true)){
-				return BLACK_WIN;
+				return player1();
 			}
 		}
 	}
@@ -241,12 +210,30 @@ char NexState::check_win(){
 		uint16_t key = row * numColumns;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
-				return WHITE_WIN;
+				return player2();
 			}
 		}
 	}
 
-	uint16_t emptyCount = numRows*numColumns - (blackCount+whiteCount+neutralCount);
+	// count stones
+	uint16_t blackCount = 0;
+	uint16_t whiteCount = 0;
+	uint16_t neutralCount = 0;
+	for (uint16_t row = 0; row < numRows; ++row){
+		for (uint16_t col = 0; col < numColumns; ++col){
+			if (graph[row*numColumns+col].first == BLACK){
+				blackCount++;
+			}
+			else if (graph[row*numColumns+col].first == WHITE){
+				whiteCount++;
+			}
+			else if (graph[row*numColumns+col].first == NEUTRAL){
+				neutralCount++;
+			}
+		}
+	}
+
+	int emptyCount = numRows*numColumns - (blackCount+whiteCount+neutralCount);
 	if (emptyCount > 1){
 		return GAME_NOT_OVER;
 	}
@@ -255,7 +242,7 @@ char NexState::check_win(){
 			return GAME_NOT_OVER;
 		}
 		else{
-			return DRAW;
+			return draw();
 		}
 	}
 	return GAME_NOT_OVER;
@@ -414,9 +401,6 @@ void NexState::get_moves(vector<NexAction>& actions, bool isMax){
 NexState& NexState::operator=(NexState& s){
 	numRows = s.numRows;
 	numColumns = s.numColumns;
-	emptyCount = s.emptyCount;
-	blackCount = s.blackCount;
-	whiteCount = s.whiteCount;
 	playerJustMoved = s.playerJustMoved;
 	status = s.status;
 	graph = s.graph;

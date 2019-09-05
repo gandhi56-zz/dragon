@@ -40,10 +40,6 @@ public:
 	uint16_t numRows;
 	uint16_t numColumns;
 	vector< Cell > graph;
-	uint16_t emptyCount;
-	uint16_t neutralCount;
-	uint16_t blackCount;
-	uint16_t whiteCount;
 	uint16_t playerJustMoved;
 	char status;
 

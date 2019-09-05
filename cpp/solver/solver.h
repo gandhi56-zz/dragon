@@ -31,13 +31,13 @@ public:
 		vector<action_t> actions;
 		s.get_moves(actions, isMax);
 
-#ifdef SHUFFLE_MOVES
+		#ifdef SHUFFLE_MOVES
 		srand(time(nullptr));
 		random_shuffle(actions.begin(), actions.end());
-#endif
+		#endif
+
 		for (auto action : actions){
 			s.update(action);
-
 			if (depth == 0){
 				int neg = -negamax(s, -beta, -alpha, !isMax, depth+1);
 				if (neg > value){
@@ -66,7 +66,7 @@ public:
 		int value;
 		if (gameStatus == s.player1())		value = 1;
 		else if (gameStatus == s.player2())	value = -1;
-		else if (gameStatus == s.draw())		value = 0;
+		else if (gameStatus == s.draw())	value = 0;
 		if (!isMax)	value *= -1;
 		return value;	
 	
