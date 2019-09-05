@@ -64,14 +64,6 @@ void Server::run(){
 			//}
 
 		}
-		else if (cmd == "search"){
-			if (state.status == '.'){
-				solver.solve();			
-			}
-			else{
-				cout << state.status << " has already won." << endl;
-			}
-		}
 		else if (cmd == "play"){
 			cout << "status = " << state.status << endl;
 			if (state.status == '.'){
@@ -98,8 +90,9 @@ void Server::run(){
 		else if (cmd == "config"){
 		
 		}
-		else if (cmd == "neg"){
-			cout << solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0) << endl;
+		else if (cmd == "search"){
+			int neg = solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0);
+			cout << "negamax value = " << neg << endl;
 		}
 		else if (cmd == "quit"){
 			break;

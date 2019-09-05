@@ -46,7 +46,7 @@ public:
 	void revert(TTTAction action);
 	int next();
 	void get_moves(vector<TTTAction>& actions);
-	void get_moves(vector<TTTAction>& actions, string myStone);
+	void get_moves(vector<TTTAction>& actions, bool isMax);
 	void switch_turns();
 	void do_move(TTTAction action);
 	TTTState& operator=(TTTState& s);

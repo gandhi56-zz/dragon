@@ -355,7 +355,11 @@ void NexState::get_moves(vector<NexAction>& actions){
 }
 
 
-void NexState::get_moves(vector<NexAction>& actions, string myStone){
+void NexState::get_moves(vector<NexAction>& actions, bool isMax){
+
+	string myStone = "B";
+	if (!isMax)
+		myStone = "W";
 
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;

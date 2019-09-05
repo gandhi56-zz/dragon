@@ -68,7 +68,7 @@ public:
 
 	// get actions
 	void get_moves(vector<NexAction>& actions);
-	void get_moves(vector<NexAction>& actions, string myStone);
+	void get_moves(vector<NexAction>& actions, bool isMax);
 
 	// terminal test
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);

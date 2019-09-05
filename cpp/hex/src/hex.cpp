@@ -239,7 +239,12 @@ void HexState::get_moves(vector<HexAction>& actions){
 	}
 }
 
-void HexState::get_moves(vector<HexAction>& actions, string myStone){
+void HexState::get_moves(vector<HexAction>& actions, bool isMax){
+
+	string myStone = "B";
+	if (!isMax)
+		myStone = "W";
+
 	// store all cells where a stone may be placed
 	vector<string> emptyPos;
 	vector<string> stonePos;

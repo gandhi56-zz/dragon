@@ -65,7 +65,7 @@ public:
 	
 	// get actions
 	void get_moves(vector<HexAction>& actions);
-	void get_moves(vector<HexAction>& actions, string myStone);
+	void get_moves(vector<HexAction>& actions, bool isMax);
 	
 	// terminal test
 	char check_win();

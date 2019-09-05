@@ -189,7 +189,10 @@ void TTTState::get_moves(vector<TTTAction>& actions){
 	}
 }
 
-void TTTState::get_moves(vector<TTTAction>& actions, string myStone){
+void TTTState::get_moves(vector<TTTAction>& actions, bool isMax){
+	string myStone = "x";
+	if (!isMax)
+		myStone = "o";
 	for (int r = 0; r < numRows; ++r){
 		for (int c = 0; c < numColumns; ++c){
 			if (graph[r*numRows+c] == EMPTY){
