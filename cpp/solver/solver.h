@@ -16,8 +16,8 @@ class State{
 public:
 	State& operator=(State& s);
 	void show();
-	bool update(Action action);
-	void revert(Action& action);
+	// bool update(Action action);
+	// void revert(Action& action);
 	void get_moves(...);
 	char check_win();
 	char player1();

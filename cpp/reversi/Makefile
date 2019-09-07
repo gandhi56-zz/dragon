@@ -1,18 +1,30 @@
-reversi_main: reversi_main.o game.o player.o
-	g++ reversi_main.o game.o player.o -o reversi_main
 
-reversi_main.o: game.o
-	g++ reversi_main.cpp -c -o reversi_main.o
+CC = g++
+CCFLAGS = -Wall -std=c++17
+SRC = ./src/
+OBJ = ./obj/
+HEADER = ./include/
+GAME = reversi
 
-game.o: game.cpp
-	g++ game.cpp -c -o game.o
+$(OBJ)$(GAME): $(OBJ)$(GAME).o $(OBJ)server.o $(OBJ)main.o 
+	$(CC) $(CCFLAGS) $^ -o $@
 
-player.o: player.cpp
-	g++ player.cpp -c -o player.o
+$(OBJ)main.o: $(SRC)main.cpp
+	$(CC) $(CCFLAGS) $^ -c -o $@
 
-run: reversi_main
-	./reversi_main
+$(OBJ)server.o: $(SRC)server.cpp
+	$(CC) $(CCFLAGS) $^ -c -o $@
+
+$(OBJ)$(GAME).o: $(SRC)$(GAME).cpp
+	mkdir -p $(@D)
+	$(CC) $(CCFLAGS) $^ -c -o $@
+
+run: $(OBJ)$(GAME)
+	@$(OBJ)$(GAME)
 
 clean:
-	rm -f *.o
-	rm -f reversi_main
+	@rm -f $(OBJ)*.o $(OBJ)$(GAME)
+	@rm -rf $(SRC).*.*.*
+	@rm -rf $(HEADER).*.*.*
+	@rm -rf .*.*.*
+
