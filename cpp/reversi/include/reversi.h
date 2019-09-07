@@ -2,8 +2,8 @@
 
 #define _GAME_
 
-#define BLACK_STONE		'B'
-#define WHITE_STONE		'W'
+#define BLACK_COIN		'B'
+#define WHITE_COIN		'W'
 #define EMPTY 			'-'
 
 #define DRAW			'#'
@@ -42,7 +42,6 @@ public:
 	uint16_t numRows;
 	uint16_t numColumns;
 	vector<Cell> graph;
-	uint16_t emptyCount;
 	uint16_t blackCount;
 	uint16_t whiteCount;
 	uint16_t playerJustMoved;
@@ -62,6 +61,10 @@ public:
 	// transition
 	// bool update(ReversiAction action);
 	// void revert(ReversiAction& action);
+	bool update(ReversiAction action);
+	int process_move(struct Pos startPos, struct Pos changePos, char coin, char oppcoin);
+	int flip_coins(Pos startPos, Pos changePos, char coin, char oppcoin);
+	void update_scores(int numFlips, char coin);
 	void switch_turns();
 	int next();
 
@@ -69,9 +72,10 @@ public:
 	// void get_moves(vector<ReversiAction>& actions);
 	// void get_moves(vector<ReversiAction>& actions, bool isMax);
 	void validate_moves(bool isMax);
-	void get_moves(vector<ReversiAction>& actions);
+	void get_moves(vector<ReversiAction>& actions, bool isMax);
 
 	bool posInBounds(struct Pos p);
+	bool posInBounds(int row, int col);
 	void generate_moves(struct Pos selectPos, bool isMax);
 	// // terminal test
 	// char check_win();

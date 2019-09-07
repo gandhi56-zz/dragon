@@ -3,7 +3,7 @@
 
 #define MAX_ITERATIONS 1000
 
-#define SHUFFLE_MOVES
+// #define SHUFFLE_MOVES
 
 #include <algorithm>	// for random shuffle
 
@@ -16,7 +16,7 @@ class State{
 public:
 	State& operator=(State& s);
 	void show();
-	// bool update(Action action);
+	bool update(Action action);
 	// void revert(Action& action);
 	void get_moves(...);
 	char check_win();
@@ -38,11 +38,60 @@ public:
 		state = s;
 	}
 
-	// alpha beta negamax ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	action_t solve(){
-		return action_t("");
-	}
+	// alpha beta negamax (without revert)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	int negamax(state_t s, int alpha, int beta, bool isMax, int depth){
+		/*
+
+		// cout << "negmax call " << depth << endl;
+		int value = s.evaluate(isMax);
+		// cout << "value = " << value << endl;
+		if (value != -100 and value != 100){
+			return value;
+		}
+
+		*/
+
+		vector<action_t> actions;
+		s.get_moves(actions, isMax);
+		if (actions.size() == 0){
+			return s.evaluate(isMax);
+		}
+
+		#ifdef SHUFFLE_MOVES
+			srand(time(nullptr));
+			if (depth == 0){
+				random_shuffle(actions.begin(), actions.end());
+			}
+		#endif
+
+		state_t _s = s;
+		int value = -100;
+		for (auto action : actions){
+			s = _s;
+			s.update(action);
+			if (depth == 0){
+				int neg = -negamax(s, -beta, -alpha, !isMax, depth+1);
+				if (neg > value){
+					value = neg;
+					bestAction = action;
+				}
+			}
+			else{
+				value = max(value, -negamax(s, -beta, -alpha, !isMax, depth+1));
+			}
+			alpha = max(alpha, value);
+			if (alpha >= beta)
+				break;
+		}
+
+		if (depth == 0)
+			cout << "best move = " << bestAction.move << endl;
+		return value;
+	}
+
+
+	// alpha beta negamax (with revert)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	int negamax_r(state_t s, int alpha, int beta, bool isMax, int depth){
 		// cout << "negmax call " << depth << endl;
 		int value = s.evaluate(isMax);
 		// cout << "value = " << value << endl;
@@ -55,7 +104,9 @@ public:
 
 		#ifdef SHUFFLE_MOVES
 		srand(time(nullptr));
-		random_shuffle(actions.begin(), actions.end());
+		if (depth == 0){
+			random_shuffle(actions.begin(), actions.end());
+		}
 		#endif
 
 		for (auto action : actions){
@@ -78,7 +129,6 @@ public:
 
 		if (depth == 0)
 			cout << "best move = " << bestAction.move << endl;
-
 		return value;
 	}
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
