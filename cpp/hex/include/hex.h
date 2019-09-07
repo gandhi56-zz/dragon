@@ -70,8 +70,8 @@ public:
 	// terminal test
 	char check_win();
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
-	
-	// terminal test accessors
+	int evaluate(bool isMax);
+
 	char player1();
 	char player2();
 	char draw();

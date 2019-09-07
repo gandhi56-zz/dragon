@@ -222,3 +222,24 @@ char TTTState::player2(){
 char TTTState::draw(){
 	return DRAW;
 }
+
+int TTTState::evaluate(bool isMax){
+	char result = check_win();
+	int value;
+	switch(result){
+		case GAME_NOT_OVER:
+			return -100;
+		case PLAYER_X:
+			value = 1;
+			break;
+		case PLAYER_O:
+			value = -1;
+			break;
+		case DRAW:
+			value = 0;
+	};
+	if (!isMax)
+		value *= -1;
+	// cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
+	return value;
+}

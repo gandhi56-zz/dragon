@@ -44,7 +44,7 @@ void Server::run(){
 		cin >> cmd;
 
 		if (cmd == "show"){
-			show();
+			state.show();
 		}
 		else if (cmd == "new"){
 			int rows, cols;
@@ -103,43 +103,5 @@ void Server::run(){
 		}
 	}
 	cout << "Terminating dragon." << endl;
-}
-
-void Server::report_result(int gameId, char result){
-	string win = "+";
-	string lose = "-";
-	
-	if (result == BLACK){
-		numBlackWin++;
-		cout << "*************************************************";
-		cout << endl;
-		cout << "Game #" << gameId << endl;
-		cout << "*\tB\tl\ta\tc\tk\t*" << endl;
-		cout << "*************************************************";
-		cout << endl;
-		cout << "S>+/-" << endl;
-	}
-	else if (result == WHITE){
-		numWhiteWin++;
-		cout << "*************************************************";
-		cout << endl;
-		cout << "*\tW\th\ti\tt\te\t*" << endl;
-		cout << "*************************************************";
-		cout << endl;
-		cout << "S>+/-" << endl;
-	}
-	else{
-		numDraw++;
-		cout << "*****************************************" << endl;
-		cout << "*\tD\tR\tA\tW\t*" << endl;
-		cout << "*****************************************" << endl;
-		cout << "S>#" << endl;
-	}
-
-}
-
-void Server::show(){
-	state.show();
-	cout << "Player to move: " << state.next() << endl;
 }
 

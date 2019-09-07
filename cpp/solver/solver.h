@@ -1,7 +1,9 @@
 #ifndef _SOLVER_
 #define _SOLVER_
 
-// #define SHUFFLE_MOVES
+#define MAX_ITERATIONS 1000
+
+#define SHUFFLE_MOVES
 
 #include <algorithm>	// for random shuffle
 
@@ -21,6 +23,7 @@ public:
 	char player1();
 	char player2();
 	char draw();
+	int evaluate(bool isMax);
 };
 
 template <class state_t, class action_t>
@@ -40,9 +43,10 @@ public:
 		return action_t("");
 	}
 	int negamax(state_t s, int alpha, int beta, bool isMax, int depth){
-		//cout << "negmax call " << depth << endl;
-		int value = evaluate(s, isMax);
-		if (value != -100){
+		// cout << "negmax call " << depth << endl;
+		int value = s.evaluate(isMax);
+		// cout << "value = " << value << endl;
+		if (value != -100 and value != 100){
 			return value;
 		}
 
@@ -77,25 +81,95 @@ public:
 
 		return value;
 	}
-	
-	int evaluate(state_t s, bool isMax){
-		char gameStatus = s.check_win();
-		if (gameStatus == GAME_NOT_OVER)	return -100;
-		int value;
-		if (gameStatus == s.player1())		value = 1;
-		else if (gameStatus == s.player2())	value = -1;
-		else if (gameStatus == s.draw())	value = 0;
-		if (!isMax)	value *= -1;
-		return value;	
-	
-	}
-
-	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	~Solver(){
 		cout << "Solver dies" << endl;
 	}
 };
+
+
+
+// template<class state_t, class action_t>
+// class MCTNode{
+// public:
+// 	action_t action;
+// 	MCTNode* parent;
+// 	vector<MCTNode*> children;
+// 	uint16_t wins, visits;
+
+// 	MCTNode(){
+// 		parent = nullptr;
+// 		wins = 0;
+// 		visits = 0;
+// 	};
+
+// 	MCTNode(action_t actionPlayed, MCTNode* parentNode){
+// 		action = actionPlayed;
+// 		parent = parentNode;
+// 		wins = 0;
+// 		visits = 0;
+// 	}
+
+// 	~MCTNode(){}
+
+// 	void update(int result){
+// 		visits++;
+// 		if (result)
+// 			wins++;
+// 	}
+
+// 	bool is_leaf(){
+// 		return children.size() == 0;
+// 	}
+
+// 	bool has_parent(){
+// 		return parent != nullptr;
+// 	}
+
+// 	MCTNode& operator=(const MCTNode& node){
+// 		action = node.action;
+// 		parent = node.parent;
+// 		children = node.children;
+// 		wins = node.wins;
+// 		visits = node.visits;
+// 		return *this;
+// 	}	
+
+// private:
+// };
+
+// template<class state_t, class action_t>
+// class Dragon{
+// public:
+// 	uint16_t maxIter;
+
+// 	Dragon(){
+// 		maxIter = MAX_ITERATIONS;
+// 	}
+
+// 	void search(state_t currState){
+// 		MCTNode root(action_t("none"), nullptr);
+// 		MCTNode node();
+// 		state_t state;
+// 		for (uint16_t iter = 1; iter <= maxIter; ++iter){
+
+// 			node = root;
+// 			state = currState;
+
+// 			while (!node.is_leaf()){
+// 				node = select_policy(node, depth);
+// 				state.update(node.action);
+// 				depth++;
+// 			}
+
+// 		}
+// 	}
+
+// 	MCTNode select_policy(node, depth){
+// 		return MCTNode(action_t(""), nullptr);
+// 	}
+// private:
+// };
 
 #endif

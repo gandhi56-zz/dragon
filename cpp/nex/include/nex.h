@@ -8,8 +8,8 @@
 #define EMPTY   		0
 #define VALBITS			2		// number of bits for value
 #define DRAW			'#'
-#define BLACK_WIN		'B'
-#define WHITE_WIN		'W'
+#define BLACK_STONE		'B'
+#define WHITE_STONE		'W'
 #define GAME_NOT_OVER	'.'
 
 #include <iostream>
@@ -69,8 +69,8 @@ public:
 	// terminal test
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
 	char check_win();
+	int evaluate(bool isMax);
 
-	// terminal test accessors
 	char player1();
 	char player2();
 	char draw();

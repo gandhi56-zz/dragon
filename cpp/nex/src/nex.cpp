@@ -201,7 +201,7 @@ char NexState::check_win(){
 	for (uint16_t col = 0; col < numColumns; ++col){
 		if (graph[col].first == BLACK){
 			if (connected(col, numRows-1, true)){
-				return player1();
+				return BLACK_STONE;
 			}
 		}
 	}
@@ -210,7 +210,7 @@ char NexState::check_win(){
 		uint16_t key = row * numColumns;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
-				return player2();
+				return WHITE_STONE;
 			}
 		}
 	}
@@ -242,7 +242,7 @@ char NexState::check_win(){
 			return GAME_NOT_OVER;
 		}
 		else{
-			return draw();
+			return DRAW;
 		}
 	}
 	return GAME_NOT_OVER;
@@ -407,15 +407,35 @@ NexState& NexState::operator=(NexState& s){
 	return *this;
 }
 
-
 char NexState::player1(){
-	return 'B';
+	return BLACK_STONE;
 }
 
 char NexState::player2(){
-	return 'W';
+	return WHITE_STONE;
 }
 
 char NexState::draw(){
 	return DRAW;
+}
+
+int NexState::evaluate(bool isMax){
+	char result = check_win();
+	int value;
+	switch(result){
+		case GAME_NOT_OVER:
+			return -100;
+		case BLACK_STONE:
+			value = 1;
+			break;
+		case WHITE_STONE:
+			value = -1;
+			break;
+		case DRAW:
+			value = 0;
+	};
+	if (!isMax)
+		value *= -1;
+	// cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
+	return value;
 }
