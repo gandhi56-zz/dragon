@@ -5,16 +5,20 @@ int main(){
 	Server server;
 	server.run();
 
-	// Server server;
-	// server.state.show();
-	// vector<ReversiAction> actions;
-	// server.state.get_moves(actions, true);
-	// server.state.update(ReversiAction("Bd6"));
-	// server.state.show();
+	// ReversiState state;
+	// state.set_size(8, 8);
+	// state.create_graph();
 
-	// server.state.get_moves(actions, false);
-	// // server.state.update(Revers);
-	// server.state.show();
+	// for (int i = 0; i < 8*8; ++i){
+	// 	char c;
+	// 	cin >> c;
+	// 	if (c == BLACK_COIN or c == WHITE_COIN){
+	// 		state.graph[i].first = c;
+	// 	}
+	// }
+	// state.show();
 
+	// state.update(ReversiAction("Ba1"));
+	// state.show();
 	return 0;
 }

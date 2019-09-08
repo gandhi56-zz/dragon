@@ -3,7 +3,7 @@
 
 #define MAX_ITERATIONS 1000
 
-// #define SHUFFLE_MOVES
+#define SHUFFLE_MOVES
 
 #include <algorithm>	// for random shuffle
 
@@ -53,7 +53,7 @@ public:
 		// s.show();
 		vector<action_t> actions;
 		s.get_moves(actions, isMax);
-		if (actions.size() == 0 or depth >= 10){
+		if (actions.size() == 0 or depth >= 7){
 			return s.evaluate(isMax);
 		}
 

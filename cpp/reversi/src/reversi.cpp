@@ -250,7 +250,8 @@ int ReversiState::process_move(Pos startPos, Pos changePos, char coin, char oppc
 
 // return the number of flips
 int ReversiState::flip_coins(Pos startPos, Pos changePos, char coin, char oppcoin){
-    int numFlips = 0;
+    // cout << "changepos " << changePos.row << ", " << changePos.col << endl;
+	int numFlips = 0;
 
     // reverse the signs
     changePos.row = -changePos.row;
@@ -259,7 +260,8 @@ int ReversiState::flip_coins(Pos startPos, Pos changePos, char coin, char oppcoi
     startPos.add(changePos);
 
     // Flip each coin until 'play0' coin is found
-    while (graph[startPos.row*numColumns+startPos.col].first == oppcoin){
+    while (graph[startPos.row*numColumns+startPos.col].first == oppcoin and posInBounds(startPos)){
+		// cout << "(" << startPos.row << " " << startPos.col << ")" << endl;
         graph[startPos.row*numColumns+startPos.col].first = coin;
         startPos.add(changePos);
         numFlips++;
