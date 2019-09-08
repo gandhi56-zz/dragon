@@ -4,11 +4,10 @@
 ReversiState::ReversiState(){
 	numRows = 0;
 	numColumns = 0;
-	emptyCount = 0;
-	//blackCount = 0;
-	//whiteCount = 0;
+	blackCount = 0;
+	whiteCount = 0;
 	playerJustMoved = 2;
-	status = '.';
+	status = GAME_NOT_OVER;
 }
 
 ReversiState::~ReversiState(){
@@ -19,11 +18,11 @@ ReversiState::~ReversiState(){
 ReversiState& ReversiState::operator=(ReversiState& s){
 	numRows = s.numRows;
 	numColumns = s.numColumns;
-	//blackCount = s.blackCount;
-	//whiteCount = s.whiteCount;
+	blackCount = s.blackCount;
+	whiteCount = s.whiteCount;
 	playerJustMoved = s.playerJustMoved;
-	status = s.status;
 	graph = s.graph;
+	status = s.status;
 	return *this;
 }
 
@@ -40,11 +39,13 @@ void ReversiState::create_graph(){
 		graph[i] = {EMPTY, false};
 	}
 
-	graph[(numRows/2)*numColumns + numColumns/2].first = BLACK_STONE;
-    graph[(numRows/2-1)*numColumns + numColumns/2-1].first = BLACK_STONE;
-    graph[(numRows/2 )*numColumns + numColumns/2-1].first = WHITE_STONE;
-    graph[(numRows/2-1)*numColumns + numColumns/2].first = WHITE_STONE;
+	graph[(numRows/2)*numColumns + numColumns/2].first = WHITE_COIN;
+    graph[(numRows/2-1)*numColumns + numColumns/2-1].first = WHITE_COIN;
+    graph[(numRows/2 )*numColumns + numColumns/2-1].first = BLACK_COIN;
+    graph[(numRows/2-1)*numColumns + numColumns/2].first = BLACK_COIN;
 
+	blackCount = 2;
+	whiteCount = 2;
 }
 
 bool ReversiState::valid_pos(uint16_t key){
@@ -82,6 +83,11 @@ void ReversiState::show(){
     for (int i = 1; i <= numColumns; ++i){
         cout << i << " ";
     }
+
+	cout << endl;
+	cout << "# black coins " << blackCount << endl;
+	cout << "# white coins " << whiteCount << endl;
+
 	cout << endl << endl;
 }
 
@@ -92,9 +98,9 @@ void ReversiState::validate_moves(bool isMax){
 		graph[i].second = false;
 	}
 
-	char coin = BLACK_STONE;
+	char coin = BLACK_COIN;
 	if (!isMax)
-		coin = WHITE_STONE;
+		coin = WHITE_COIN;
 
 	Pos move;
 	for (int r = 0; r < numRows; ++r){
@@ -112,6 +118,10 @@ bool ReversiState::posInBounds(Pos p){
 	return p.row >= 0 and p.col >= 0 and p.row < numRows and p.col < numColumns;
 }
 
+bool ReversiState::posInBounds(int row, int col){
+	return row >= 0 and col >= 0 and row < numRows and col < numColumns;
+}
+
 void ReversiState::generate_moves(Pos selectPos, bool isMax){
 	Pos pos;
     // store neighbour positions
@@ -124,9 +134,9 @@ void ReversiState::generate_moves(Pos selectPos, bool isMax){
     			  selectPos.row+1, selectPos.col  , 
     			  selectPos.row+1, selectPos.col+1};
 
-	char oppCoin = BLACK_STONE;
+	char oppCoin = BLACK_COIN;
 	if (isMax){
-		oppCoin = WHITE_STONE;
+		oppCoin = WHITE_COIN;
 	}
 	int nbrsCount = 8;
 	for (int i = 0; i < 2*nbrsCount; i += 2){
@@ -152,9 +162,14 @@ void ReversiState::generate_moves(Pos selectPos, bool isMax){
 	}
 }
 
-void ReversiState::get_moves(vector<ReversiAction>& actions){
+void ReversiState::get_moves(vector<ReversiAction>& actions, bool isMax){
+	actions.clear();
+	for (int i = 0; i < numRows*numColumns; ++i){
+		graph[i].second = false;
+	}
+
 	string coin = "B";
-	if (playerJustMoved == 1){
+	if (!isMax){
 		coin = "W";
 	}
 	validate_moves(coin=="B");
@@ -164,21 +179,118 @@ void ReversiState::get_moves(vector<ReversiAction>& actions){
 		}
 	}
 
-	cout << "in ReversiState::get_moves()..." << endl;
-	for (auto action : actions){
-		cout << action.move << endl;
-	}
-
+	// cout << "in ReversiState::get_moves()..." << endl;
+	// for (auto action : actions){
+	// 	cout << action.move << endl;
+	// }
 }
 
 // state transitions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 bool ReversiState::update(ReversiAction action){
+	char coin = action.move[0];
+	char oppcoin = (coin==BLACK_COIN?WHITE_COIN:BLACK_COIN);
+	int row = get_row(action.move.substr(1, action.move.size()-1));
+	int col = get_col(action.move.substr(1, action.move.size()-1));
+	// cout << "playing " << coin << " " << row << " " << col << endl;
+	
+	validate_moves(coin == BLACK_COIN);
 
+	if (graph[row*numColumns+col].second and posInBounds(row, col)){
+		int numFlips = 0;
+
+        // Store 'pos' of each neighbour cell
+        int nbrs[] = {row-1, col-1, row-1, col, row-1, col+1, row  , col-1, 
+			row  , col+1, row+1, col-1, row+1, col  , row+1, col+1};
+
+		const int nbrsCount = 8;
+		// For each neighbour
+        for (int i = 0; i < 2*nbrsCount; i += 2){
+            // check if the neighbour cell holds an opponent coin
+            if ( graph[nbrs[i]*numColumns+nbrs[i+1]].first == oppcoin ){
+
+                Pos startPos;
+                Pos changePos;
+
+                // Set startPos to the neighbour cell pos
+                startPos.row = nbrs[i];
+                startPos.col = nbrs[i+1];
+
+                // Set increment values
+                changePos.row = startPos.row - row;
+                changePos.col = startPos.col - col;
+
+                numFlips += process_move(startPos, changePos, coin, oppcoin);
+            }     
+        }
+
+		// Finally, place a coin at the intended position
+		graph[row*numColumns+col].first = coin;
+		update_scores(numFlips, coin);
+	}
+	return true;
 }
+
+// returns the number of coins flipped. 
+int ReversiState::process_move(Pos startPos, Pos changePos, char coin, char oppcoin){
+    int numFlips = 0;
+
+    // Iterate over opponent coins
+    while ( graph[startPos.row*numColumns+startPos.col].first == oppcoin ){
+        startPos.add(changePos);
+    }
+
+    // If the array of opponent coins is surrounded by a self coin, 
+    // flip each opponent coin to a self coin. Count the number of 
+    // flips.
+    if (graph[startPos.row*numColumns+startPos.col].first == coin){
+        numFlips = flip_coins(startPos, changePos, coin, oppcoin);
+    }
+    return numFlips;
+}
+
+// return the number of flips
+int ReversiState::flip_coins(Pos startPos, Pos changePos, char coin, char oppcoin){
+    // cout << "changepos " << changePos.row << ", " << changePos.col << endl;
+	int numFlips = 0;
+
+    // reverse the signs
+    changePos.row = -changePos.row;
+    changePos.col = -changePos.col;
+
+    startPos.add(changePos);
+
+    // Flip each coin until 'play0' coin is found
+    while (graph[startPos.row*numColumns+startPos.col].first == oppcoin and posInBounds(startPos)){
+		// cout << "(" << startPos.row << " " << startPos.col << ")" << endl;
+        graph[startPos.row*numColumns+startPos.col].first = coin;
+        startPos.add(changePos);
+        numFlips++;
+    }
+    return numFlips;
+}
+
+void ReversiState::update_scores(int numFlips, char coin){
+    switch(coin){
+        case BLACK_COIN:
+            blackCount++;
+            blackCount += numFlips;
+            whiteCount -= numFlips;
+            break;
+        case WHITE_COIN:
+            whiteCount++;    
+            blackCount -= numFlips;
+            whiteCount += numFlips;
+            break;
+        default:
+            break;
+    }
+}
+
+// TODO implement action reverter
 
 // void ReversiState::revert(ReversiAction& action){
 // 	for (uint16_t i = 0; i < action.move.length(); ++i){
-// 		if (action.move[i] == BLACK_STONE or action.move[i] == WHITE_STONE){
+// 		if (action.move[i] == BLACK_COIN or action.move[i] == WHITE_COIN){
 // 			action.move[i] = '.';
 // 		}
 // 	}
@@ -191,11 +303,11 @@ int ReversiState::next(){
 
 // terminal test ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 char ReversiState::player1(){
-	return BLACK_STONE;
+	return BLACK_COIN;
 }
 
 char ReversiState::player2(){
-	return WHITE_STONE;
+	return WHITE_COIN;
 }
 
 char ReversiState::draw(){
@@ -203,25 +315,12 @@ char ReversiState::draw(){
 }
 
 int ReversiState::evaluate(bool isMax){
-	// char result = check_win();
-	// int value;
-	// switch(result){
-	// 	case GAME_NOT_OVER:
-	// 		return -100;
-	// 	case BLACK_STONE:
-	// 		value = 1;
-	// 		break;
-	// 	case WHITE_STONE:
-	// 		value = -1;
-	// 		break;
-	// 	case DRAW:
-	// 		value = 0;
-	// };
-	// if (!isMax)
-	// 	value *= -1;
-	// // cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
-	// return value;
-	return 0;
+	// assumes there are no moves to play
+	int value = blackCount - whiteCount;
+	if (!isMax)
+		value *= -1;
+	// cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
+	return value;
 }
 
 // pos to string

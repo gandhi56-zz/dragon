@@ -1,0 +1,33 @@
+
+  1 2 3 4 5 6 7 8 
+a * * * W B B B W a
+b W W W * B B B - b
+c B B B W B W B - c
+d - - * B W B * - d
+e B B B B B W B - e
+f - B - - B * - - f
+g - - - - B - - - g
+h - - - - B - - - h
+  1 2 3 4 5 6 7 8 
+# black coins 23
+# white coins 9
+
+
+> search
+best move = Ba1
+negamax value = 10
+> play Ba1
+> show
+
+  1 2 3 4 5 6 7 8 
+a B - - W B B B B a
+b B B W - B B B - b
+c B B B W B W B * c
+d * - * B W B * - d
+e B B B B B W B * e
+f - B * * B - - - f
+g - - - * B - - - g
+h - - - - B - - - h
+  1 2 3 4 5 6 7 8 
+# black coins 27
+# white coins 6
