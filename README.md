@@ -256,4 +256,4 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 
 ### Contributions
 
-I acknowledge Professor Ryan Hayward from the University of Alberta for inpiring me to undertake this project. I also acknowledge Ragur Krishnan and Shreyansh Jain for their contributions to this project.
+I acknowledge Professor Ryan Hayward from the University of Alberta for inpiring me to undertake this project. I also acknowledge Ragur Krishnan and Shreyansh Jain for their contributions to this project. Thanks to Belton He for helping me implement the game of Reversi in our first year Computing Science class.
