@@ -50,10 +50,10 @@ public:
 		}
 
 		*/
-
+		// s.show();
 		vector<action_t> actions;
 		s.get_moves(actions, isMax);
-		if (actions.size() == 0){
+		if (actions.size() == 0 or depth >= 10){
 			return s.evaluate(isMax);
 		}
 

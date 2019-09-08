@@ -39,10 +39,10 @@ void ReversiState::create_graph(){
 		graph[i] = {EMPTY, false};
 	}
 
-	graph[(numRows/2)*numColumns + numColumns/2].first = BLACK_COIN;
-    graph[(numRows/2-1)*numColumns + numColumns/2-1].first = BLACK_COIN;
-    graph[(numRows/2 )*numColumns + numColumns/2-1].first = WHITE_COIN;
-    graph[(numRows/2-1)*numColumns + numColumns/2].first = WHITE_COIN;
+	graph[(numRows/2)*numColumns + numColumns/2].first = WHITE_COIN;
+    graph[(numRows/2-1)*numColumns + numColumns/2-1].first = WHITE_COIN;
+    graph[(numRows/2 )*numColumns + numColumns/2-1].first = BLACK_COIN;
+    graph[(numRows/2-1)*numColumns + numColumns/2].first = BLACK_COIN;
 
 	blackCount = 2;
 	whiteCount = 2;

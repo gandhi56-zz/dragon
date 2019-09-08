@@ -2,7 +2,7 @@
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
-	state.set_size(4, 4);
+	state.set_size(8, 8);
 	state.create_graph();
 	solver.set_state(state);
 	maxGames = 1;
@@ -44,7 +44,9 @@ void Server::run(){
 		cin >> cmd;
 
 		if (cmd == "show"){
+			state.validate_moves(state.playerJustMoved==2);
 			state.show();
+			cout << "Player to move: " << state.next() << endl;
 		}
 		else if (cmd == "new"){
 			int rows, cols;
