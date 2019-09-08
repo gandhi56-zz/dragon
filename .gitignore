@@ -11,3 +11,4 @@ cpp/nex/solver2
 cpp/nex/src/.*.*.*
 cpp/nex/obj
 cpp/ttt/obj
+cpp/reversi/obj
