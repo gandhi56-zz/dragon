@@ -71,6 +71,7 @@ public:
 	char check_win();
 	bool connected(uint16_t key0, uint16_t end, bool blackConnect);
 	int evaluate(bool isMax);
+	bool gameover();
 
 	char player1();
 	char player2();

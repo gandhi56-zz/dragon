@@ -3,8 +3,8 @@
 #define _SERVER_
 
 #include <ctime>
-#include <string.h>
 #include <chrono>
+#include <ratio>
 #include "nex.h"
 
 using namespace std::chrono;

@@ -243,3 +243,7 @@ int TTTState::evaluate(bool isMax){
 	// cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
 	return value;
 }
+
+bool TTTState::gameover(){
+	return check_win() != GAME_NOT_OVER;
+}

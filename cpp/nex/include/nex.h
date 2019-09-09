@@ -74,6 +74,7 @@ public:
 	char player1();
 	char player2();
 	char draw();
+	bool gameover();
 
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);

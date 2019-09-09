@@ -439,3 +439,7 @@ int NexState::evaluate(bool isMax){
 	// cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
 	return value;
 }
+
+bool NexState::gameover(){
+	return check_win() != GAME_NOT_OVER;
+}

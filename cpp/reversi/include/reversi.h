@@ -71,12 +71,12 @@ public:
 	// get actions
 	// void get_moves(vector<ReversiAction>& actions);
 	// void get_moves(vector<ReversiAction>& actions, bool isMax);
-	void validate_moves(bool isMax);
+	int validate_moves(bool isMax);
 	void get_moves(vector<ReversiAction>& actions, bool isMax);
 
 	bool posInBounds(struct Pos p);
 	bool posInBounds(int row, int col);
-	void generate_moves(struct Pos selectPos, bool isMax);
+	int generate_moves(struct Pos selectPos, bool isMax);
 	// // terminal test
 	// char check_win();
 	// bool connected(uint16_t key0, uint16_t end, bool blackConnect);
@@ -87,6 +87,8 @@ public:
 	char draw();
 
 	int evaluate(bool isMax);
+
+	bool gameover();
 
 // private: TODO
 	bool valid_pos(uint16_t key);

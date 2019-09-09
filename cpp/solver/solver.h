@@ -3,7 +3,7 @@
 
 #define MAX_ITERATIONS 1000
 
-#define SHUFFLE_MOVES
+// #define SHUFFLE_MOVES
 
 #include <algorithm>	// for random shuffle
 
@@ -24,6 +24,7 @@ public:
 	char player2();
 	char draw();
 	int evaluate(bool isMax);
+	bool gameover();
 };
 
 template <class state_t, class action_t>
@@ -40,22 +41,19 @@ public:
 
 	// alpha beta negamax (without revert)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	int negamax(state_t s, int alpha, int beta, bool isMax, int depth){
-		/*
+		// // cout << "negmax call " << depth << endl;
+		// int value = s.evaluate(isMax);
+		// // cout << "value = " << value << endl;
+		// if (value != -100 and value != 100){
+		// 	return value;
+		// }
 
-		// cout << "negmax call " << depth << endl;
-		int value = s.evaluate(isMax);
-		// cout << "value = " << value << endl;
-		if (value != -100 and value != 100){
-			return value;
-		}
-
-		*/
-		// s.show();
-		vector<action_t> actions;
-		s.get_moves(actions, isMax);
-		if (actions.size() == 0 or depth >= 7){
+		if (s.gameover() or depth >= 10){
 			return s.evaluate(isMax);
 		}
+
+		vector<action_t> actions;
+		s.get_moves(actions, isMax);
 
 		#ifdef SHUFFLE_MOVES
 			srand(time(nullptr));
@@ -84,11 +82,12 @@ public:
 				break;
 		}
 
-		if (depth == 0)
-			cout << "best move = " << bestAction.move << endl;
+		if (depth == 0){
+			cout << "best move\t=\t" << bestAction.move << endl;
+			cout << "negamax value\t=\t" << value << endl;
+		}
 		return value;
 	}
-
 
 	// alpha beta negamax (with revert)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	int negamax_r(state_t s, int alpha, int beta, bool isMax, int depth){
@@ -127,11 +126,18 @@ public:
 			s.revert(action);
 		}
 
-		if (depth == 0)
-			cout << "best move = " << bestAction.move << endl;
+		if (depth == 0){
+			cout << "best move\t=\t" << bestAction.move << endl;
+			cout << "negamax value\t=\t" << value << endl;
+		}
+
 		return value;
 	}
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	action_t best_action(){
+		return bestAction;
+	}
 
 	~Solver(){
 		cout << "Solver dies" << endl;

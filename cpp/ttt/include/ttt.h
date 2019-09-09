@@ -55,6 +55,7 @@ public:
 	char player2();
 	char draw();
 	int evaluate(bool isMax);
+	bool gameover();
 private:
 	uint16_t num_nbrs(uint16_t row, uint16_t col);
 	uint16_t get_row(string pos);

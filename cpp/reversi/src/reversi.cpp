@@ -91,8 +91,16 @@ void ReversiState::show(){
 	cout << endl << endl;
 }
 
+bool ReversiState::posInBounds(Pos p){
+	return p.row >= 0 and p.col >= 0 and p.row < numRows and p.col < numColumns;
+}
+
+bool ReversiState::posInBounds(int row, int col){
+	return row >= 0 and col >= 0 and row < numRows and col < numColumns;
+}
+
 // actions vector ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void ReversiState::validate_moves(bool isMax){
+int ReversiState::validate_moves(bool isMax){
 	// reset all cells to unplayable
 	for (int i = 0; i < numRows * numColumns; ++i){
 		graph[i].second = false;
@@ -103,26 +111,21 @@ void ReversiState::validate_moves(bool isMax){
 		coin = WHITE_COIN;
 
 	Pos move;
+	int count = 0;
 	for (int r = 0; r < numRows; ++r){
 		for (int c = 0; c < numColumns; ++c){
 			if (graph[r*numColumns+c].first == coin){
 				move.row = r;
 				move.col = c;
-				generate_moves(move, isMax);
+				count += generate_moves(move, isMax);
 			}
 		}
 	}
+	return count;
 }
 
-bool ReversiState::posInBounds(Pos p){
-	return p.row >= 0 and p.col >= 0 and p.row < numRows and p.col < numColumns;
-}
-
-bool ReversiState::posInBounds(int row, int col){
-	return row >= 0 and col >= 0 and row < numRows and col < numColumns;
-}
-
-void ReversiState::generate_moves(Pos selectPos, bool isMax){
+int ReversiState::generate_moves(Pos selectPos, bool isMax){
+	int count = 0;
 	Pos pos;
     // store neighbour positions
     int nbrs[] = {selectPos.row-1, selectPos.col-1, 
@@ -155,11 +158,11 @@ void ReversiState::generate_moves(Pos selectPos, bool isMax){
 
 			if (posInBounds(startPos) and graph[startPos.row*numColumns+startPos.col].first == EMPTY){
 				graph[startPos.row*numColumns+startPos.col].second = true;
+				count++;
 			}
-
 		}
-
 	}
+	return count;
 }
 
 void ReversiState::get_moves(vector<ReversiAction>& actions, bool isMax){
@@ -338,7 +341,6 @@ string ReversiState::get_key(uint16_t row, uint16_t col){
 	return key;
 }
 
-
 bool ReversiState::valid_pos(uint16_t row, uint16_t col){
 	return (row>=0 && row<numRows && col>=0 && col<numColumns);
 }
@@ -350,4 +352,14 @@ uint16_t ReversiState::get_row(string pos){
 
 uint16_t ReversiState::get_col(string pos){
 	return (uint16_t)(pos[1] - '1');
+}
+
+bool ReversiState::gameover(){
+	vector<ReversiAction> actions;
+	get_moves(actions, true);
+	if (actions.size() == 0){
+		get_moves(actions, false);
+		return actions.size() == 0;
+	}
+	return false;
 }

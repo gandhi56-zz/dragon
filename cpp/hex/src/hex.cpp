@@ -165,7 +165,7 @@ int HexState::next(){
 }
 
 bool HexState::connected(uint16_t key0, uint16_t key1, bool blackConnect){
-	
+	cout << " --- " << blackConnect << endl;
 	bool visited[numRows * numColumns];
 	memset(visited, false, numRows*numColumns);
 	stack<uint16_t> keyStack;
@@ -177,6 +177,8 @@ bool HexState::connected(uint16_t key0, uint16_t key1, bool blackConnect){
 
 		uint16_t currRow = curr/numRows;
 		uint16_t currCol = curr%numRows;
+
+		cout << currRow << " " << currCol << endl;
 
 		if ((blackConnect and currRow == key1) or
 			(!blackConnect and currCol == key1)){
@@ -192,6 +194,7 @@ bool HexState::connected(uint16_t key0, uint16_t key1, bool blackConnect){
 			}
 		}
 	}
+	cout << " --- " << endl;
 	return false;
 }
 
@@ -211,6 +214,7 @@ char HexState::check_win(){
 		uint16_t key = row * numRows;
 		if (graph[key].first == WHITE){
 			if (connected(key, numColumns-1, false)){
+				cout << key << endl;
 				return WHITE_STONE;
 			}
 		}
@@ -301,5 +305,9 @@ int HexState::evaluate(bool isMax){
 		value *= -1;
 	// cout << "result = " << result << " isMax = " << isMax << " value = " << value << endl;
 	return value;
+}
+
+bool HexState::gameover(){
+	return check_win() != GAME_NOT_OVER;
 }
 
