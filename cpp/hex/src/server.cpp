@@ -2,7 +2,7 @@
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
-	state.set_size(3, 3);
+	state.set_size(4, 4);
 	state.create_graph();
 	solver.set_state(state);
 	maxGames = 1;
