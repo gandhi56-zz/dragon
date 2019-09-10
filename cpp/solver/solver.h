@@ -91,9 +91,7 @@ public:
 
 	// alpha beta negamax (with revert)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	int negamax_r(state_t s, int alpha, int beta, bool isMax, int depth){
-		// cout << "negmax call " << depth << endl;
 		int value = s.evaluate(isMax);
-		// cout << "value = " << value << endl;
 		if (value != -100 and value != 100){
 			return value;
 		}

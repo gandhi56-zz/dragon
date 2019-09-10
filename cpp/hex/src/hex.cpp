@@ -18,6 +18,7 @@ HexState::~HexState(){
 void HexState::set_size(int16_t rows, int16_t cols){
 	numRows = rows;
 	numColumns = cols;
+	graph.clear();
 	graph.resize(numRows*numColumns);
 }
 
@@ -35,6 +36,7 @@ void HexState::create_graph(){
 bool HexState::valid_pos(int16_t key){
 	return 0 <= key and key < numRows*numColumns;
 }
+
 void HexState::set_nbrs(vector<int16_t>& nbrs, int16_t key){
 	int row = key/numColumns;
 	int col = key%numColumns;
@@ -118,8 +120,8 @@ int16_t HexState::get_col(string pos){
 
 bool HexState::update(HexAction action){
 	//cout << "playing " << action.move << endl;
-	int16_t i = 0;
-	int16_t j = 1;
+	uint16_t i = 0;
+	uint16_t j = 1;
 	string pos;
 	int key;
 	Valtype val;
@@ -153,7 +155,7 @@ bool HexState::update(HexAction action){
 }
 
 void HexState::revert(HexAction& action){
-	for (int16_t i = 0; i < action.move.length(); ++i){
+	for (uint16_t i = 0; i < action.move.length(); ++i){
 		if (action.move[i] == BLACK_STONE or action.move[i] == WHITE_STONE){
 			action.move[i] = '.';
 		}

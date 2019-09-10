@@ -2,7 +2,7 @@
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
-	state.set_size(4, 4);
+	state.set_size(3, 3);
 	state.create_graph();
 	solver.set_state(state);
 	maxGames = 1;
@@ -10,6 +10,12 @@ Server::Server(){
 	numWhiteWin = 0;
 	numDraw = 0;
 	cout << "Game created successfully." << endl;
+	// for (int i =0 ; i < state.numRows * state.numColumns; ++i){
+	// 	cout << i/state.numColumns << ", "<< i%state.numColumns << endl;
+	// 	for (auto adj : state.graph[i].second){
+	// 		cout << "*** " << adj/state.numColumns << ", " << adj%state.numColumns << endl;
+	// 	}
+	// }
 }
 
 Server::~Server(){
