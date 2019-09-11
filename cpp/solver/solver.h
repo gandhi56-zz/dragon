@@ -1,7 +1,8 @@
 #ifndef _SOLVER_
 #define _SOLVER_
 
-#define MAX_ITERATIONS 1000
+#define MAX_ITERATIONS 		1000
+#define DEPTH_LIMIT			100
 
 // #define SHUFFLE_MOVES
 
@@ -48,7 +49,7 @@ public:
 		// 	return value;
 		// }
 
-		if (s.gameover() or depth >= 10){
+		if (s.gameover() or depth >= DEPTH_LIMIT){
 			return s.evaluate(isMax);
 		}
 
@@ -67,6 +68,7 @@ public:
 		for (auto action : actions){
 			s = _s;
 			s.update(action);
+			s.virtual_connections(isMax);
 			if (depth == 0){
 				int neg = -negamax(s, -beta, -alpha, !isMax, depth+1);
 				if (neg > value){

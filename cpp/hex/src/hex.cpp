@@ -4,9 +4,6 @@
 HexState::HexState(){
 	numRows = 0;
 	numColumns = 0;
-	emptyCount = 0;
-	//blackCount = 0;
-	//whiteCount = 0;
 	playerJustMoved = 2;
 	status = '.';
 }
@@ -48,11 +45,30 @@ void HexState::set_nbrs(vector<int16_t>& nbrs, int16_t key){
 	if (valid_pos(row+1, col-1))	nbrs.push_back((row+1) * numColumns + (col-1));
 }
 
-string HexState::get_value(int16_t row, int16_t col){
+// string HexState::get_value(int16_t row, int16_t col){
+// 	Valtype value = graph[row*numColumns+col].first;
+// 	if 		(value == BLACK)	return "B";
+// 	else if (value == WHITE)	return "W";
+// 	else						return ".";
+// }
+
+char HexState::get_value(int16_t row, int16_t col){
 	Valtype value = graph[row*numColumns+col].first;
-	if 		(value == BLACK)	return "B";
-	else if (value == WHITE)	return "W";
-	else						return ".";
+	if 		(value == BLACK)	return BLACK_STONE;
+	else if (value == WHITE)	return WHITE_STONE;
+	else						return EMPTY_STONE;
+}
+
+void HexState::set_value(int16_t row, int16_t col, char stone){
+	if (stone == BLACK_STONE){
+		graph[row*numColumns+col].first = BLACK;
+	}
+	else if (stone == WHITE_STONE){
+		graph[row*numColumns+col].first = WHITE;
+	}
+	else if (stone == EMPTY_STONE){
+		graph[row*numColumns+col].first = EMPTY;
+	}
 }
 
 void HexState::switch_turns(){
@@ -307,5 +323,66 @@ int HexState::evaluate(bool isMax){
 
 bool HexState::gameover(){
 	return check_win() != GAME_NOT_OVER;
+}
+
+void HexState::clear(){
+	for (int i = 0; i < numRows * numColumns; ++i){
+		graph[i].first = EMPTY;
+	}
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Hex strategies
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void HexState::virtual_connections(bool isMax){
+	char stone = isMax ? BLACK_STONE : WHITE_STONE;
+	for (int row = 0; row < numRows; ++row){
+		for (int col = 0; col < numColumns; ++col){
+			if (get_value(row, col) == stone){
+				if (valid_pos(row-2, col+1)){
+					if (get_value(row-2, col+1) == stone){
+						set_value(row-1, col, stone);
+						set_value(row-1, col+1, stone);
+					}
+				}
+
+				if (valid_pos(row-1, col+2)){
+					if (get_value(row-1, col+2) == stone){
+						set_value(row-1, col+1, stone);
+						set_value(row, col+1, stone);
+					}
+				}
+
+				if (valid_pos(row-1, col-1)){
+					if (get_value(row-1, col-1) == stone){
+						set_value(row-1, col, stone);
+						set_value(row, col-1, stone);
+					}
+				}
+
+				if (valid_pos(row+1, col+1)){
+					if (get_value(row+1, col+1) == stone){
+						set_value(row, col+1, stone);
+						set_value(row+1, col, stone);
+					}
+				}
+
+				if (valid_pos(row+1, col-2)){
+					if (get_value(row+1, col-2) == stone){
+						set_value(row, col-1, stone);
+						set_value(row+1, col-1, stone);
+					}
+				}
+
+				if (valid_pos(row+2, col-1)){
+					if (get_value(row+2, col-1) == stone){
+						set_value(row+1, col, stone);
+						set_value(row+1, col-1, stone);
+					}
+				}
+
+			}
+		}
+	}
 }
 

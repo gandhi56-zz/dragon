@@ -58,10 +58,9 @@ void Server::run(){
 		}
 		else if (cmd == "search"){
 			high_resolution_clock::time_point startTime = high_resolution_clock::now();
-			int neg = solver.negamax_r(solver.state, -100, 100, state.playerJustMoved==2, 0);
+			solver.negamax_r(solver.state, -100, 100, state.playerJustMoved==2, 0);
 			high_resolution_clock::time_point endTime = high_resolution_clock::now();
 			duration<double> timeTaken = duration_cast<duration<double>>(endTime - startTime);
-			cout << "negamax value = " << neg << endl;
 			cout << "Search time   = " << timeTaken.count() << " sec." << endl;
 		}
 		else if (cmd == "play"){

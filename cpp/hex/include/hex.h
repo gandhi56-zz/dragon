@@ -9,6 +9,7 @@
 #define DRAW			'#'
 #define BLACK_STONE		'B'
 #define WHITE_STONE		'W'
+#define EMPTY_STONE		'.'
 #define GAME_NOT_OVER	'.'
 
 #include <iostream>
@@ -39,9 +40,6 @@ public:
 	int16_t numRows;
 	int16_t numColumns;
 	vector< Cell > graph;
-	int16_t emptyCount;
-	int16_t blackCount;
-	int16_t whiteCount;
 	int16_t playerJustMoved;
 	char status;
 
@@ -76,14 +74,21 @@ public:
 	char player1();
 	char player2();
 	char draw();
+
+	// hex strategies
+	void virtual_connections(bool isMax);
+
+	void clear();
+
 private:
 	string get_key(int16_t row, int16_t col);
-	string get_value(int16_t row, int16_t col);
+	char get_value(int16_t row, int16_t col);
 	int16_t num_nbrs(int16_t row, int16_t col);
 	int16_t get_row(string pos);
 	int16_t get_col(string pos);
 	bool valid_pos(int16_t key);
 	bool valid_pos(int16_t row, int16_t col);
+	void set_value(int16_t row, int16_t col, char stone);
 };
 
 
