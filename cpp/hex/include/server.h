@@ -19,6 +19,7 @@ public:
 	
 	HexState state;
 	Solver<HexState, HexAction> solver;
+	Dragon<HexState, HexAction> dragon;
 
 	Server();
 	~Server();

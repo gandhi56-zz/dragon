@@ -2,7 +2,7 @@
 #define _SOLVER_
 
 #define MAX_ITERATIONS 		1000
-#define DEPTH_LIMIT			100
+#define DEPTH_LIMIT			10
 
 // #define SHUFFLE_MOVES
 
@@ -68,7 +68,7 @@ public:
 		for (auto action : actions){
 			s = _s;
 			s.update(action);
-			s.virtual_connections(isMax);
+			// s.virtual_connections(isMax);
 			if (depth == 0){
 				int neg = -negamax(s, -beta, -alpha, !isMax, depth+1);
 				if (neg > value){
@@ -146,86 +146,143 @@ public:
 
 
 
-// template<class state_t, class action_t>
-// class MCTNode{
-// public:
-// 	action_t action;
-// 	MCTNode* parent;
-// 	vector<MCTNode*> children;
-// 	uint16_t wins, visits;
+template<class state_t, class action_t>
+class MCTNode{
+public:
+	action_t action;
+	MCTNode<state_t, action_t>* parent;
+	vector<MCTNode<state_t, action_t>*> children;
+	uint16_t wins, visits;
 
-// 	MCTNode(){
-// 		parent = nullptr;
-// 		wins = 0;
-// 		visits = 0;
-// 	};
+	MCTNode(){
+		parent = nullptr;
+		wins = 0;
+		visits = 0;
+	};
 
-// 	MCTNode(action_t actionPlayed, MCTNode* parentNode){
-// 		action = actionPlayed;
-// 		parent = parentNode;
-// 		wins = 0;
-// 		visits = 0;
-// 	}
+	MCTNode(action_t actionPlayed, MCTNode* parentNode){
+		action = actionPlayed;
+		parent = parentNode;
+		wins = 0;
+		visits = 0;
+	}
 
-// 	~MCTNode(){}
+	~MCTNode(){}
 
-// 	void update(int result){
-// 		visits++;
-// 		if (result)
-// 			wins++;
-// 	}
+	void expand(state_t s, bool isMax){
+		if (!s.gameover()){
+			vector<action_t> actions;
+			s.get_moves(actions, isMax);
+			for (auto action : actions){
+				MCTNode* child(action, this);
+				children.push_back(child);
+			}
+		}
+	}
 
-// 	bool is_leaf(){
-// 		return children.size() == 0;
-// 	}
+	void update(int result){
+		visits++;
+		if (result)
+			wins++;
+	}
 
-// 	bool has_parent(){
-// 		return parent != nullptr;
-// 	}
+	bool is_leaf(){
+		return children.size() == 0;
+	}
 
-// 	MCTNode& operator=(const MCTNode& node){
-// 		action = node.action;
-// 		parent = node.parent;
-// 		children = node.children;
-// 		wins = node.wins;
-// 		visits = node.visits;
-// 		return *this;
-// 	}	
+	bool has_parent(){
+		return parent != nullptr;
+	}
 
-// private:
-// };
+	MCTNode& operator=(const MCTNode& node){
+		action = node.action;
+		parent = node.parent;
+		children = node.children;
+		wins = node.wins;
+		visits = node.visits;
+		return *this;
+	}	
 
-// template<class state_t, class action_t>
-// class Dragon{
-// public:
-// 	uint16_t maxIter;
+private:
+};
 
-// 	Dragon(){
-// 		maxIter = MAX_ITERATIONS;
-// 	}
+template<class state_t, class action_t>
+class Dragon{
+public:
+	uint16_t maxIter;
 
-// 	void search(state_t currState){
-// 		MCTNode root(action_t("none"), nullptr);
-// 		MCTNode node();
-// 		state_t state;
-// 		for (uint16_t iter = 1; iter <= maxIter; ++iter){
+	Dragon(){
+		maxIter = MAX_ITERATIONS;
+	}
 
-// 			node = root;
-// 			state = currState;
+	void search(state_t currState, bool isMax){
+		MCTNode<state_t, action_t> root(action_t("none"), nullptr);
+		MCTNode<state_t, action_t> node;
+		bool player = isMax;
 
-// 			while (!node.is_leaf()){
-// 				node = select_policy(node, depth);
-// 				state.update(node.action);
-// 				depth++;
-// 			}
+		state_t state;
+		for (uint16_t iter = 1; iter <= maxIter; ++iter){
 
-// 		}
-// 	}
+			node = root;
+			state = currState;
 
-// 	MCTNode select_policy(node, depth){
-// 		return MCTNode(action_t(""), nullptr);
-// 	}
-// private:
-// };
+			int depth = 0;
+
+			// selection
+			while (!node.is_leaf()){
+				select_policy(node, depth);
+				state.update(node.action);
+				depth++;
+			}
+
+			// expansion
+			node.expand(state, isMax);
+			select_policy(node, depth);
+
+			isMax = !isMax;
+
+			// simulation
+			while (!state.gameover()){
+				simulation_policy(state, isMax);
+				isMax = !isMax;
+			}
+
+			int result = state.evaluate(player);
+			
+		//	while (n.has_parent()){
+		//		n.update(result);
+		//		n = n->parent;
+		//	}
+
+		}
+	}
+
+	void select_policy(MCTNode<state_t, action_t>& node, int depth){
+		MCTNode<state_t, action_t> bestChild;
+		double bestValue = -1.0;
+		double value;
+		for (auto child : node.children){
+			value = child->wins / child->visits;
+			if (value > bestValue){
+				bestValue = value;
+				bestChild = child;
+			}
+		}
+		node = bestChild;
+	}
+
+	void simulation_policy(state_t& state, bool isMax){
+		
+		srand(time(nullptr));
+		
+		vector<action_t> actions;
+		state.get_moves(actions, isMax);
+		action_t action = actions[rand() % actions.size()];
+		state.update(action);
+		state.switch_turns();
+	}
+
+private:
+};
 
 #endif

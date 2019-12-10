@@ -233,6 +233,7 @@ Hence, **Ba1?a2** is indeed a winning opening in 2x2 Nex. Symmetrically, **Bb2?b
 
 * Move 3, **Ba3?a2**, appears to be a powerful move. This pattern may be useful in developing heuristics for Solver 3.0.
 
+
 ##### Solver 2.0 vs Solver 1.0 on 3x3 Nex
 ![](./cpp/nex/images/solver2_solver1/blank.png)
 ![](./cpp/nex/images/solver2_solver1/1_0.png)

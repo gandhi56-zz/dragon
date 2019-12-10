@@ -11,7 +11,7 @@ ReversiState::ReversiState(){
 }
 
 ReversiState::~ReversiState(){
-
+	cout << "state destroyed 1111" << endl;
 }
 
 

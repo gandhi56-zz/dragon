@@ -2,8 +2,8 @@
 #include "../include/server.h"
 
 int main(){
-	Server server;
-	server.run();
+	//Server server;
+	//server.run();
 
 	// ReversiState state;
 	// state.set_size(8, 8);
@@ -20,5 +20,11 @@ int main(){
 
 	// state.update(ReversiAction("Ba1"));
 	// state.show();
+
+	ReversiState s;
+	s.set_size(4,4);
+	s.create_graph();
+	s.show();
+
 	return 0;
 }

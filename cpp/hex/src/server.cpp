@@ -2,7 +2,7 @@
 
 // ~~~~~~~~~~~~~~~~~~~~Server class~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Server::Server(){
-	state.set_size(4, 4);
+	state.set_size(3, 3);
 	state.create_graph();
 	solver.set_state(state);
 	maxGames = 1;
@@ -98,7 +98,7 @@ void Server::run(){
 		}
 		else if (cmd == "search"){
 			high_resolution_clock::time_point startTime = high_resolution_clock::now();
-			solver.negamax(solver.state, -100, 100, state.playerJustMoved==2, 0);
+			solver.negamax_r(solver.state, -100, 100, state.playerJustMoved==2, 0);
 			high_resolution_clock::time_point endTime = high_resolution_clock::now();
 			duration<double> timeTaken = duration_cast<duration<double>>(endTime - startTime);
 			cout << "Search time\t=\t" << timeTaken.count() << " sec." << endl;
