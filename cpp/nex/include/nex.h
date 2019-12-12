@@ -22,7 +22,7 @@ using namespace std;
 typedef bitset<VALBITS> Valtype;
 typedef pair<Valtype, vector<uint16_t> > Cell;
 
-#include "../../solver/solver.h"
+#include "solver.h"
 
 class NexAction: public Action{
 public:
